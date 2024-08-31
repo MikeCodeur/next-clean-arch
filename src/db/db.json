@@ -1,0 +1,64 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "Default post"
+    },
+    {
+      "id": "2",
+      "title": "Un post"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "title": "Default product",
+      "price": 199,
+      "quantity": 19,
+      "category": "lighting",
+      "createdAt": "2024-04-24T05:56:06.593Z",
+      "updadtedAt": "2024-07-03T04:35:13.468Z"
+    },
+    {
+      "id": "2",
+      "title": "IPhone",
+      "price": 1490,
+      "quantity": 4,
+      "category": "furniture",
+      "createdAt": "2024-04-25T05:56:06.593Z",
+      "updadtedAt": "2024-07-03T04:35:13.468Z"
+    }
+  ],
+  "todos": [
+    {
+      "id": 1,
+      "title": "Apprendre React",
+      "isCompleted": true,
+      "createdAt": "2024-07-03T04:35:13.468Z",
+      "updadtedAt": "2024-07-03T04:35:13.468Z"
+    },
+    {
+      "id": 2,
+      "title": "Apprendre Next",
+      "isCompleted": false,
+      "createdAt": "2024-07-03T04:35:13.468Z",
+      "updadtedAt": "2024-07-03T04:35:13.468Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "a@a.fr",
+      "password": "$2b$10$ctVHPcQ6RdTSIYnxUVbj6uzjbe9P1Cmku.vcon9uLj4I/xYpXGwvO",
+      "name": "John",
+      "role": "USER"
+    }
+  ],
+  "sessions": [
+    {
+      "sessionId": "1",
+      "userId": "1",
+      "expiresAt": "2024-07-03T04:35:13.468Z"
+    }
+  ]
+}
