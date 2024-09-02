@@ -35,10 +35,10 @@ Par exemple, ce RCC est rendu **une fois sur le server** sans code client (inter
 
 ```tsx
 export default function ClientComponent() {
-	const handleClick = () => {alert('Hi')}
-	return (
-    <button onClick={handleClick}>Click here</button>
-  )
+  const handleClick = () => {
+    alert('Hi')
+  }
+  return <button onClick={handleClick}>Click here</button>
 }
 ```
 
@@ -59,12 +59,8 @@ On a déjà vu plusieurs fois les bénéfice de ce type de découpage. Mais il f
 
 ```tsx
 export default function ClientComponent() {
-	const date = new Date().toString()
-	return (
-    <div>
-      {date}
-    </div>
-  )
+  const date = new Date().toString()
+  return <div>{date}</div>
 }
 // SSR date : Tue Jul 02 2024 14:18:53 GMT+0800
 // Le rendu client arrive après

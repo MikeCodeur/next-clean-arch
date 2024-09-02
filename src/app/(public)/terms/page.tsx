@@ -1,5 +1,5 @@
-import {Metadata} from "next"
-import {terms} from "./terms"
+import {Metadata} from 'next'
+import {terms} from './terms'
 
 export const metadata: Metadata = {
   title: "Condition d'utilisation",
@@ -28,7 +28,7 @@ const Term = (props: TermsProps) => {
       <li className="p-1" key={cIndex}>
         <span className="">
           {index}.{cIndex + 1}.
-        </span>{" "}
+        </span>{' '}
         {content}
       </li>
     )

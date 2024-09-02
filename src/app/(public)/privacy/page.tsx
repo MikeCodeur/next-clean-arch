@@ -1,9 +1,9 @@
-import {Metadata} from "next"
-import {privacy} from "./privacy"
+import {Metadata} from 'next'
+import {privacy} from './privacy'
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité",
-  description: "Page de politique de confidentialité",
+  title: 'Politique de confidentialité',
+  description: 'Page de politique de confidentialité',
 }
 const Page = () => {
   return (

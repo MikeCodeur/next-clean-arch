@@ -1,18 +1,20 @@
 import {
   date,
   pgTable,
-  serial,
   varchar,
   real,
   text,
   integer,
+  uuid,
 } from 'drizzle-orm/pg-core'
 
 import {categories, Category} from './categories'
-import {relations} from 'drizzle-orm'
+import {relations, sql} from 'drizzle-orm'
 
 export const products = pgTable('product', {
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
   title: varchar('title', {length: 256}),
   price: real('price'),
   description: text('description'),
@@ -32,9 +34,9 @@ export const productsRelations = relations(products, ({one}) => ({
   }),
 }))
 
-export type Product = typeof products.$inferSelect // return type when queried
-export type InsertProduct = typeof products.$inferInsert // return type when queried
+export type ProductModel = typeof products.$inferSelect // return type when queried
+export type CreateEditProductModel = typeof products.$inferInsert // return type when queried
 
-export type ProductWithCategory = Product & {
+export type ProductWithCategory = ProductModel & {
   category: Category | null | number
 }

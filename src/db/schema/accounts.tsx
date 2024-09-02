@@ -1,10 +1,12 @@
-import {integer, pgTable, serial, numeric, boolean} from 'drizzle-orm/pg-core'
+import {integer, pgTable, numeric, boolean, uuid} from 'drizzle-orm/pg-core'
 
 import {relations, sql} from 'drizzle-orm'
 import {users} from './users'
 
 export const accounts = pgTable('accounts', {
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
   userId: integer('user_id')
     .references(() => users.id)
     .notNull(), // Clé étrangère vers users
