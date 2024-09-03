@@ -8,13 +8,18 @@ import {
   getProductByName,
   getProductsDao,
   persistProductDao,
-} from '@/db/repositories/product'
+} from '@/db/repositories/product-repository'
 
 import {
   createEditProductSchema,
   FormProductSchemaType,
 } from '@/services/validations/product-validation'
-import {Product, UpdateProduct} from '@/lib/product-types'
+import {Product, UpdateProduct} from '@/types/domain/product-types'
+import {getConnectedUser} from '@/services/dal'
+import {
+  createProductService,
+  updateProductService,
+} from '@/services/product-service'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -31,11 +36,9 @@ export async function onSubmitAction(
   prevState: FormState,
   data: FormData
 ): Promise<FormState> {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
   const formData = Object.fromEntries(data)
   const parsed = createEditProductSchema.safeParse(formData)
 
-  console.log('parsed', parsed)
   if (!parsed.success) {
     logZodError(data)
     const validationErrors: ValidationError[] = parsed.error.errors.map(
@@ -47,6 +50,15 @@ export async function onSubmitAction(
     return {
       success: false,
       errors: validationErrors,
+      message: 'Server Error',
+    }
+  }
+
+  const userConnected = await getConnectedUser()
+  console.log('userConnected', userConnected)
+  if (!userConnected) {
+    return {
+      success: false,
       message: 'Server Error',
     }
   }
@@ -80,8 +92,12 @@ export async function onSubmitAction(
   try {
     if (parsed.data.id === '') {
       delete parsed.data.id
+      await createProductService(parsed.data)
+    } else {
+      await updateProductService(parsed.data as UpdateProduct)
     }
-    await persistProductDao(parsed.data as UpdateProduct)
+
+    //await persistProductDao(parsed.data as UpdateProduct)
     revalidatePath('/exercises/shop-admin')
     return {
       success: true,

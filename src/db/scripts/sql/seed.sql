@@ -11,15 +11,15 @@ INSERT INTO Todo (title, isCompleted, createdAt, updatedAt) VALUES
 ('Plan Next Month’s Goals', true, '2024-01-10 18:00:00', '2024-01-10 18:00:00');
 
 -- Insérer des utilisateurs
-INSERT INTO users (name) VALUES
-('Alice'),
-('Bob'),
-('Blocked'),
-('Charlie'),
-('David'),
-('Eve'),
-('Frank'),
-('Grace');
+INSERT INTO users (name, role , email) VALUES
+('Alice','ADMIN', 'admin@gmail.com'),
+('Bob','REDACTOR', 'redactor@gmail.com'),
+('Blocked','ADMIN', 'admin-1@gmail.com'),
+('Charlie','GUEST', 'guest@gmail.com'),
+('David','MODERATOR', 'moderator@gmail.com'),
+('Eve','ADMIN', 'admin-1@gmail.com'),
+('Frank','SUPER_ADMIN', 'superadmin@gmail.com'),
+('Grace','REDACTOR', 'redactor-2@gmail.com');
 
 INSERT INTO profile_info (user_id, note, metadata) VALUES
 ((SELECT id FROM users WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
@@ -67,43 +67,6 @@ VALUES
     ('Wilson Pro Staff Tennis Racket', 229.99, 'Wilson Pro Staff RF97 Autograph Tennis Racket', 'wilson_tennis_racket.png', (SELECT id FROM Category WHERE name = 'Sports Equipment'), 50, '2024-01-20 21:00:00', '2024-01-20 21:00:00');
 
 
-INSERT INTO groups (name) VALUES
-('Admin'),
-('User'),
-('Guest');
-
--- Établir les relations entre les utilisateurs et les groupes
--- Relations pour Alice
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Alice'), (SELECT id FROM groups WHERE name = 'Admin')),
-((SELECT id FROM users WHERE name = 'Alice'), (SELECT id FROM groups WHERE name = 'User'));
-
--- Relations pour Bob
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Bob'), (SELECT id FROM groups WHERE name = 'User'));
-
--- Relations pour Charlie
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Charlie'), (SELECT id FROM groups WHERE name = 'User')),
-((SELECT id FROM users WHERE name = 'Charlie'), (SELECT id FROM groups WHERE name = 'Guest'));
-
--- Relations pour David
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'David'), (SELECT id FROM groups WHERE name = 'User')),
-((SELECT id FROM users WHERE name = 'David'), (SELECT id FROM groups WHERE name = 'Admin'));
-
--- Relations pour Eve
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Eve'), (SELECT id FROM groups WHERE name = 'Guest'));
-
--- Relations pour Frank
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Frank'), (SELECT id FROM groups WHERE name = 'Admin'));
-
--- Relations pour Grace
-INSERT INTO users_to_groups (user_id, group_id) VALUES
-((SELECT id FROM users WHERE name = 'Grace'), (SELECT id FROM groups WHERE name = 'User')),
-((SELECT id FROM users WHERE name = 'Grace'), (SELECT id FROM groups WHERE name = 'Guest'));
 
 INSERT INTO accounts (user_id, balance, blocked) VALUES
 ((SELECT id FROM users WHERE name = 'Alice'), 10000.00, false),

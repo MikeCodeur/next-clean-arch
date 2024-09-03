@@ -1,5 +1,5 @@
 {
-  "id": "53ecc50e-d958-4c97-937f-2b9475362ff5",
+  "id": "864a9431-0746-471c-b9aa-4b06d2e16f9b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -201,29 +201,6 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.groups": {
-      "name": "groups",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "uuid_generate_v4()"
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "public.profile_info": {
       "name": "profile_info",
       "schema": "",
@@ -284,8 +261,27 @@
           "notNull": true,
           "default": "uuid_generate_v4()"
         },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "roles",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password": {
+          "name": "password",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -295,66 +291,22 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
-    },
-    "public.users_to_groups": {
-      "name": "users_to_groups",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "group_id": {
-          "name": "group_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "users_to_groups_user_id_users_id_fk": {
-          "name": "users_to_groups_user_id_users_id_fk",
-          "tableFrom": "users_to_groups",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "users_to_groups_group_id_groups_id_fk": {
-          "name": "users_to_groups_group_id_groups_id_fk",
-          "tableFrom": "users_to_groups",
-          "tableTo": "groups",
-          "columnsFrom": [
-            "group_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "users_to_groups_user_id_group_id_pk": {
-          "name": "users_to_groups_user_id_group_id_pk",
-          "columns": [
-            "user_id",
-            "group_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {}
     }
   },
-  "enums": {},
+  "enums": {
+    "public.roles": {
+      "name": "roles",
+      "schema": "public",
+      "values": [
+        "USER",
+        "GUEST",
+        "REDACTOR",
+        "MODERATOR",
+        "ADMIN",
+        "SUPER_ADMIN"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "_meta": {

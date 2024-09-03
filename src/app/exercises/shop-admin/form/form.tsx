@@ -32,7 +32,7 @@ import {
 } from '@/services/validations/product-validation'
 
 import {Category} from '@/db/schema/categories' //todo import the category type
-import {ProductWithCategory} from '@/lib/product-types'
+import {ProductWithCategory} from '@/types/domain/product-types'
 
 export default function ProductForm({
   product,

@@ -10,7 +10,7 @@ import {
 import {Button} from '@/components/ui/button'
 
 import {JSX, SVGProps} from 'react'
-import {Product} from '@/lib/product-types'
+import {Product} from '@/types/domain/product-types'
 import {Category} from '@/db/schema/categories'
 
 export function ProductsTable({

@@ -1,4 +1,8 @@
-import {CreateProduct, DeleteProduct, UpdateProduct} from '@/lib/product-types'
+import {
+  CreateProduct,
+  DeleteProduct,
+  UpdateProduct,
+} from '@/types/domain/product-types'
 import db from '@/db/schema'
 import {products} from '../schema/products'
 import {and, eq} from 'drizzle-orm'

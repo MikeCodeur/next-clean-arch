@@ -1,57 +1,23 @@
-import {
-  jsonb,
-  pgTable,
-  primaryKey,
-  text,
-  uuid,
-  varchar,
-} from 'drizzle-orm/pg-core'
+import {jsonb, pgEnum, pgTable, text, uuid, varchar} from 'drizzle-orm/pg-core'
 import {relations, sql} from 'drizzle-orm'
 
-// User Group
-export const groups = pgTable('groups', {
-  id: uuid('id')
-    .default(sql`uuid_generate_v4()`)
-    .primaryKey(),
-  name: text('name'),
-})
+export const roleEnum = pgEnum('roles', [
+  'USER',
+  'GUEST',
+  'REDACTOR',
+  'MODERATOR',
+  'ADMIN',
+  'SUPER_ADMIN',
+])
 
-export const usersToGroups = pgTable(
-  'users_to_groups',
-  {
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => users.id),
-    groupId: uuid('group_id')
-      .notNull()
-      .references(() => groups.id),
-  },
-  (t) => ({
-    pk: primaryKey({columns: [t.userId, t.groupId]}),
-  })
-)
-export const groupsRelations = relations(groups, ({many}) => ({
-  usersToGroups: many(usersToGroups),
-  users: many(usersToGroups),
-}))
-
-export const usersToGroupsRelations = relations(usersToGroups, ({one}) => ({
-  group: one(groups, {
-    fields: [usersToGroups.groupId],
-    references: [groups.id],
-  }),
-  user: one(users, {
-    fields: [usersToGroups.userId],
-    references: [users.id],
-  }),
-}))
-
-// USER
 export const users = pgTable('users', {
   id: uuid('id')
     .default(sql`uuid_generate_v4()`)
     .primaryKey(),
+  email: text('email'),
   name: text('name'),
+  role: roleEnum('role').notNull(),
+  password: text('password'),
 })
 
 export const profileInfo = pgTable('profile_info', {
@@ -63,13 +29,11 @@ export const profileInfo = pgTable('profile_info', {
   metadata: jsonb('metadata'),
 })
 
-export const usersRelations = relations(users, ({one, many}) => ({
+export const usersRelations = relations(users, ({one}) => ({
   profileInfo: one(profileInfo, {
     fields: [users.id],
     references: [profileInfo.userId],
   }),
-  usersToGroups: many(usersToGroups),
-  groups: many(usersToGroups),
 }))
 
 export const profileInfoRelations = relations(profileInfo, ({one}) => ({
@@ -78,3 +42,5 @@ export const profileInfoRelations = relations(profileInfo, ({one}) => ({
     references: [users.id],
   }),
 }))
+
+export type UserModel = typeof users.$inferSelect
