@@ -27,28 +27,32 @@ import {useFormState as useActionState} from 'react-dom'
 import {getCategories, onSubmitAction} from '../actions'
 import {toast} from 'sonner'
 import {
-  formSchema,
-  FormSchemaType,
+  createEditProductSchema,
+  FormProductSchemaType,
 } from '@/services/validations/product-validation'
-import {Product} from '@/lib/product-types'
 
 import {Category} from '@/db/schema/categories' //todo import the category type
+import {ProductWithCategory} from '@/lib/product-types'
 
-export default function ProductForm({product}: {product?: Product}) {
+export default function ProductForm({
+  product,
+}: {
+  product?: ProductWithCategory
+}) {
   const [state, formAction] = useActionState(onSubmitAction, {
     success: true,
   })
   const [categories, setCategories] = React.useState<Category[]>([])
-
   const [isPending, setIsPending] = React.useState(false)
+  console.log('product form', product)
 
-  const form = useForm<FormSchemaType>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormProductSchemaType>({
+    resolver: zodResolver(createEditProductSchema),
     defaultValues: {
       id: product?.id ?? '',
       createdAt: product?.createdAt ?? new Date().toISOString(),
       quantity: product?.quantity ?? 0,
-      category: product?.category ?? 0,
+      category: product?.category?.id ?? undefined,
       title: product?.title ?? '',
       description: product?.description ?? '',
       price: product?.price ?? 0,
@@ -83,7 +87,7 @@ export default function ProductForm({product}: {product?: Product}) {
       id: product?.id ?? '',
       createdAt: product?.createdAt ?? new Date().toISOString(),
       quantity: product?.quantity ?? 10,
-      category: product?.category ?? undefined,
+      category: product?.category?.id ?? undefined,
       title: product?.title ?? '',
       description: product?.description ?? '',
       price: product?.price ?? 0,
@@ -102,7 +106,7 @@ export default function ProductForm({product}: {product?: Product}) {
     fetchCategories()
   }, [])
 
-  const handleSubmitAction = async (prod: FormSchemaType) => {
+  const handleSubmitAction = async (prod: FormProductSchemaType) => {
     setIsPending(true)
     const formData = new FormData()
     for (const [key, value] of Object.entries(prod)) {
@@ -164,9 +168,9 @@ export default function ProductForm({product}: {product?: Product}) {
           render={({field}) => (
             <FormItem>
               <Select
-                onValueChange={(value) => field.onChange(Number(value))}
-                defaultValue={`${field.value}`}
-                value={`${field.value}`}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
               >
                 <FormLabel>Catégorie</FormLabel>
                 <FormControl>
@@ -176,7 +180,7 @@ export default function ProductForm({product}: {product?: Product}) {
                 </FormControl>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={`${category.id}`}>
+                    <SelectItem key={category.id} value={category.id ?? ''}>
                       {category.name}
                     </SelectItem>
                   ))}

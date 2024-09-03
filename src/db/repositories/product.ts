@@ -4,11 +4,13 @@ import {products} from '../schema/products'
 import {and, eq} from 'drizzle-orm'
 
 export const createProductDao = async (productParams: CreateProduct) => {
+  console.log('createProductDao product', productParams)
   const row = await db.insert(products).values(productParams)
   return row
 }
 
 export const updateProductDao = async (productParams: UpdateProduct) => {
+  console.log('updateProductDao product', productParams)
   const row = await db
     .update(products)
     .set(productParams)
@@ -35,6 +37,7 @@ export async function getProductByName(name: string) {
 }
 
 export async function persistProductDao(product: UpdateProduct) {
+  console.log('persistProductDao product', product)
   const rows = await db
     .insert(products)
     .values(product)
@@ -47,8 +50,7 @@ export async function getProductsDao() {
     with: {
       category: true,
     },
-    //where: catId ? (categories, {eq}) => eq(categories.id, catId) : undefined,
-    orderBy: (categories, {asc}) => [asc(categories.id)],
+    orderBy: (products, {desc}) => [desc(products.createdAt)],
     limit: 20,
   })
 
@@ -56,9 +58,6 @@ export async function getProductsDao() {
 }
 
 export async function getCategoriesDao() {
-  const resultQuery = await db.query.categories.findMany({
-    // 🐶 Implémente la requête avec les caractéristiques suivantes :
-    // - trié par id ascendant
-  })
+  const resultQuery = await db.query.categories.findMany({})
   return resultQuery
 }

@@ -1,9 +1,11 @@
-import {pgTable, serial, text} from 'drizzle-orm/pg-core'
-import {relations} from 'drizzle-orm'
+import {pgTable, text, uuid} from 'drizzle-orm/pg-core'
+import {relations, sql} from 'drizzle-orm'
 import {products} from './products'
 
 export const categories = pgTable('category', {
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
   name: text('name'),
 })
 

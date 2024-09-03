@@ -1,29 +1,28 @@
 import {
-  integer,
   jsonb,
-  PgColumn,
   pgTable,
-  PgTableWithColumns,
   primaryKey,
-  serial,
   text,
+  uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
-import {relations} from 'drizzle-orm'
+import {relations, sql} from 'drizzle-orm'
 
 // User Group
 export const groups = pgTable('groups', {
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
   name: text('name'),
 })
 
 export const usersToGroups = pgTable(
   'users_to_groups',
   {
-    userId: integer('user_id')
+    userId: uuid('user_id')
       .notNull()
       .references(() => users.id),
-    groupId: integer('group_id')
+    groupId: uuid('group_id')
       .notNull()
       .references(() => groups.id),
   },
@@ -49,13 +48,17 @@ export const usersToGroupsRelations = relations(usersToGroups, ({one}) => ({
 
 // USER
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
   name: text('name'),
 })
 
 export const profileInfo = pgTable('profile_info', {
-  id: serial('id').primaryKey(),
-  userId: integer('user_id').references(() => users.id),
+  id: uuid('id')
+    .default(sql`uuid_generate_v4()`)
+    .primaryKey(),
+  userId: uuid('user_id').references(() => users.id),
   note: varchar('note', {length: 255}),
   metadata: jsonb('metadata'),
 })

@@ -11,13 +11,13 @@ import {
 } from '@/db/repositories/product'
 
 import {
-  formSchema,
-  FormSchemaType,
+  createEditProductSchema,
+  FormProductSchemaType,
 } from '@/services/validations/product-validation'
 import {Product, UpdateProduct} from '@/lib/product-types'
 
 type ValidationError = {
-  field: keyof FormSchemaType
+  field: keyof FormProductSchemaType
   message: string
 }
 
@@ -33,13 +33,14 @@ export async function onSubmitAction(
 ): Promise<FormState> {
   await new Promise((resolve) => setTimeout(resolve, 1000))
   const formData = Object.fromEntries(data)
-  const parsed = formSchema.safeParse(formData)
+  const parsed = createEditProductSchema.safeParse(formData)
 
+  console.log('parsed', parsed)
   if (!parsed.success) {
     logZodError(data)
     const validationErrors: ValidationError[] = parsed.error.errors.map(
       (err) => ({
-        field: err.path[0] as keyof FormSchemaType,
+        field: err.path[0] as keyof FormProductSchemaType,
         message: `zod server error ${err.message}`,
       })
     )
@@ -49,6 +50,7 @@ export async function onSubmitAction(
       message: 'Server Error',
     }
   }
+
   if (data.get('title')?.toString().includes('  ')) {
     return {
       success: false,
@@ -62,7 +64,7 @@ export async function onSubmitAction(
     }
   }
   const prod = await getProductByName(data.get('title')?.toString() ?? '')
-  if (prod) {
+  if (prod && prod.length > 0 && prod[0].id !== parsed.data.id) {
     return {
       success: false,
       errors: [
@@ -76,6 +78,9 @@ export async function onSubmitAction(
   }
 
   try {
+    if (parsed.data.id === '') {
+      delete parsed.data.id
+    }
     await persistProductDao(parsed.data as UpdateProduct)
     revalidatePath('/exercises/shop-admin')
     return {
@@ -92,7 +97,7 @@ export async function onSubmitAction(
 
 function logZodError(data: FormData) {
   const formData = Object.fromEntries(data)
-  const parsed = formSchema.safeParse(formData)
+  const parsed = createEditProductSchema.safeParse(formData)
   const errorMessages = parsed?.error?.errors
     .map((err) => `${err.path} ${err.message}`)
     .join(', ')
@@ -100,12 +105,10 @@ function logZodError(data: FormData) {
 }
 
 export const getProducts = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
   const products = await getProductsDao()
   return products
 }
 export const getCategories = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000))
   const products = await getCategoriesDao()
   return products
 }

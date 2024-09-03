@@ -19,7 +19,7 @@ export const products = pgTable('product', {
   price: real('price'),
   description: text('description'),
   image: varchar('image', {length: 256}),
-  category: integer('category_id').references(() => categories.id, {
+  category: uuid('category_id').references(() => categories.id, {
     onDelete: 'cascade',
   }),
   quantity: integer('quantity'),

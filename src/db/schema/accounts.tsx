@@ -7,7 +7,7 @@ export const accounts = pgTable('accounts', {
   id: uuid('id')
     .default(sql`uuid_generate_v4()`)
     .primaryKey(),
-  userId: integer('user_id')
+  userId: uuid('user_id')
     .references(() => users.id)
     .notNull(), // Clé étrangère vers users
   balance: numeric('balance', {precision: 10, scale: 2})
