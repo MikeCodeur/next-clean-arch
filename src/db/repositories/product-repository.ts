@@ -1,4 +1,5 @@
 import {
+  CreateEditProduct,
   CreateProduct,
   DeleteProduct,
   UpdateProduct,
@@ -27,7 +28,7 @@ export const deleteProductDao = async (productParams: DeleteProduct) => {
   await db.delete(products).where(and(eq(products.id, productParams.id)))
 }
 
-export async function getProductByName(name: string) {
+export async function getProductByNameDao(name: string) {
   const resultQuery = await db.query.products.findMany({
     with: {
       category: true,
@@ -40,7 +41,7 @@ export async function getProductByName(name: string) {
   return resultQuery
 }
 
-export async function persistProductDao(product: UpdateProduct) {
+export async function persistProductDao(product: CreateEditProduct) {
   console.log('persistProductDao product', product)
   const rows = await db
     .insert(products)

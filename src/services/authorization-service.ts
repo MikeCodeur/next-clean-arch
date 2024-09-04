@@ -9,6 +9,10 @@ export const canCreateProduct = async () => {
   return isAdmin
 }
 
+export const canReadProduct = async () => {
+  return true
+}
+
 export const hasRoleAdmin = (authUser?: UserDTO): boolean => {
   return authUser?.role === RoleEnum.ADMIN || false
 }

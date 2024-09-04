@@ -18,9 +18,10 @@ export const createEditProductSchema = z.object({
     message: 'Description must be at least 2 characters.',
   }),
 })
-export type FormProductSchemaType = z.infer<typeof createEditProductSchema>
 
 export const updateProductShema = createEditProductSchema.extend({
   id: z.string(),
   category: z.string(),
 })
+
+export type FormProductSchemaType = z.infer<typeof createEditProductSchema>

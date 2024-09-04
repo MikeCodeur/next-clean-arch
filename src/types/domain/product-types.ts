@@ -13,3 +13,5 @@ export type DeleteProduct = Pick<Product, 'id'>
 export type ProductWithCategory = Product & {
   category: Category | null | number
 }
+
+export type ProductDTO = Pick<Product, 'id' | 'title' | 'category'>

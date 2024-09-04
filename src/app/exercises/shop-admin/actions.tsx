@@ -1,24 +1,24 @@
 'use server'
-
+// DO NOT INCLUDE @/db/....
 import {revalidatePath} from 'next/cache'
-
-import {
-  deleteProductDao,
-  getCategoriesDao,
-  getProductByName,
-  getProductsDao,
-  persistProductDao,
-} from '@/db/repositories/product-repository'
-
+//DAL
+import {getConnectedUser} from '@/app/lib/user-dal'
+// Validation Schema and Type (used for form validation)
 import {
   createEditProductSchema,
   FormProductSchemaType,
 } from '@/services/validations/product-validation'
-import {Product, UpdateProduct} from '@/types/domain/product-types'
-import {getConnectedUser} from '@/services/dal'
+
+// Domain Types
+import {CreateEditProduct, Product} from '@/types/domain/product-types'
+
+// Services
 import {
-  createProductService,
-  updateProductService,
+  deleteProductService,
+  getCategoriesService,
+  getProductByNameService,
+  getProductsService,
+  persistProductService,
 } from '@/services/product-service'
 
 type ValidationError = {
@@ -75,7 +75,9 @@ export async function onSubmitAction(
       message: 'Server Error',
     }
   }
-  const prod = await getProductByName(data.get('title')?.toString() ?? '')
+  const prod = await getProductByNameService(
+    data.get('title')?.toString() ?? ''
+  )
   if (prod && prod.length > 0 && prod[0].id !== parsed.data.id) {
     return {
       success: false,
@@ -92,10 +94,8 @@ export async function onSubmitAction(
   try {
     if (parsed.data.id === '') {
       delete parsed.data.id
-      await createProductService(parsed.data)
-    } else {
-      await updateProductService(parsed.data as UpdateProduct)
     }
+    await persistProductService(parsed.data)
 
     //await persistProductDao(parsed.data as UpdateProduct)
     revalidatePath('/exercises/shop-admin')
@@ -120,21 +120,26 @@ function logZodError(data: FormData) {
   console.error('Zod errorMessages', errorMessages)
 }
 
+export const getUser = async () => {
+  const userConnected = await getConnectedUser()
+  return userConnected
+}
+
 export const getProducts = async () => {
-  const products = await getProductsDao()
+  const products = await getProductsService()
   return products
 }
 export const getCategories = async () => {
-  const products = await getCategoriesDao()
+  const products = await getCategoriesService()
   return products
 }
 
-export const persistProduct = async (product: Product) => {
-  await persistProductDao(product)
+export const persistProduct = async (product: CreateEditProduct) => {
+  await persistProductService(product)
   revalidatePath('/exercises/shop-admin')
 }
 
 export const deleteProduct = async (product: Product) => {
-  await deleteProductDao(product)
+  await deleteProductService(product)
   revalidatePath('/exercises/shop-admin')
 }

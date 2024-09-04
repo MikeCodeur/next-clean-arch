@@ -37,6 +37,6 @@ export const productsRelations = relations(products, ({one}) => ({
 export type ProductModel = typeof products.$inferSelect // return type when queried
 export type CreateEditProductModel = typeof products.$inferInsert // return type when queried
 
-export type ProductWithCategory = ProductModel & {
+export type ProductWithCategoryModel = ProductModel & {
   category: Category | null | number
 }

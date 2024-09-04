@@ -2,8 +2,9 @@ import 'server-only'
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
 
 //import {auth} from '@/auth'
-import {getUserByEmailDao} from '@/db/repositories/user-repository'
+
 import {RoleEnum, User, UserDTO} from '@/types/domain/user-types'
+import {getUserByEmailService} from '@/services/user-service'
 
 export const getConnectedUser = cache(async () => {
   //const session = await verifySession()
@@ -11,7 +12,7 @@ export const getConnectedUser = cache(async () => {
   // if (!session?.user || !session.user.email) return
   // console.log('getConnectedUser session.user', session.user)
   try {
-    const user = await getUserByEmailDao('admin@gmail.com')
+    const user = await getUserByEmailService('admin@gmail.com')
     return userDTO(user as User)
   } catch (error) {
     console.error('Failed to fetch user', error)
