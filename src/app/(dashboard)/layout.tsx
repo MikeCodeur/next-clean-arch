@@ -5,13 +5,15 @@ import {PropsWithChildren} from 'react'
 import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
+import {checkAuth} from '@/services/authentication/auth-service'
 
 export const metadata: Metadata = {
   title: 'App',
   description: "Page d'app",
 }
 
-export default function AppLayout({children}: PropsWithChildren) {
+export default async function AppLayout({children}: PropsWithChildren) {
+  await checkAuth()
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b">

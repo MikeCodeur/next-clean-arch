@@ -11,7 +11,7 @@ INSERT INTO Todo (title, isCompleted, createdAt, updatedAt) VALUES
 ('Plan Next Month’s Goals', true, '2024-01-10 18:00:00', '2024-01-10 18:00:00');
 
 -- Insérer des utilisateurs
-INSERT INTO users (name, role , email) VALUES
+INSERT INTO user (name, role, email) VALUES
 ('Alice','ADMIN', 'admin@gmail.com'),
 ('Bob','REDACTOR', 'redactor@gmail.com'),
 ('Blocked','ADMIN', 'admin-1@gmail.com'),
@@ -22,8 +22,8 @@ INSERT INTO users (name, role , email) VALUES
 ('Grace','REDACTOR', 'redactor-2@gmail.com');
 
 INSERT INTO profile_info (user_id, note, metadata) VALUES
-((SELECT id FROM users WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
-((SELECT id FROM users WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
+((SELECT id FROM user WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
+((SELECT id FROM user WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
 
 
 INSERT INTO Category (name) VALUES
@@ -68,7 +68,7 @@ VALUES
 
 
 
-INSERT INTO accounts (user_id, balance, blocked) VALUES
-((SELECT id FROM users WHERE name = 'Alice'), 10000.00, false),
-((SELECT id FROM users WHERE name = 'Bob'), 15000.00, false),
-((SELECT id FROM users WHERE name = 'Blocked'), 15000.00, true);
+INSERT INTO bank_accounts (user_id, balance, blocked) VALUES
+((SELECT id FROM user WHERE name = 'Alice'), 10000.00, false),
+((SELECT id FROM user WHERE name = 'Bob'), 15000.00, false),
+((SELECT id FROM user WHERE name = 'Blocked'), 15000.00, true);

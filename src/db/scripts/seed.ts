@@ -36,28 +36,31 @@ const seed = async () => {
     `)
 
   await client.query(` 
-      
--- Insérer des utilisateurs
-INSERT INTO users (name, role , email) VALUES
-('Alice','ADMIN', 'admin@gmail.com'),
-('Bob','REDACTOR', 'redactor@gmail.com'),
-('Blocked','ADMIN', 'admin-1@gmail.com'),
-('Charlie','GUEST', 'guest@gmail.com'),
-('David','MODERATOR', 'moderator@gmail.com'),
-('Eve','ADMIN', 'admin-1@gmail.com'),
-('Frank','SUPER_ADMIN', 'superadmin@gmail.com'),
-('Grace','REDACTOR', 'redactor-2@gmail.com');
+    
+INSERT INTO "user" (email, name, emailVerified, role, password, image)
+VALUES
+  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', 'hashedpassword1', 'https://example.com/alice.jpg'),
+  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', 'hashedpassword2', 'https://example.com/bob.jpg'),
+  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', 'hashedpassword3', NULL),
+  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', 'hashedpassword4', 'https://example.com/charlie.jpg'),
+  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', 'hashedpassword5', 'https://example.com/david.jpg'),
+  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', 'hashedpassword6', 'https://example.com/eve.jpg'),
+  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', 'hashedpassword7', 'https://example.com/frank.jpg'),
+  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', 'hashedpassword8', 'https://example.com/grace.jpg');
 
 
-INSERT INTO profile_info (user_id, note, metadata) VALUES
-((SELECT id FROM users WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
-((SELECT id FROM users WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
 
-      INSERT INTO profile_info (user_id, note, metadata) VALUES
-      ((SELECT id FROM users WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
-      ((SELECT id FROM users WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
-          
+ 
      `)
+  await client.query(`
+    INSERT INTO "profile_info" (user_id, note, metadata) VALUES
+    ((SELECT id FROM "user" WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
+    ((SELECT id FROM "user" WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
+
+    INSERT INTO "profile_info" (user_id, note, metadata) VALUES
+    ((SELECT id FROM "user" WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
+    ((SELECT id FROM "user" WHERE name = 'Bob'), 'Note Bob', '{"age": 30, "city": "San Francisco"}');
+         `)
 
   await client.query(` 
     INSERT INTO Category (name) VALUES
@@ -101,10 +104,10 @@ VALUES
   `)
 
   await client.query(` 
-    INSERT INTO accounts (user_id, balance, blocked) VALUES
-    ((SELECT id FROM users WHERE name = 'Alice'), 10000.00, false),
-    ((SELECT id FROM users WHERE name = 'Bob'), 15000.00, false),
-    ((SELECT id FROM users WHERE name = 'Blocked'), 15000.00, true);
+    INSERT INTO bank_accounts (user_id, balance, blocked) VALUES
+((SELECT id FROM "user" WHERE name = 'Alice'), 10000.00, false),
+((SELECT id FROM "user" WHERE name = 'Bob'), 15000.00, false),
+((SELECT id FROM "user" WHERE name = 'Blocked'), 15000.00, true);
     `)
 
   const end = Date.now()

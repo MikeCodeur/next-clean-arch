@@ -3,7 +3,7 @@ import {integer, pgTable, numeric, boolean, uuid} from 'drizzle-orm/pg-core'
 import {relations, sql} from 'drizzle-orm'
 import {users} from './users'
 
-export const accounts = pgTable('accounts', {
+export const bankAccounts = pgTable('bank_accounts', {
   id: uuid('id')
     .default(sql`uuid_generate_v4()`)
     .primaryKey(),
@@ -16,10 +16,10 @@ export const accounts = pgTable('accounts', {
   blocked: boolean('blocked').default(false),
 })
 
-export const accountRelations = relations(accounts, ({one}) => ({
+export const accountRelations = relations(bankAccounts, ({one}) => ({
   user: one(users, {
-    fields: [accounts.userId],
+    fields: [bankAccounts.userId],
     references: [users.id],
   }),
 }))
-export type Account = typeof accounts.$inferSelect // return type when queried
+export type BankAccount = typeof bankAccounts.$inferSelect // return type when queried

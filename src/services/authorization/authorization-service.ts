@@ -1,5 +1,5 @@
 import {RoleEnum, UserDTO} from '@/types/domain/user-types'
-import {getConnectedUser} from './dal'
+import {getConnectedUser} from '../../app/lib/user-dal'
 
 // ONLY ADMIN CAN CREATE PRODUCT
 export const canCreateProduct = async () => {

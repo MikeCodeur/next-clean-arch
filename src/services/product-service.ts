@@ -13,7 +13,10 @@ import {
   DeleteProduct,
   UpdateProduct,
 } from '@/types/domain/product-types'
-import {canCreateProduct, canReadProduct} from './authorization-service'
+import {
+  canCreateProduct,
+  canReadProduct,
+} from './authorization/authorization-service'
 
 export const getProductsService = async () => {
   const permission = await canReadProduct()

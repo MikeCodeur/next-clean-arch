@@ -1,5 +1,5 @@
 import {getUserByEmailDao} from '@/db/repositories/user-repository'
-import {canReadProduct} from './authorization-service'
+import {canReadProduct} from './authorization/authorization-service'
 
 export const getUserByEmailService = async (name: string) => {
   const permission = await canReadProduct()
