@@ -1,11 +1,16 @@
 'use server'
-import {auth, signIn, signOut} from '@/services/authentication/auth'
+import {
+  createSessionDao,
+  getUserByEmailDao,
+} from '@/db/repositories/user-repository'
+import {signIn, signOut} from '@/services/authentication/auth'
 import {signUp} from '@/services/authentication/auth-service'
 import {
   LoginFormSchema,
   SignInError,
   SignupFormSchema,
 } from '@/services/authentication/type'
+
 import {AuthError} from 'next-auth'
 import {isRedirectError} from 'next/dist/client/components/redirect'
 
@@ -97,9 +102,9 @@ export async function authenticate(
     const user = await signIn('credentials', formData)
     console.log('Signed in:', user)
   } catch (error) {
-    console.error('authenticate error:', error)
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451
     if (isRedirectError(error)) {
+      //console.error('isRedirectError error:', error)
       throw error
     }
     const signInError = error as SignInError
@@ -119,5 +124,13 @@ export async function authenticate(
       }
     }
     throw error
+  } finally {
+    console.log('authenticate finally...')
+    // const user = await getUserByEmailDao(email)
+    // await createSessionDao({
+    //   userId: user?.id ?? '',
+    //   sessionToken: 'ok',
+    //   expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+    // })
   }
 }

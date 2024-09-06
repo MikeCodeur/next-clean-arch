@@ -39,14 +39,14 @@ const seed = async () => {
     
 INSERT INTO "user" (email, name, emailVerified, role, password, image)
 VALUES
-  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', 'hashedpassword1', 'https://example.com/alice.jpg'),
-  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', 'hashedpassword2', 'https://example.com/bob.jpg'),
-  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', 'hashedpassword3', NULL),
-  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', 'hashedpassword4', 'https://example.com/charlie.jpg'),
-  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', 'hashedpassword5', 'https://example.com/david.jpg'),
-  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', 'hashedpassword6', 'https://example.com/eve.jpg'),
-  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', 'hashedpassword7', 'https://example.com/frank.jpg'),
-  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', 'hashedpassword8', 'https://example.com/grace.jpg');
+  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/alice.jpg'),
+  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/bob.jpg'),
+  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', NULL),
+  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/charlie.jpg'),
+  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/david.jpg'),
+  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/eve.jpg'),
+  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/frank.jpg'),
+  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/grace.jpg');
 
 
 

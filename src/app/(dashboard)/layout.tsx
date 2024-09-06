@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function AppLayout({children}: PropsWithChildren) {
   await checkAuth()
+
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b">

@@ -2,11 +2,12 @@ import {redirect} from 'next/navigation'
 import {auth} from './auth'
 import {AuthUser} from './type'
 import {
+  createUserAccountSessionDao,
   createUserDao,
   getUserByEmailDao,
   getUserByIdDao,
 } from '@/db/repositories/user-repository'
-import {hashPassword} from './crypt'
+import {encrypt, hashPassword} from './crypt'
 import {CreateUser, RoleEnum} from '@/types/domain/user-types'
 
 export const checkAuth = async () => {
@@ -41,8 +42,13 @@ export const signUp = async (email: string, password: string) => {
     password: hashedPassword,
     name: 'John Doe',
     role: RoleEnum.SUPER_ADMIN,
+    emailVerified: new Date(),
   }
-  const createdUser = await createUserDao(newUser)
+  const token = await encrypt({
+    userId: newUser.email ?? '',
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+  })
+  const createdUser = await createUserAccountSessionDao(newUser, token)
   //await createSession(createdUser.id)
-  return {email: createdUser.email, role: createdUser.role}
+  return {email: createdUser.user.email, role: createdUser.user.role}
 }

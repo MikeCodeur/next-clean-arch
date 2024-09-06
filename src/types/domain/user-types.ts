@@ -9,13 +9,17 @@ import {
 export type User = UserModel
 export type UserRoles = User['role']
 //export type UserVisibility = User['visibility']
-export type CreateUser = Omit<UserAddModel, 'emailVerified'>
+export type CreateUser = Omit<UserAddModel, 'id'>
 export type UpdateUser = Omit<User, 'role' | 'emailVerified'>
 
 export type Session = SessionModel
 export type Account = AccountAddModel
 
 export type CreateSession = SessionAddModel
+export type UpdateSession = Partial<Omit<SessionModel, 'userId'>> & {
+  userId: string
+}
+
 export type CreateAccount = AccountAddModel
 
 export enum RoleEnum {

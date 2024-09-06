@@ -8,9 +8,15 @@ import Resend from 'next-auth/providers/resend'
 //import {verifyPassword} from './crypt'
 import {DrizzleAdapter} from '@auth/drizzle-adapter'
 import db from '@/db/schema'
-import {getUserByEmailDao} from '@/db/repositories/user-repository'
-import {hashPassword, verifyPassword} from './crypt'
+import {
+  createSessionDao,
+  getSessionDao,
+  getUserByEmailDao,
+  updateSessionDao,
+} from '@/db/repositories/user-repository'
+import {encrypt, hashPassword, verifyPassword} from './crypt'
 import {accounts, sessions, users, verificationTokens} from '@/db/schema/users'
+import {getSession} from './auth-service'
 
 console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 
@@ -24,9 +30,15 @@ const redactorRoutes = new Set(['/redaction'])
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
   callbacks: {
+    session: async ({session, token}) => {
+      console.log('session', session)
+      console.log('token', token)
+      //session.user.id = token.sub
+      return session
+    },
     authorized: async ({auth, request: {nextUrl}}) => {
       // Logged in users are authenticated, otherwise redirect to login page
-      console.log('authorized', auth)
+      console.log('authorized caallback', auth)
       const hasSession = auth?.user?.email
       const path = nextUrl.pathname
       const isProtectedRoute = protectedRoutes.has(path)
@@ -63,33 +75,63 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
       }
       return true
     },
+    // async redirect({url, baseUrl}) {
+    //   //Allows relative callback URLs
+    //   if (url.startsWith('/')) return `${baseUrl}${url}`
+    //   // Allows callback URLs on the same origin
+    //   else if (new URL(url).origin === baseUrl) return url
+    //   return baseUrl
+    // },
   },
   providers: [
     Google,
     Resend,
     Credentials({
+      credentials: {
+        email: {},
+        password: {},
+      },
       authorize: async (credentials) => {
         const user = await getUserByEmailDao(credentials.email as string)
-
+        if (!user) {
+          throw new Error('User not found.')
+        }
         const passwordMatch = await verifyPassword(
           credentials.password as string,
           user?.password as string
         )
         console.log('authorize passwordMatch', passwordMatch)
-        if (!user) {
-          throw new Error('User not found.')
-        }
+
         if (!passwordMatch) {
           throw new Error('Password incorrect.')
         }
+        // NOT REALLY USEDED
+        // const session = await getSessionDao(user?.id)
+        // const token = await encrypt({
+        //   userId: user?.id ?? '',
+        //   expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+        // })
+        // await (session
+        //   ? updateSessionDao({
+        //       userId: user.id,
+        //       sessionToken: token,
+        //       expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        //     })
+        //   : createSessionDao({
+        //       userId: user?.id,
+        //       sessionToken: token,
+        //       expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+        //     }))
+        // console.log('authorize user returned', user)
         return user
       },
     }),
   ],
   secret: process.env.AUTH_SECRET,
-  jwt: {},
+  // jwt: {},
   session: {
-    strategy: 'database',
+    //https://stackoverflow.com/questions/78577647/auth-js-v5-database-session-strategy-for-credential-provider-returning-null/78955835#78955835
+    strategy: 'jwt',
   },
   adapter: DrizzleAdapter(db, {
     usersTable: users,

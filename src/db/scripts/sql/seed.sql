@@ -11,15 +11,17 @@ INSERT INTO Todo (title, isCompleted, createdAt, updatedAt) VALUES
 ('Plan Next Month’s Goals', true, '2024-01-10 18:00:00', '2024-01-10 18:00:00');
 
 -- Insérer des utilisateurs
-INSERT INTO user (name, role, email) VALUES
-('Alice','ADMIN', 'admin@gmail.com'),
-('Bob','REDACTOR', 'redactor@gmail.com'),
-('Blocked','ADMIN', 'admin-1@gmail.com'),
-('Charlie','GUEST', 'guest@gmail.com'),
-('David','MODERATOR', 'moderator@gmail.com'),
-('Eve','ADMIN', 'admin-1@gmail.com'),
-('Frank','SUPER_ADMIN', 'superadmin@gmail.com'),
-('Grace','REDACTOR', 'redactor-2@gmail.com');
+INSERT INTO "user" (email, name, emailVerified, role, password, image)
+VALUES
+  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/alice.jpg'),
+  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/bob.jpg'),
+  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', NULL),
+  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/charlie.jpg'),
+  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/david.jpg'),
+  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/eve.jpg'),
+  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/frank.jpg'),
+  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/grace.jpg');
+
 
 INSERT INTO profile_info (user_id, note, metadata) VALUES
 ((SELECT id FROM user WHERE name = 'Alice'),'Note Alice', '{"age": 25, "city": "New York"}'),
