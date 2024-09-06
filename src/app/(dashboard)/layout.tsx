@@ -1,11 +1,8 @@
 import {Metadata} from 'next'
 import Link from 'next/link'
 import {PropsWithChildren} from 'react'
-
 import {ModeToggle} from '@/components/theme-toggle'
-
 import RenderTime from '@/components/render-time'
-import {isAuth} from '@/services/authentication/auth-service'
 import {checkAuth} from '../lib/user-dal'
 
 export const metadata: Metadata = {
@@ -41,6 +38,13 @@ export default async function AppLayout({children}: PropsWithChildren) {
                 href="/dashboard/transfert"
               >
                 <span>Transfert</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/exercises/shop-admin"
+              >
+                <span>Shop Admin</span>
               </Link>
 
               <div className="hidden items-center space-x-2 md:flex"></div>

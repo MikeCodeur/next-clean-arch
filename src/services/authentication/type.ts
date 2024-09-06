@@ -1,4 +1,4 @@
-import {RoleEnum} from '@/types/domain/user-types'
+import {RoleEnum} from '@/services/types/domain/user-types'
 import type {Session, User} from 'next-auth'
 import {z} from 'zod'
 

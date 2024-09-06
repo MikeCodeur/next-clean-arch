@@ -10,7 +10,10 @@ import ProductForm from './form'
 import {ProductsTable} from './product-table'
 import {deleteProduct as deleteProductAction} from './actions'
 import {toast} from 'sonner'
-import {Product} from '@/types/domain/product-types'
+import {
+  Product,
+  ProductWithCategory,
+} from '@/services/types/domain/product-types'
 
 export function ProductsManagement({products}: {products: Product[]}) {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()
@@ -31,7 +34,7 @@ export function ProductsManagement({products}: {products: Product[]}) {
             <CardTitle>Product</CardTitle>
           </CardHeader>
           <CardContent>
-            <ProductForm product={selectedProduct} />
+            <ProductForm product={selectedProduct as ProductWithCategory} />
           </CardContent>
           <div className="mb-4 ml-4 flex gap-2">
             <Button

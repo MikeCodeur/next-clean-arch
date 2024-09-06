@@ -4,10 +4,9 @@ import {
   CreateSession,
   CreateUser,
   UpdateSession,
-  User,
-} from '@/types/domain/user-types'
+} from '@/services/types/domain/user-types'
 import db from '../schema'
-import {accounts, sessions, UserModel, users} from '../schema/users'
+import {accounts, sessions, users} from '../schema/users'
 import {and, eq} from 'drizzle-orm'
 
 export const getUserByIdDao = async (uid: string) => {

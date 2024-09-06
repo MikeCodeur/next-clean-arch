@@ -1,10 +1,10 @@
 import 'server-only'
-import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
+import {cache} from 'react'
 
 //import {auth} from '@/auth'
 
 import {getProductsService} from '@/services/product-service'
-import {Product, ProductDTO} from '@/types/domain/product-types'
+import {Product, ProductDTO} from '@/services/types/domain/product-types'
 
 export const getProducts = cache(async () => {
   //const session = await verifySession()

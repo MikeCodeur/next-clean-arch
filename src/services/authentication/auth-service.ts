@@ -1,4 +1,3 @@
-//import {redirect} from 'next/navigation'
 import {auth} from './auth'
 import {AuthUser} from './type'
 import {
@@ -6,8 +5,11 @@ import {
   getUserByEmailDao,
 } from '@/db/repositories/user-repository'
 import {encrypt, hashPassword} from './crypt'
-import {CreateUser, RoleEnum} from '@/types/domain/user-types'
-import {hasRole, hasRoleAdmin} from '../authorization/authorization-service'
+import {CreateUser, RoleEnum, User} from '@/services/types/domain/user-types'
+import {
+  checkRoleHierarchy,
+  hasRole,
+} from '../authorization/authorization-service'
 
 export const isAuth = async () => {
   const {session} = await getSession()
@@ -16,7 +18,8 @@ export const isAuth = async () => {
 
 export const isAuthAdmin = async () => {
   const authUser = await getUserAuthExtented()
-  return hasRoleAdmin(authUser)
+  console.log('isAuthAdmin authUser', authUser)
+  return checkRoleHierarchy(authUser?.user as User, RoleEnum.ADMIN)
 }
 
 export const checkAuthRole = async (role: RoleEnum) => {
@@ -28,6 +31,7 @@ export const getSession = async () => {
   const session = await auth()
   return {session}
 }
+
 export const getUserAuthExtented = async (): Promise<AuthUser | undefined> => {
   const session = await auth()
   console.log('getUserAuthExtented session.user', session?.user)
@@ -50,7 +54,7 @@ export const signUp = async (email: string, password: string) => {
     email,
     password: hashedPassword,
     name: 'John Doe',
-    role: RoleEnum.SUPER_ADMIN,
+    role: RoleEnum.ADMIN,
     emailVerified: new Date(),
   }
   const token = await encrypt({

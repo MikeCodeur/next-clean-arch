@@ -1,4 +1,4 @@
-import {integer, pgTable, numeric, boolean, uuid} from 'drizzle-orm/pg-core'
+import {pgTable, numeric, boolean, uuid} from 'drizzle-orm/pg-core'
 
 import {relations, sql} from 'drizzle-orm'
 import {users} from './users'

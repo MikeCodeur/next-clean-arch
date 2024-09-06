@@ -1,4 +1,4 @@
-import {DeleteProduct} from '@/types/domain/product-types'
+import {DeleteProduct} from '@/services/types/domain/product-types'
 import z from 'zod'
 
 export const deleteProductSchema = z.object({

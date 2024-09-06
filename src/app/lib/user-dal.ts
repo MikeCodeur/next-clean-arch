@@ -1,17 +1,11 @@
 import 'server-only'
+
 import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
-
-//import {auth} from '@/auth'
-
-import {RoleEnum, User, UserDTO} from '@/types/domain/user-types'
+import {redirect} from 'next/navigation'
+import {RoleEnum, User, UserDTO} from '@/services/types/domain/user-types'
 import {getUserByEmailService} from '@/services/user-service'
 import {auth} from '@/services/authentication/auth'
-import {
-  getUserAuthExtented,
-  isAuth,
-  isAuthAdmin,
-} from '@/services/authentication/auth-service'
-import {redirect} from 'next/navigation'
+import {isAuth, isAuthAdmin} from '@/services/authentication/auth-service'
 
 export const getConnectedUser = cache(async () => {
   const session = await auth()

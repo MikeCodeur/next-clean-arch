@@ -12,7 +12,7 @@ import {
   CreateProduct,
   DeleteProduct,
   UpdateProduct,
-} from '@/types/domain/product-types'
+} from '@/services/types/domain/product-types'
 import {
   canCreateProduct,
   canReadProduct,

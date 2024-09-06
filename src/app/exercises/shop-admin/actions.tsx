@@ -10,7 +10,7 @@ import {
 } from '@/services/validations/product-validation'
 
 // Domain Types
-import {CreateEditProduct, Product} from '@/types/domain/product-types'
+import {CreateEditProduct, Product} from '@/services/types/domain/product-types'
 
 // Services
 import {

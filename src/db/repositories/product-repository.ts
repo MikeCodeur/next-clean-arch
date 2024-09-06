@@ -3,7 +3,7 @@ import {
   CreateProduct,
   DeleteProduct,
   UpdateProduct,
-} from '@/types/domain/product-types'
+} from '@/services/types/domain/product-types'
 import db from '@/db/schema'
 import {products} from '../schema/products'
 import {and, eq} from 'drizzle-orm'
