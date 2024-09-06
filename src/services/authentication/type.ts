@@ -33,7 +33,7 @@ export interface SignInError {
 export type AuthUser = {
   session: Session
   user?: User
-  roles: string[]
+  role: string
 }
 
 export const LoginFormSchema = z.object({

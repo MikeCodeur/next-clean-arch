@@ -5,20 +5,41 @@ import {cache, experimental_taintUniqueValue as taintUniqueValue} from 'react'
 
 import {RoleEnum, User, UserDTO} from '@/types/domain/user-types'
 import {getUserByEmailService} from '@/services/user-service'
+import {auth} from '@/services/authentication/auth'
+import {
+  getUserAuthExtented,
+  isAuth,
+  isAuthAdmin,
+} from '@/services/authentication/auth-service'
+import {redirect} from 'next/navigation'
 
 export const getConnectedUser = cache(async () => {
-  //const session = await verifySession()
-  // const session = await auth()
-  // if (!session?.user || !session.user.email) return
-  // console.log('getConnectedUser session.user', session.user)
+  const session = await auth()
+  if (!session?.user || !session.user.email) return
+  console.log('getConnectedUser session.user', session.user)
   try {
-    const user = await getUserByEmailService('admin@gmail.com')
+    const user = await getUserByEmailService(session.user.email)
     return userDTO(user as User)
   } catch (error) {
     console.error('Failed to fetch user', error)
     return
   }
 })
+
+export const checkAuth = async () => {
+  const auth = await isAuth()
+  console.log('checkAuth', auth)
+  if (!auth) {
+    redirect('/sign-in')
+  }
+}
+
+export const checkAdmin = async () => {
+  const auth = await isAuthAdmin()
+  if (!auth) {
+    redirect('/restricted')
+  }
+}
 
 export function userDTO(user: User): UserDTO | undefined {
   if (!user) return undefined

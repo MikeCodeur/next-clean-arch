@@ -1,4 +1,7 @@
-export default function Page() {
+import {checkAdmin} from '@/app/lib/user-dal'
+
+export default async function Page() {
+  await checkAdmin()
   return (
     <div className="grid h-full items-center justify-center p-4 text-center">
       <div className="space-y-4">

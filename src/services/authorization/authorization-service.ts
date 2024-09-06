@@ -1,5 +1,6 @@
 import {RoleEnum, UserDTO} from '@/types/domain/user-types'
 import {getConnectedUser} from '../../app/lib/user-dal'
+import {AuthUser} from '../authentication/type'
 
 // ONLY ADMIN CAN CREATE PRODUCT
 export const canCreateProduct = async () => {
@@ -13,8 +14,15 @@ export const canReadProduct = async () => {
   return true
 }
 
-export const hasRoleAdmin = (authUser?: UserDTO): boolean => {
+export const hasRoleAdmin = (authUser?: UserDTO | AuthUser): boolean => {
   return authUser?.role === RoleEnum.ADMIN || false
+}
+
+export const hasRole = (
+  role: RoleEnum,
+  authUser?: UserDTO | AuthUser
+): boolean => {
+  return authUser?.role === role || false
 }
 
 // export const hasRoleAdmin = (authUser?: AuthUser): boolean => {

@@ -18,10 +18,7 @@ export default function AppLayout({children}: PropsWithChildren) {
         <div className="container px-4 sm:px-6 lg:px-8">
           <nav className="flex h-14 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/exercises"
-              >
+              <Link className="flex items-center space-x-2 font-bold" href="/">
                 <span>Home</span>
               </Link>
 

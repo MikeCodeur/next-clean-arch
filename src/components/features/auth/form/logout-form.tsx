@@ -21,7 +21,7 @@ function LogoutButton() {
     setPending(true)
     await logout()
     setPending(false)
-    router.push('/exercises/')
+    router.push('/sign-in/')
   }
 
   return (

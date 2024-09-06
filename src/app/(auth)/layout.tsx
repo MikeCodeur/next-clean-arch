@@ -32,6 +32,34 @@ export default function AppLayout({children}: PropsWithChildren) {
                 <span>Inscription</span>
               </Link>
 
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/dashboard"
+              >
+                <span>Dashboard</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/privacy"
+              >
+                <span>Privacy</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/terms"
+              >
+                <span>Terms</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/logout"
+              >
+                <span>Logout</span>
+              </Link>
+
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
             <div className="flex items-center space-x-2">

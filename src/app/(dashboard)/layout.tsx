@@ -5,7 +5,8 @@ import {PropsWithChildren} from 'react'
 import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
-import {checkAuth} from '@/services/authentication/auth-service'
+import {isAuth} from '@/services/authentication/auth-service'
+import {checkAuth} from '../lib/user-dal'
 
 export const metadata: Metadata = {
   title: 'App',
@@ -23,16 +24,23 @@ export default async function AppLayout({children}: PropsWithChildren) {
             <div className="flex items-center space-x-4">
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/exercises"
+                href="/dashboard"
               >
                 <span>Home</span>
               </Link>
 
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/instructions"
+                href="/admin"
               >
-                <span>Instructions</span>
+                <span>Admin</span>
+              </Link>
+
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/dashboard/transfert"
+              >
+                <span>Transfert</span>
               </Link>
 
               <div className="hidden items-center space-x-2 md:flex"></div>

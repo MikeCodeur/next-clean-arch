@@ -1,19 +1,27 @@
-import {redirect} from 'next/navigation'
+//import {redirect} from 'next/navigation'
 import {auth} from './auth'
 import {AuthUser} from './type'
 import {
   createUserAccountSessionDao,
-  createUserDao,
   getUserByEmailDao,
-  getUserByIdDao,
 } from '@/db/repositories/user-repository'
 import {encrypt, hashPassword} from './crypt'
 import {CreateUser, RoleEnum} from '@/types/domain/user-types'
+import {hasRole, hasRoleAdmin} from '../authorization/authorization-service'
 
-export const checkAuth = async () => {
+export const isAuth = async () => {
   const {session} = await getSession()
-  console.log('checkAuth', session)
-  if (!session) redirect('/sign-in')
+  return session ? true : false
+}
+
+export const isAuthAdmin = async () => {
+  const authUser = await getUserAuthExtented()
+  return hasRoleAdmin(authUser)
+}
+
+export const checkAuthRole = async (role: RoleEnum) => {
+  const authUser = await getUserAuthExtented()
+  return hasRole(role, authUser)
 }
 
 export const getSession = async () => {
@@ -22,11 +30,12 @@ export const getSession = async () => {
 }
 export const getUserAuthExtented = async (): Promise<AuthUser | undefined> => {
   const session = await auth()
-  if (!session?.user?.id) return
-  const uid = session?.user?.id
-  const user = await getUserByIdDao(uid)
+  console.log('getUserAuthExtented session.user', session?.user)
+  if (!session?.user?.email) return
+  const email = session?.user?.email ?? ''
+  const user = await getUserByEmailDao(email)
   if (!user) return
-  return {session, user, roles: [user?.role?.toLocaleLowerCase()] as string[]}
+  return {session, user, role: user?.role?.toLocaleLowerCase() as string}
 }
 
 export const signUp = async (email: string, password: string) => {

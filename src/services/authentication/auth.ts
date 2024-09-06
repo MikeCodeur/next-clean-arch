@@ -1,32 +1,24 @@
-//import {getUserByEmailDao} from '@/db/repositories/user-repository'
-import {RoleEnum} from '@/types/domain/user-types'
 import NextAuth from 'next-auth'
 import type {NextAuthConfig} from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import Google from 'next-auth/providers/google'
 import Resend from 'next-auth/providers/resend'
-//import {verifyPassword} from './crypt'
+
 import {DrizzleAdapter} from '@auth/drizzle-adapter'
 import db from '@/db/schema'
-import {
-  createSessionDao,
-  getSessionDao,
-  getUserByEmailDao,
-  updateSessionDao,
-} from '@/db/repositories/user-repository'
-import {encrypt, hashPassword, verifyPassword} from './crypt'
+import {getUserByEmailDao} from '@/db/repositories/user-repository'
+import {verifyPassword} from './crypt'
 import {accounts, sessions, users, verificationTokens} from '@/db/schema/users'
-import {getSession} from './auth-service'
 
 console.log('process.env.NEXT_RUNTIME AUTH', process.env.NEXT_RUNTIME)
 
-const protectedRoutes = new Set([
-  '/exercises/dashboard',
-  '/exercises/bank-account',
-])
-const publicRoutes = new Set(['/'])
-const adminRoutes = new Set(['/admin'])
-const redactorRoutes = new Set(['/redaction'])
+// const protectedRoutes = new Set([
+//   '/exercises/dashboard',
+//   '/exercises/bank-account',
+// ])
+// const publicRoutes = new Set(['/'])
+// const adminRoutes = new Set(['/admin'])
+// const redactorRoutes = new Set(['/redaction'])
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
   callbacks: {
@@ -39,41 +31,42 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
     authorized: async ({auth, request: {nextUrl}}) => {
       // Logged in users are authenticated, otherwise redirect to login page
       console.log('authorized caallback', auth)
-      const hasSession = auth?.user?.email
-      const path = nextUrl.pathname
-      const isProtectedRoute = protectedRoutes.has(path)
-      const isPublicRoute = publicRoutes.has(path)
-      const isAdminRoute = adminRoutes.has(path)
-      const isRedactorRoute = redactorRoutes.has(path)
-      //prefere add ROLE to session than call BD in middleware
-      const user = await getUserByEmailDao(auth?.user?.email as string)
-      const role = user?.role
-
-      if (isProtectedRoute && !hasSession) {
-        return Response.redirect(new URL('/exercises/login', nextUrl))
-      }
-      //admin route
-      if (
-        isAdminRoute &&
-        !role?.includes(RoleEnum.ADMIN) &&
-        !role?.includes(RoleEnum.SUPER_ADMIN)
-      ) {
-        return Response.redirect(new URL('/restricted/', nextUrl))
-      }
-      // Redactor route
-      if (
-        isRedactorRoute &&
-        !role?.includes(RoleEnum.ADMIN) &&
-        !role?.includes(RoleEnum.SUPER_ADMIN) &&
-        !role?.includes(RoleEnum.REDACTOR) &&
-        !role?.includes(RoleEnum.MODERATOR)
-      ) {
-        return Response.redirect(new URL('/restricted/', nextUrl))
-      }
-      if (isPublicRoute && hasSession) {
-        return Response.redirect(new URL('/exercises/auth', nextUrl))
-      }
       return true
+      // const hasSession = auth?.user?.email
+      // const path = nextUrl.pathname
+      // const isProtectedRoute = protectedRoutes.has(path)
+      // const isPublicRoute = publicRoutes.has(path)
+      // const isAdminRoute = adminRoutes.has(path)
+      // const isRedactorRoute = redactorRoutes.has(path)
+      // //prefere add ROLE to session than call BD in middleware
+      // const user = await getUserByEmailDao(auth?.user?.email as string)
+      // const role = user?.role
+
+      // if (isProtectedRoute && !hasSession) {
+      //   return Response.redirect(new URL('/exercises/login', nextUrl))
+      // }
+      // //admin route
+      // if (
+      //   isAdminRoute &&
+      //   !role?.includes(RoleEnum.ADMIN) &&
+      //   !role?.includes(RoleEnum.SUPER_ADMIN)
+      // ) {
+      //   return Response.redirect(new URL('/restricted/', nextUrl))
+      // }
+      // // Redactor route
+      // if (
+      //   isRedactorRoute &&
+      //   !role?.includes(RoleEnum.ADMIN) &&
+      //   !role?.includes(RoleEnum.SUPER_ADMIN) &&
+      //   !role?.includes(RoleEnum.REDACTOR) &&
+      //   !role?.includes(RoleEnum.MODERATOR)
+      // ) {
+      //   return Response.redirect(new URL('/restricted/', nextUrl))
+      // }
+      // if (isPublicRoute && hasSession) {
+      //   return Response.redirect(new URL('/exercises/auth', nextUrl))
+      // }
+      // return true
     },
     // async redirect({url, baseUrl}) {
     //   //Allows relative callback URLs

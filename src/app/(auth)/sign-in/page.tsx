@@ -1,12 +1,19 @@
+import {getConnectedUser} from '@/app/lib/user-dal'
 import LoginForm from '@/components/features/auth/form/login-form'
+import {redirect} from 'next/navigation'
 
-export default function Page() {
+export default async function Page() {
+  const user = await getConnectedUser()
+  if (user) {
+    redirect('/logout')
+  }
   return (
     <div className="grid h-full items-center justify-center p-4 text-center">
       <div className="space-y-4">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl">
           Se connecter
         </h1>
+        {}
         <LoginForm></LoginForm>
       </div>
     </div>
