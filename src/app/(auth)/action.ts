@@ -45,12 +45,7 @@ export async function register(
     }
   }
   try {
-    const user = await signUp(email, password)
-    console.log('Signed UP:', user)
-    //WORKAROUND FOR EDGE UNCACHE ISSUE
-    // const formDataOverrided = new FormData()
-    // formDataOverrided.append('email', email)
-    // formDataOverrided.append('password', password)
+    await signUp(email, password)
     await signIn('credentials', formData)
   } catch (error) {
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451

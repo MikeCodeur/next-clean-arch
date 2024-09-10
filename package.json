@@ -18,7 +18,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:drop": "drizzle-kit drop",
     "db:studio": "drizzle-kit studio",
-    "db:reset-seed": "pnpm db:drop && pnpm db:clear && pnpm db:generate && pnpm db:migrate && pnpm db:seed"
+    "db:reset-seed": "pnpm db:drop && pnpm db:clear && pnpm db:generate && pnpm db:migrate && pnpm db:seed",
+    "test": "vitest"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -73,6 +74,7 @@
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
+    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.24.0",
     "eslint": "^8.57.0",
@@ -86,8 +88,12 @@
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "jsdom": "^24.1.1",
     "tailwindcss": "^3.4.6",
     "tsx": "^4.17.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.4",
+    "vite-tsconfig-paths": "^4.3.2",
+    "@testing-library/jest-dom": "6.4.8"
   }
 }

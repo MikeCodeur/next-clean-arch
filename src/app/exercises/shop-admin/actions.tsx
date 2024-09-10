@@ -27,7 +27,7 @@ type ValidationError = {
 }
 
 export type FormState = {
-  success: boolean
+  success?: boolean
   errors?: ValidationError[]
   message?: string
 }

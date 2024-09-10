@@ -10,5 +10,5 @@ export const todos = pgTable('todo', {
   updatedAt: timestamp('updatedat').defaultNow(),
   createdAt: timestamp('createdat').defaultNow(),
 })
-export type Todo = typeof todos.$inferSelect // return type when queried
-export type AddTodo = typeof todos.$inferInsert // input type when inserting
+export type TodoModel = typeof todos.$inferSelect // return type when queried
+export type AddTodoModel = typeof todos.$inferInsert // input type when inserting

@@ -39,9 +39,7 @@ export default function ProductForm({
 }: {
   product?: ProductWithCategory
 }) {
-  const [state, formAction] = useActionState(onSubmitAction, {
-    success: true,
-  })
+  const [state, formAction] = useActionState(onSubmitAction, {})
   const [categories, setCategories] = React.useState<Category[]>([])
   const [isPending, setIsPending] = React.useState(false)
   console.log('product form', product)
@@ -60,7 +58,7 @@ export default function ProductForm({
   })
 
   React.useEffect(() => {
-    if (state?.success) {
+    if (state?.success === true) {
       toast.success('Product saved')
       form.reset({
         id: '',
@@ -71,7 +69,7 @@ export default function ProductForm({
         description: '',
         price: 0,
       })
-    } else {
+    } else if (state?.success === false) {
       //set rhf errors form the server errors
       for (const error of state?.errors ?? []) {
         form.setError(error.field, {type: 'manual', message: error.message})
@@ -93,10 +91,6 @@ export default function ProductForm({
       price: product?.price ?? 0,
     })
   }, [form, product]) //
-
-  // const categories = Object.keys(CategoriesEnum).filter((key) =>
-  //   Number.isNaN(Number(key))
-  // )
 
   React.useEffect(() => {
     const fetchCategories = async () => {
