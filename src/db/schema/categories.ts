@@ -12,4 +12,5 @@ export const categories = pgTable('category', {
 export const categoriesRelations = relations(categories, ({many}) => ({
   products: many(products),
 }))
-export type Category = typeof categories.$inferSelect // return type when queried
+export type CategoryModel = typeof categories.$inferSelect // return type when queried
+export type AddCategoryModel = typeof categories.$inferInsert

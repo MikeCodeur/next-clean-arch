@@ -10,8 +10,8 @@ import {and, eq} from 'drizzle-orm'
 
 export const createProductDao = async (productParams: CreateProduct) => {
   console.log('createProductDao product', productParams)
-  const row = await db.insert(products).values(productParams)
-  return row
+  const row = await db.insert(products).values(productParams).returning()
+  return row[0]
 }
 
 export const updateProductDao = async (productParams: UpdateProduct) => {

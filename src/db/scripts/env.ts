@@ -1,8 +1,11 @@
 import dotenv from 'dotenv'
 //import path from 'path'
 
-function initDotEnv() {
-  const environment = process.env.NODE_ENV || 'development'
+function initDotEnv(
+  environment: string = process.env.NODE_ENV || 'development'
+) {
+  // const environment = process.env.NODE_ENV || 'development'
+  console.log('initDotEnv environment', environment)
   let envFilePath
 
   // Utilisation d'un switch-case pour choisir le bon fichier .env
@@ -34,6 +37,13 @@ function initDotEnv() {
   } else {
     console.log(`Environnement chargé à partir de ${envFilePath}`)
   }
+}
+
+export function getEnvFromArg() {
+  const envOption = process.argv[3]
+  const env = envOption?.split('=')[1]
+  console.log('getEnvFromArg env', env)
+  return env
 }
 
 export default initDotEnv

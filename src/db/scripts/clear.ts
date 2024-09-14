@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
 import pg from 'pg'
-import initDotEnv from './env'
+import initDotEnv, {getEnvFromArg} from './env'
 
-initDotEnv()
+//const envOption = process.argv[3]
+const env = getEnvFromArg()
+console.log('clear.ts with env', env)
+initDotEnv(env)
 
-const clearDb = async () => {
+export const clearDb = async (shouldExit: boolean = false) => {
   if (!process.env.POSTGRES_URL) {
     throw new Error('POSTGRES_URL is not defined')
   }
@@ -44,14 +47,16 @@ const clearDb = async () => {
   const end = Date.now()
 
   console.log('✅ Tables deleted in', end - start, 'ms')
-
-  process.exit(0)
+  if (shouldExit) {
+    process.exit(0) // Exit seulement si shouldExit est vrai (mode script package.sjon)
+  }
 }
 
 export default clearDb
+const shouldExit = process.argv[2] === 'true'
 
 try {
-  await clearDb()
+  await clearDb(shouldExit)
 } catch (error) {
   console.error('❌ Connexion failed')
   console.error(error)

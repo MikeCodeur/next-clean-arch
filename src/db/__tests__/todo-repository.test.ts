@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {truncateTables} from '../repositories/management-repository'
+import {initDrizzle} from '../repositories/management-repository'
 import {
   createTodoDao,
   getTodoByIdDao,
@@ -7,29 +7,13 @@ import {
   updateTodoDao,
 } from '../repositories/todo-repository'
 import {CreateTodo} from '@/services/types/domain/todo-types'
-import clearDb from '../scripts/clear'
-
-// beforeAll(async () => {
-//   await truncateTables()
-// })
-
-describe('Vitest Configuration', () => {
-  it('should return true to confirm Vitest is working', () => {
-    expect(true).toBe(true)
-  })
-})
-
-// describe('getTodos', () => {
-//   it('should return an empty array by default', async () => {
-//     const todos = await getTodos()
-//     expect(todos).toEqual([])
-//   })
-// })
 
 describe('CRUD operations for Todo', () => {
   beforeAll(async () => {
-    await clearDb()
-    await truncateTables() // Assure-toi que la base de données est propre
+    await initDrizzle() // Assure-toi que la base de données est propre
+  })
+  it('should return true to confirm Vitest is working', () => {
+    expect(true).toBe(true)
   })
 
   afterAll(async () => {
@@ -45,6 +29,8 @@ describe('CRUD operations for Todo', () => {
     }
 
     const createdTodo = await createTodoDao(newTodo)
+    console.log('createdTodo:', createdTodo)
+    console.log('newTodo:', newTodo)
     expect(createdTodo).toMatchObject(newTodo)
   })
 

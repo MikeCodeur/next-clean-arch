@@ -1,5 +1,9 @@
 import {sql} from 'drizzle-orm'
 import db from '../schema'
+import {exec} from 'node:child_process'
+import initDotEnv from '../scripts/env'
+
+initDotEnv()
 
 async function truncateTableIfExists(tableName: string) {
   console.log('tableName:', tableName)
@@ -20,15 +24,6 @@ async function truncateTableIfExists(tableName: string) {
 
 export async function truncateTables() {
   try {
-    // Désactiver temporairement les contraintes de clé étrangère
-    //await db.execute(sql`SET session_replication_role = 'replica';`)
-
-    // Troncature des tables
-    // await db.execute(
-    //   sql`TRUNCATE TABLE users_to_groups RESTART IDENTITY CASCADE;`
-    // )
-
-    // Appels aux différentes tables
     await truncateTableIfExists('profile_info')
     await truncateTableIfExists('accounts')
     await truncateTableIfExists('product')
@@ -36,9 +31,6 @@ export async function truncateTables() {
     await truncateTableIfExists('todo')
     await truncateTableIfExists('users')
     await truncateTableIfExists('groups')
-
-    // Réactiver les contraintes de clé étrangère
-    // await db.execute(sql`SET session_replication_role = 'origin';`)
 
     console.log('Tables truncated successfully')
   } catch (error: unknown) {
@@ -49,4 +41,54 @@ export async function truncateTables() {
     }
     throw error
   }
+}
+
+export async function initDrizzle() {
+  await generateDb()
+  await migrateDb()
+  await truncateTables()
+}
+
+const generateDb = async () => {
+  try {
+    console.log('⏳ Running drizzle-kit generate...')
+
+    await runCommand(
+      `dotenv -e .env.test -- npx drizzle-kit generate --config='./src/db/__tests__/drizzle.config.ts'`
+    )
+    console.log('✅ drizzle-kit generate completed!')
+  } catch {
+    console.error('❌ Failed to run drizzle-kit generate')
+  }
+}
+
+const migrateDb = async () => {
+  try {
+    console.log('⏳ Running drizzle-kit generate...')
+    // Définir NODE_ENV sur 'test'
+    // penser a : CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    await runCommand(
+      `npx drizzle-kit migrate --config='./src/db/__tests__/drizzle.config.ts'`
+    )
+    console.log('✅ drizzle-kit migrate completed!')
+  } catch {
+    console.error('❌ Failed to run drizzle-kit migrate')
+  }
+}
+
+// Fonction pour exécuter une commande shell
+const runCommand = (command: string) => {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`❌ Error executing command: ${error.message}`)
+        reject(error)
+      }
+      if (stderr) {
+        console.error(`⚠️ stderr: ${stderr}`)
+      }
+      console.log(`✅ stdout: ${stdout}`)
+      resolve(stdout)
+    })
+  })
 }
