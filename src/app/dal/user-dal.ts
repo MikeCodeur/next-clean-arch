@@ -20,20 +20,20 @@ export const getConnectedUser = cache(async () => {
   }
 })
 
-export const checkAuth = async () => {
+export const checkAuth = cache(async () => {
   const auth = await isAuth()
   console.log('checkAuth', auth)
   if (!auth) {
     redirect('/sign-in')
   }
-}
+})
 
-export const checkAdmin = async () => {
+export const checkAdmin = cache(async () => {
   const auth = await isAuthAdmin()
   if (!auth) {
     redirect('/restricted')
   }
-}
+})
 
 export function userDTO(user: User): UserDTO | undefined {
   if (!user) return undefined

@@ -1,11 +1,11 @@
 import {DeleteProduct} from '@/services/types/domain/product-types'
 import z from 'zod'
 
-export const deleteProductServiceSchema = z.object({
+export const deleteProductFormSchema = z.object({
   id: z.string(),
 }) satisfies z.Schema<DeleteProduct>
 
-export const createEditProductServiceSchema = z.object({
+export const createEditProductFormSchema = z.object({
   id: z.string().optional(),
   createdAt: z.string().optional(),
   quantity: z.coerce.number().optional(),
@@ -19,11 +19,9 @@ export const createEditProductServiceSchema = z.object({
   }),
 })
 
-export const updateProductServiceShema = createEditProductServiceSchema.extend({
+export const updateProductShema = createEditProductFormSchema.extend({
   id: z.string(),
   category: z.string(),
 })
 
-export type ServiceProductSchemaType = z.infer<
-  typeof createEditProductServiceSchema
->
+export type FormProductSchemaType = z.infer<typeof createEditProductFormSchema>

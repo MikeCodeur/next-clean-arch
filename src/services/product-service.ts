@@ -17,6 +17,7 @@ import {
   canCreateProduct,
   canReadProduct,
 } from './authorization/authorization-service'
+import {createEditProductServiceSchema} from './validations/product-validation'
 
 export const getProductsService = async () => {
   const permission = await canReadProduct()
@@ -63,7 +64,13 @@ export const persistProductService = async (product: CreateEditProduct) => {
   if (!permission) {
     throw new Error("Vous n'êtes pas autorisé à effectuer cette action")
   }
-  await persistProductDao(product)
+  const parsed = createEditProductServiceSchema.safeParse(product)
+  if (!parsed.success) {
+    console.error('Validation errors:', parsed.error.issues) // real loger
+    throw new Error(`Validation failed ${parsed.error.message}`)
+  }
+  const validatedProduct = parsed.data
+  await persistProductDao(validatedProduct)
 }
 
 export const getProductByNameService = async (name: string) => {

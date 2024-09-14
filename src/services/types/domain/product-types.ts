@@ -1,8 +1,8 @@
 import {CategoryModel} from '@/db/schema/categories'
-import {CreateEditProductModel, ProductModel} from '@/db/schema/products'
+import {AddProductModel, ProductModel} from '@/db/schema/products'
 
 export type Product = ProductModel
-export type CreateEditProduct = Omit<CreateEditProductModel, 'category'> & {
+export type CreateEditProduct = Omit<AddProductModel, 'category'> & {
   category?: string
 }
 

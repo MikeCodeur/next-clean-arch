@@ -42,7 +42,7 @@ export const getUserAuthExtented = async (): Promise<AuthUser | undefined> => {
   return {session, user, role: user?.role?.toLocaleLowerCase() as string}
 }
 
-export const signUp = async (email: string, password: string) => {
+export const signUp = async (email: string, password: string, name: string) => {
   const user = await getUserByEmailDao(email)
   if (user) {
     throw new Error('User already exists')
@@ -53,7 +53,7 @@ export const signUp = async (email: string, password: string) => {
   const newUser: CreateUser = {
     email,
     password: hashedPassword,
-    name: 'John Doe',
+    name,
     role: RoleEnum.ADMIN,
     emailVerified: new Date(),
   }

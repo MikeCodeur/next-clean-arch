@@ -8,7 +8,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core'
 
-import {categories, Category} from './categories'
+import {categories, CategoryModel} from './categories'
 import {relations, sql} from 'drizzle-orm'
 
 export const products = pgTable('product', {
@@ -35,8 +35,4 @@ export const productsRelations = relations(products, ({one}) => ({
 }))
 
 export type ProductModel = typeof products.$inferSelect // return type when queried
-export type CreateEditProductModel = typeof products.$inferInsert // return type when queried
-
-export type ProductWithCategoryModel = ProductModel & {
-  category: Category | null | number
-}
+export type AddProductModel = typeof products.$inferInsert // return type when queried

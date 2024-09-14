@@ -26,13 +26,14 @@ import {useFormState as useActionState} from 'react-dom'
 
 import {getCategories, onSubmitAction} from '../actions'
 import {toast} from 'sonner'
-import {
-  createEditProductSchema,
-  FormProductSchemaType,
-} from '@/services/validations/product-validation'
 
-import {Category} from '@/db/schema/categories' //todo import the category type
+//import {CategoryModel} from '@/db/schema/categories' //todo import the category type
 import {ProductWithCategory} from '@/services/types/domain/product-types'
+import {
+  createEditProductFormSchema,
+  FormProductSchemaType,
+} from '@/components/features/auth/validations/product-form-validation'
+import {Category} from '@/services/types/domain/category-types'
 
 export default function ProductForm({
   product,
@@ -45,7 +46,7 @@ export default function ProductForm({
   console.log('product form', product)
 
   const form = useForm<FormProductSchemaType>({
-    resolver: zodResolver(createEditProductSchema),
+    resolver: zodResolver(createEditProductFormSchema),
     defaultValues: {
       id: product?.id ?? '',
       createdAt: product?.createdAt ?? new Date().toISOString(),

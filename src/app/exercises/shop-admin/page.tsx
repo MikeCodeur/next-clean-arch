@@ -1,4 +1,4 @@
-import {checkAdmin} from '@/app/lib/user-dal'
+import {checkAdmin} from '@/app/dal/user-dal'
 import {getProducts} from './actions'
 import {ProductsManagement} from './products-management'
 

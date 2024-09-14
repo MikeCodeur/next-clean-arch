@@ -2,7 +2,7 @@ import React from 'react'
 
 import {Label} from '@/components/ui/label'
 import {WithAuthProps} from '@/services/authentication/type'
-import {getConnectedUser} from '@/app/lib/user-dal'
+import {getConnectedUser} from '@/app/dal/user-dal'
 
 const withAuth = <P extends object>(
   WrappedComponent: React.ComponentType<P & WithAuthProps>

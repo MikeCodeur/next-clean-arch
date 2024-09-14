@@ -1,4 +1,4 @@
-import {checkAdmin} from '@/app/lib/user-dal'
+import {checkAdmin} from '@/app/dal/user-dal'
 
 export default async function Page() {
   await checkAdmin()

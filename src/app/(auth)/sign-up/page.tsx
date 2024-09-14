@@ -1,4 +1,4 @@
-import {getConnectedUser} from '@/app/lib/user-dal'
+import {getConnectedUser} from '@/app/dal/user-dal'
 import RegisterForm from '@/components/features/auth/form/register-form'
 import {redirect} from 'next/navigation'
 

@@ -45,7 +45,7 @@ export async function register(
     }
   }
   try {
-    await signUp(email, password)
+    await signUp(email, password, email)
     await signIn('credentials', formData)
   } catch (error) {
     //https://github.com/nextauthjs/next-auth/discussions/9389#discussioncomment-8046451

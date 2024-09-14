@@ -25,7 +25,7 @@ export function productDTO(product: Product): ProductDTO | undefined {
   return {
     id: product?.id ?? '',
     title: product?.title ?? '',
-    category: canSeecategory() ? (product?.category ?? '') : '',
+    category: canSeeCategory() ? (product?.category ?? '') : '',
   }
 }
 
@@ -36,6 +36,6 @@ export function productsDTO(products: Product[]): ProductDTO[] | undefined {
     .map((product) => productDTO(product))
     .filter(Boolean) as ProductDTO[]
 }
-function canSeecategory() {
+function canSeeCategory() {
   return true
 }

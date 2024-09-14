@@ -11,7 +11,7 @@ import {Button} from '@/components/ui/button'
 
 import {JSX, SVGProps} from 'react'
 import {Product} from '@/services/types/domain/product-types'
-import {Category} from '@/db/schema/categories'
+import {Category} from '@/services/types/domain/category-types'
 
 export function ProductsTable({
   products,

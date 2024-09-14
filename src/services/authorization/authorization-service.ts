@@ -1,5 +1,5 @@
 import {RoleEnum, User, UserDTO} from '@/services/types/domain/user-types'
-import {getConnectedUser} from '../../app/lib/user-dal'
+import {getConnectedUser} from '../../app/dal/user-dal'
 import {AuthUser} from '../authentication/type'
 
 // ONLY ADMIN CAN CREATE PRODUCT

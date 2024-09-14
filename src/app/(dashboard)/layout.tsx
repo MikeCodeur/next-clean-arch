@@ -3,7 +3,7 @@ import Link from 'next/link'
 import {PropsWithChildren} from 'react'
 import {ModeToggle} from '@/components/theme-toggle'
 import RenderTime from '@/components/render-time'
-import {checkAuth} from '../lib/user-dal'
+import {checkAuth} from '../dal/user-dal'
 
 export const metadata: Metadata = {
   title: 'App',

@@ -56,5 +56,29 @@
     "eslint-comments/no-use": "warn",
     "@typescript-eslint/no-unused-vars" : "warn"
   },
+  "overrides": [
+    {
+      "files": ["src/app/**/*.ts", "src/app/**/*.tsx", "src/components/**/*.tsx",  "src/components/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": ["@/db/*"]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/db/**/*.ts", "src/services/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": ["@/app/*"]
+          }
+        ]
+      }
+    }
+  ],
   "ignorePatterns": ["src/**/*.js"]
 }

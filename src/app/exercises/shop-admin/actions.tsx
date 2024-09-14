@@ -2,12 +2,8 @@
 // DO NOT INCLUDE @/db/....
 import {revalidatePath} from 'next/cache'
 //DAL
-import {getConnectedUser} from '@/app/lib/user-dal'
+import {getConnectedUser} from '@/app/dal/user-dal'
 // Validation Schema and Type (used for form validation)
-import {
-  createEditProductSchema,
-  FormProductSchemaType,
-} from '@/services/validations/product-validation'
 
 // Domain Types
 import {CreateEditProduct, Product} from '@/services/types/domain/product-types'
@@ -20,6 +16,10 @@ import {
   getProductsService,
   persistProductService,
 } from '@/services/product-service'
+import {
+  createEditProductFormSchema,
+  FormProductSchemaType,
+} from '@/components/features/auth/validations/product-form-validation'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -37,7 +37,7 @@ export async function onSubmitAction(
   data: FormData
 ): Promise<FormState> {
   const formData = Object.fromEntries(data)
-  const parsed = createEditProductSchema.safeParse(formData)
+  const parsed = createEditProductFormSchema.safeParse(formData)
 
   if (!parsed.success) {
     logZodError(data)
@@ -113,7 +113,7 @@ export async function onSubmitAction(
 
 function logZodError(data: FormData) {
   const formData = Object.fromEntries(data)
-  const parsed = createEditProductSchema.safeParse(formData)
+  const parsed = createEditProductFormSchema.safeParse(formData)
   const errorMessages = parsed?.error?.errors
     .map((err) => `${err.path} ${err.message}`)
     .join(', ')
