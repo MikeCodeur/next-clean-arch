@@ -44,8 +44,10 @@ export async function truncateTables() {
 }
 
 export async function initDrizzle() {
-  await generateDb()
-  await migrateDb()
+  if (process.env.NODE_ENV !== 'production') {
+    await generateDb()
+    await migrateDb()
+  }
   await truncateTables()
 }
 
