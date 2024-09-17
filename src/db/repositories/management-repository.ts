@@ -3,7 +3,7 @@ import db from '../schema'
 import {exec} from 'node:child_process'
 import initDotEnv from '../scripts/env'
 
-initDotEnv()
+initDotEnv('test')
 
 async function truncateTableIfExists(tableName: string) {
   console.log('tableName:', tableName)
