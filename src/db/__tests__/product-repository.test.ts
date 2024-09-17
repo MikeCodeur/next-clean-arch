@@ -37,7 +37,7 @@ describe('CRUD operations for Product', () => {
     }
 
     const createdProduct = await createProductDao(newProduct)
-    expect(createdProduct).toMatchObject({title: 'avion'})
+    expect(createdProduct).toMatchObject(newProduct)
   })
 
   it('should read a product by name', async () => {
