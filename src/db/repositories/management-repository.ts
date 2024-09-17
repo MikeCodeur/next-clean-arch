@@ -57,8 +57,8 @@ const generateDb = async () => {
       `dotenv -e .env.test -- npx drizzle-kit generate --config='./src/db/__tests__/drizzle.config.ts'`
     )
     console.log('✅ drizzle-kit generate completed!')
-  } catch {
-    console.error('❌ Failed to run drizzle-kit generate')
+  } catch (error: unknown) {
+    console.error(`❌ Failed to run drizzle-kit generate ${error}`)
   }
 }
 
@@ -71,8 +71,8 @@ const migrateDb = async () => {
       `npx drizzle-kit migrate --config='./src/db/__tests__/drizzle.config.ts'`
     )
     console.log('✅ drizzle-kit migrate completed!')
-  } catch {
-    console.error('❌ Failed to run drizzle-kit migrate')
+  } catch (error: unknown) {
+    console.error(`❌ Failed to run drizzle-kit migrate${error}`)
   }
 }
 
