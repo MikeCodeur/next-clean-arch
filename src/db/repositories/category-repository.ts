@@ -9,7 +9,7 @@ import {and, eq} from 'drizzle-orm'
 import {categories} from '../schema/categories'
 
 export const createCategoryDao = async (params: CreateCategory) => {
-  console.log('createCategoryDao product', params)
+  logger.info('createCategoryDao product', params)
   const row = await db.insert(categories).values(params).returning()
   return row[0]
 }

@@ -15,7 +15,7 @@ import {
   getProductByNameService,
   getProductsService,
   persistProductService,
-} from '@/services/product-service'
+} from '@/services/facades/product-service-facade'
 import {
   createEditProductFormSchema,
   FormProductSchemaType,

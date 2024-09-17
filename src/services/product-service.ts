@@ -18,6 +18,15 @@ import {
   canReadProduct,
 } from './authorization/authorization-service'
 import {createEditProductServiceSchema} from './validations/product-validation'
+//import withInterceptor from './interceptor/service-logger-interceptor'
+
+// export const getProductsService = withInterceptor(async () => {
+//   const permission = await canReadProduct()
+//   if (!permission) {
+//     throw new Error("Vous n'êtes pas autorisé à effectuer cette action")
+//   }
+//   return await getProductsDao()
+// }, 'getProductsService')
 
 export const getProductsService = async () => {
   const permission = await canReadProduct()
