@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "cypress/globals": true
   },
   "extends": [
     "next/core-web-vitals",
@@ -11,6 +12,7 @@
     "plugin:@typescript-eslint/strict",
     "plugin:github/recommended",
     "plugin:unicorn/recommended",
+    "plugin:cypress/recommended",
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
@@ -25,6 +27,7 @@
     "json-format",
     "unicorn",
     "promise",
+    "cypress",
     "prettier"
   ],
   "rules": {
@@ -54,11 +57,16 @@
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "off",
     "eslint-comments/no-use": "warn",
-    "@typescript-eslint/no-unused-vars" : "warn"
+    "@typescript-eslint/no-unused-vars": "warn"
   },
   "overrides": [
     {
-      "files": ["src/app/**/*.ts", "src/app/**/*.tsx", "src/components/**/*.tsx",  "src/components/**/*.ts"],
+      "files": [
+        "src/app/**/*.ts",
+        "src/app/**/*.tsx",
+        "src/components/**/*.tsx",
+        "src/components/**/*.ts"
+      ],
       "rules": {
         "no-restricted-imports": [
           "error",

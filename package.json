@@ -20,7 +20,9 @@
     "db:studio": "drizzle-kit studio",
     "db:reset-seed": "pnpm db:drop && pnpm db:clear && pnpm db:generate && pnpm db:migrate && pnpm db:seed",
     "test:cleardb": "pnpm db:drop && dotenv -e .env.test -- tsx src/db/scripts/clear.ts true env=test",
-    "test": "vitest --pool=forks"
+    "test": "vitest --pool=forks",
+    "e2e": "cypress open",
+    "e2e:ci": "cypress run"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",
@@ -70,6 +72,7 @@
   },
   "devDependencies": {
     "@mikecodeur/course-app-cli": "^1.0.19",
+    "@testing-library/cypress": "^10.0.2",
     "@testing-library/jest-dom": "6.4.8",
     "@types/node": "^22.5.1",
     "@types/pg": "^8.11.6",
@@ -79,11 +82,13 @@
     "@typescript-eslint/parser": "^7.16.1",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
+    "cypress": "^13.15.0",
     "dotenv-cli": "^7.4.2",
     "drizzle-kit": "^0.24.2",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.7",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-cypress": "^4.0.0",
     "eslint-plugin-github": "^4.10.2",
     "eslint-plugin-json-format": "^2.0.1",
     "eslint-plugin-promise": "^6.4.0",
@@ -98,5 +103,6 @@
     "typescript": "^5.5.3",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.0.4"
-  }
+  },
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }
