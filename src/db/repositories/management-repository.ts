@@ -56,7 +56,7 @@ const generateDb = async () => {
     console.log('⏳ Running drizzle-kit generate...')
 
     await runCommand(
-      `dotenv -e .env.test -- npx drizzle-kit generate --config='./src/db/__tests__/drizzle.config.ts'`
+      `dotenv -e .env.test -- pnpm exec drizzle-kit generate --config='./src/db/__tests__/drizzle.config.ts'`
     )
     console.log('✅ drizzle-kit generate completed!')
   } catch (error: unknown) {
@@ -70,7 +70,7 @@ const migrateDb = async () => {
     // Définir NODE_ENV sur 'test'
     // penser a : CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     await runCommand(
-      `npx drizzle-kit migrate --config='./src/db/__tests__/drizzle.config.ts'`
+      `pnpm exec drizzle-kit migrate --config='./src/db/__tests__/drizzle.config.ts'`
     )
     console.log('✅ drizzle-kit migrate completed!')
   } catch (error: unknown) {
