@@ -1,26 +1,26 @@
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
+import {CreateTodo} from '@/services/types/domain/todo-types'
+import {beforeAll, describe, expect, it, test} from 'vitest'
 import {initDrizzle} from '../repositories/management-repository'
 import {
   createTodoDao,
+  deleteTodoDao,
   getTodoByIdDao,
   getTodosDao,
   updateTodoDao,
 } from '../repositories/todo-repository'
-import {CreateTodo} from '@/services/types/domain/todo-types'
 
-describe('CRUD operations for Todo', () => {
+describe.sequential('CRUD operations for Todo', () => {
   beforeAll(async () => {
     await initDrizzle() // Assure-toi que la base de données est propre
   })
   it('should return true to confirm Vitest is working', () => {
     expect(true).toBe(true)
   })
+  // afterAll(async () => {
+  //   //await truncateTables() // Nettoie la base de données après les tests
+  // })
 
-  afterAll(async () => {
-    //await truncateTables() // Nettoie la base de données après les tests
-  })
-
-  it('should create a new todo', async () => {
+  test('should create a new todo', async () => {
     const newTodo: CreateTodo = {
       title: 'Test Create Todo',
       isCompleted: false,
@@ -34,7 +34,7 @@ describe('CRUD operations for Todo', () => {
     expect(createdTodo).toMatchObject(newTodo)
   })
 
-  it('should read a todo by ID', async () => {
+  test('should read a todo by ID', async () => {
     const todos = await getTodosDao()
     const todo = await getTodoByIdDao(`${todos[0].id}`)
 
@@ -42,8 +42,9 @@ describe('CRUD operations for Todo', () => {
     expect(todo?.title).toBe('Test Create Todo')
   })
 
-  it('should update a todo', async () => {
+  test('should update a todo', async () => {
     const todos = await getTodosDao()
+    console.log('todos UPDATE', todos)
     const todoToUpdate = todos[0]
 
     const updatedData = {
@@ -55,5 +56,14 @@ describe('CRUD operations for Todo', () => {
     const updatedTodo = await updateTodoDao(updatedData)
     expect(updatedTodo.title).toBe('Updated Todo Title')
     expect(updatedTodo.isCompleted).toBe(true)
+  })
+
+  test('should delete a todo', async () => {
+    const todos = await getTodosDao()
+    const todoToDelete = todos[0]
+
+    await deleteTodoDao(todoToDelete.id)
+    expect(await getTodoByIdDao(todoToDelete.id)).toBeUndefined()
+    expect(await getTodosDao()).toHaveLength(todos.length - 1)
   })
 })

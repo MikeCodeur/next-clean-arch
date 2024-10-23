@@ -71,6 +71,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@mikecodeur/course-app-cli": "^1.0.19",
     "@testing-library/cypress": "^10.0.2",
     "@testing-library/jest-dom": "6.4.8",

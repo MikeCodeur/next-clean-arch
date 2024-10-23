@@ -1,19 +1,19 @@
-import {describe, it, expect, beforeAll, afterAll} from 'vitest'
-import {initDrizzle} from '../repositories/management-repository'
-import {
-  createProductDao,
-  updateProductDao,
-  deleteProductDao,
-  getProductByNameDao,
-  getProductsDao,
-} from '../repositories/product-repository'
 import {
   CreateEditProduct,
   UpdateProduct,
 } from '@/services/types/domain/product-types'
+import {afterAll, beforeAll, describe, expect, test} from 'vitest'
 import {createCategoryDao} from '../repositories/category-repository'
+import {initDrizzle} from '../repositories/management-repository'
+import {
+  createProductDao,
+  deleteProductDao,
+  getProductByNameDao,
+  getProductsDao,
+  updateProductDao,
+} from '../repositories/product-repository'
 
-describe('CRUD operations for Product', () => {
+describe.sequential('CRUD operations for Product', () => {
   beforeAll(async () => {
     await initDrizzle() // Initialise la base de données
   })
@@ -22,7 +22,7 @@ describe('CRUD operations for Product', () => {
     console.log('afterAll')
   })
 
-  it('should create a new product with category', async () => {
+  test('should create a new product with category', async () => {
     const newCategory = {name: 'Test Category'}
     const categoryCreated = await createCategoryDao({name: 'Test Category'})
     expect(categoryCreated).toMatchObject(newCategory)
@@ -40,15 +40,16 @@ describe('CRUD operations for Product', () => {
     expect(createdProduct).toMatchObject(newProduct)
   })
 
-  it('should read a product by name', async () => {
+  test('should read a product by name', async () => {
     const products = await getProductsDao()
+    console.log('products', products)
     const product = await getProductByNameDao(products[0].title || '')
 
     expect(product).toBeDefined()
     expect(product[0]?.title).toBe('Test Product')
   })
 
-  it('should update a product', async () => {
+  test('should update a product', async () => {
     const products = await getProductsDao()
     const productToUpdate = products[0]
 
@@ -67,7 +68,7 @@ describe('CRUD operations for Product', () => {
     expect(updatedProduct.price).toBe(120)
   })
 
-  it('should delete a product', async () => {
+  test('should delete a product', async () => {
     const products = await getProductsDao()
     const productToDelete = {id: products[0].id}
 

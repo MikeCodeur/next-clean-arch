@@ -27,3 +27,7 @@ export const updateTodoDao = async (todo: UpdateTodo) => {
     .returning()
   return row[0]
 }
+
+export const deleteTodoDao = async (id: string) => {
+  await db.delete(todos).where(and(eq(todos.id, id)))
+}
