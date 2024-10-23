@@ -1,10 +1,11 @@
 import {RoleEnum, User, UserDTO} from '@/services/types/domain/user-types'
-import {getConnectedUser} from '../../app/dal/user-dal'
+// import {getConnectedUser} from '../../app/dal/user-dal' PATTERN NON RESPECTER
 import {AuthUser} from '../authentication/type'
+import {getUserAuthExtented} from '../authentication/auth-service'
 
 // ONLY ADMIN CAN CREATE PRODUCT
 export const canCreateProduct = async () => {
-  const userConnected = await getConnectedUser()
+  const userConnected = await getUserAuthExtented()
   if (!userConnected) return false
   const isAdmin = hasRoleAdmin(userConnected)
   return isAdmin
