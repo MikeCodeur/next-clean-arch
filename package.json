@@ -26,14 +26,14 @@
     "db:studio-test": "dotenv -e .env.test -- drizzle-kit studio",
     "db:reset-test": "pnpm db:drop-test && pnpm db:generate-test && pnpm db:migrate-test && pnpm db:seed-test",
     "db:reset-seed": "pnpm db:drop && pnpm db:clear && pnpm db:generate && pnpm db:migrate && pnpm db:seed",
-    "test:cleardb": "pnpm db:drop && dotenv -e .env.test -- tsx src/db/scripts/clear.ts true env=test",
+    "test:cleardb": "dotenv -e .env.test -- tsx src/db/scripts/clear.ts true env=test",
     "test": "vitest --pool=forks",
     "e2e": "cypress open",
     "e2e:ci": "cypress run",
     "e2e:test": "start-server-and-test start http://127.0.0.1:3000 e2e",
     "e2e:test-ci": "start-server-and-test start http://127.0.0.1:3000 e2e:ci",
-    "e2e:test-clean": "pnpm test:cleardb && pnpm build:test && pnpm e2e:test",
-    "e2e:test-clean-ci": "pnpm test:cleardb && pnpm build:test && pnpm e2e:test-ci"
+    "e2e:test-clean": "pnpm test:cleardb && pnpm db:reset-test && pnpm build:test && pnpm e2e:test",
+    "e2e:test-clean-ci": "pnpm test:cleardb && pnpm db:reset-test && pnpm build:test && pnpm e2e:test-ci"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.4.2",
