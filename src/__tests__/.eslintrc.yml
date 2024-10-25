@@ -1,5 +1,5 @@
 extends:
-  - plugin:vitest/legacy-all
+  - plugin:@vitest/legacy-all
 rules:
   vitest/prefer-expect-assertions: off
   vitest/no-hooks:
@@ -10,3 +10,5 @@ rules:
         - beforeAll
         - beforeEach
   import/named: off
+ignorePatterns:
+  - 'setup-test.ts'

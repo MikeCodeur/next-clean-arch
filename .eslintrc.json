@@ -96,6 +96,13 @@
         "**/?(*.)+(spec|test).[jt]s?(x)"
       ],
       "extends": ["plugin:testing-library/react"]
+    },
+    {
+      //db a droit au camelcase
+      "files": ["src/db/**/*.ts"],
+      "rules": {
+        "camelcase": "off"
+      }
     }
   ],
   "ignorePatterns": ["src/**/*.js"]
