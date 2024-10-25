@@ -15,6 +15,11 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
-
+// Ne renvoie pas d'erreur quand Next fait une redirection
+Cypress.on('uncaught:exception', (err) => {
+  if (err.message.includes('NEXT_REDIRECT')) {
+    return false
+  }
+})
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

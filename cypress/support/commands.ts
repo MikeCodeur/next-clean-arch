@@ -1,5 +1,5 @@
 /// <reference types="cypress" />
-import '@testing-library/cypress/add-commands'
+import '@testing-library/cypress/add-commands' // ajout des extensions de testing library
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -9,10 +9,27 @@ import '@testing-library/cypress/add-commands'
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 // ***********************************************
-//
-//
+// variable env pour les tests de cypress
+const {email, password} = Cypress.env()
+
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add('fillAuthForm', (email: string, password: string) => {
+  cy.findByPlaceholderText('Email').type(email)
+  cy.findByPlaceholderText('Password').type(password)
+})
+
+Cypress.Commands.add('login', () => {
+  cy.fillAuthForm(email, password)
+  cy.findByRole('button', {name: 'Login'}).click()
+})
+
+Cypress.Commands.add('signup', () => {
+  const emailTest = `test-${Math.random()}@example.com`
+  const passwordTest = 'test-password'
+  cy.fillAuthForm(emailTest, passwordTest)
+  cy.findByPlaceholderText('Confirm Password').type(passwordTest)
+  cy.findByRole('button', {name: 'Register'}).click()
+})
 //
 //
 // -- This is a child command --

@@ -35,6 +35,7 @@
     "filenames/match-regex": "off",
     "import/no-commonjs": "off",
     "import/no-namespace": "off",
+    "import/named": "off",
     "unicorn/prevent-abbreviations": "off",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
@@ -87,6 +88,14 @@
           }
         ]
       }
+    },
+    {
+      //aplique le linter que sur les fichiers tests
+      "files": [
+        "**/__tests__/**/*.[jt]s?(x)",
+        "**/?(*.)+(spec|test).[jt]s?(x)"
+      ],
+      "extends": ["plugin:testing-library/react"]
     }
   ],
   "ignorePatterns": ["src/**/*.js"]

@@ -8,6 +8,9 @@ declare global {
   namespace Cypress {
     interface Chainable {
       mount: typeof mount
+      fillAuthForm(email: string, password: string)
+      login(): Chainable<void>
+      signup(): Chainable<void>
     }
   }
 }
