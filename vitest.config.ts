@@ -11,5 +11,7 @@ export default defineConfig({
     alias: {
       '@/*': './src/*',
     },
+    globals: true, // cleanup globals activé
+    fileParallelism: false,
   },
 })
