@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NEXT-JS-TESTING
 
-## Getting Started
+## Preparation de l'environnement de dev/test
 
-First, run the development server:
+Dans un fichier .env et .env.test, il faut mettre la variable d'environnement suivante :
+
+- Generation de secret avec openssl:
+
+  ```bash
+  openssl rand -base64 32
+  ```
+
+- Pour postgres:
+
+  ```bash
+  POSTGRES_URL="postgresql://postgres:postgres@localhost:5432/next-js-testing-<DEV ou TEST>"
+  ```
+
+- Gestion de session, on utilise openSSL pour générer une clé secrète:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+SESSION_SECRET="EMe+UwMuib+8bhS8H1ehG4M1P9oE7jiGWootiM5CZrU="
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Gestion de l'authentification:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  ```bash
+  SESSION_USE_JWT=true
+  ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Pour pouvoir deployer:
+  ```bash
+  AUTH_TRUST_HOST=true
+  ```
 
-## Learn More
+> Récapitulatif des variables d'environnement pour dev:
+>
+> ```bash
+> POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/next-js-testing-dev
+> SESSION_SECRET=t9wpZYUcVVsdMkb8J+GrJxbYCOHy9mT44S7S0IqFcrg=
+> AUTH_SECRET="C02ZbpYJNnxO2aabMZc3CMrFlNNX+S17LCpNvfVLSe4="
+> SESSION_USE_JWT=true
+> AUTH_TRUST_HOST=true
+> ```
 
-To learn more about Next.js, take a look at the following resources:
+> Récapitulatif des variables d'environnement pour test:
+>
+> ```bash
+> POSTGRES_URL=postgresql://postgres:postgres@localhost:5432/next-js-testing-test
+> SESSION_SECRET=t9wpZYUcVVsdMkb8J+GrJxbYCOHy9mT44S7S0IqFcrg=
+> AUTH_SECRET="C02ZbpYJNnxO2aabMZc3CMrFlNNX+S17LCpNvfVLSe4="
+> SESSION_USE_JWT=true
+> AUTH_TRUST_HOST=true
+> ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Installation et lancement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Installation des dépendances:
 
-## Deploy on Vercel
+  ```bash
+  pnpm install
+  ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Lancement de l'application:
+  ```bash
+  pnpm dev
+  ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Pour les tests
+
+- Lancement des tests avec vitest:
+  ```bash
+  pnpm test
+  ```
+- Lancement des tests e2e avec affichage (reset db + build):
+  ```bash
+  pnpm e2e:test-clean
+  ```
+- Lancement des tests e2e avec affichage (sans reset db, ni build):
+  ```bash
+  pnpm e2e:test
+  ```
+- Lancement des tests e2e en CLI seulement (avec build):
+  ```bash
+  pnpm e2e:test-clean-ci
+  ```
+- Lancement des tests e2e en CLI seulement (sans reset db, ni build):
+  ```bash
+  pnpm e2e:test-ci
+  ```
