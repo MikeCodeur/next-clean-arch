@@ -69,6 +69,7 @@ const migrateDb = async () => {
     console.log('⏳ Running drizzle-kit generate...')
     // Définir NODE_ENV sur 'test'
     // penser a : CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    await db.execute(sql.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`))
     await runCommand(
       `pnpm exec drizzle-kit migrate --config='./src/db/__tests__/drizzle.config.ts'`
     )
