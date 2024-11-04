@@ -42,7 +42,7 @@ describe('[getProductsService] when called', () => {
   beforeEach(() => {
     vi.mocked(productRepository).getProductsDao.mockResolvedValue([
       {
-        id: '1',
+        id: faker.string.alphanumeric(10),
         category: null,
         createdAt: new Date().toDateString(),
         updatedAt: new Date().toDateString(),
@@ -63,11 +63,11 @@ describe('[getProductsService] when called', () => {
 describe('[getCategoriesService] when called', () => {
   const categories = [
     {
-      id: '1',
+      id: faker.string.alphanumeric(10),
       name: 'Electronics',
     },
     {
-      id: '2',
+      id: faker.string.alphanumeric(10),
       name: 'Books',
     },
   ]
@@ -115,17 +115,18 @@ describe('[createProductService] when called', () => {
 })
 
 describe('[updateProductService] when called', () => {
+  const updateProduct = {
+    id: faker.string.alphanumeric(10),
+    title: faker.lorem.word(),
+  }
   beforeEach(() => {
     vi.clearAllMocks()
   })
-
   it("[USER] can't update a product", async () => {
     setupUserAuthExtentedMocked(user)
+
     await expect(
-      updateProductService({
-        id: '1',
-        title: 'test',
-      })
+      updateProductService(updateProduct)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: Vous n'êtes pas autorisé à effectuer cette action]`
     )
@@ -137,10 +138,7 @@ describe('[updateProductService] when called', () => {
       role: RoleEnum.ADMIN,
     }
     setupUserAuthExtentedMocked(userAdmin)
-    await updateProductService({
-      id: '1',
-      title: 'test',
-    })
+    await updateProductService(updateProduct)
     expect(productRepository.updateProductDao).toBeCalledTimes(1)
   })
 })

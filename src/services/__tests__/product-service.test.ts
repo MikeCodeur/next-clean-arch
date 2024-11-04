@@ -32,15 +32,18 @@ const user = {
   },
 } satisfies AuthUser
 
-const product = {
-  title: 'Test Product',
-  description: 'Description of product',
-  price: 10,
-  image: null,
-  createdAt: new Date().toISOString(),
-  quantity: 100,
-  updatedAt: new Date().toISOString(),
-} satisfies CreateProduct
+const getProductTest = () => {
+  const product = {
+    title: faker.lorem.word({length: 3}),
+    description: faker.lorem.paragraph(1),
+    price: faker.number.int({max: 1000}),
+    image: null,
+    createdAt: new Date().toISOString(),
+    quantity: faker.number.int({max: 1000}),
+    updatedAt: new Date().toISOString(),
+  } satisfies CreateProduct
+  return product
+}
 
 describe.sequential('[getProductsService] when called', () => {
   beforeAll(async () => {
@@ -51,6 +54,7 @@ describe.sequential('[getProductsService] when called', () => {
     vi.spyOn(productRepository, 'getProductsDao')
   })
   test('[Everyone] can get products', async () => {
+    const product = getProductTest()
     await productRepository.createProductDao(product)
     const result = await getProductsDao()
     expect(productRepository.getProductsDao).toBeCalledTimes(1)
@@ -61,7 +65,7 @@ describe.sequential('[getProductsService] when called', () => {
 describe.sequential('[getCategoriesService] when called', () => {
   const productCategory = {
     id: 'd3519b5d-2c86-4486-be90-0f7ff49a6b2a',
-    name: 'Test category',
+    name: faker.lorem.word({length: 3}),
   } satisfies CreateCategory
 
   beforeAll(async () => {
@@ -122,12 +126,13 @@ describe.sequential('[updateProductService] when called', () => {
     await initDrizzle()
   })
   beforeEach(async () => {
+    const product = getProductTest()
     await productRepository.createProductDao(product)
     vi.clearAllMocks()
     vi.spyOn(productRepository, 'updateProductDao')
   })
 
-  const newTitle = 'Title Update'
+  const newTitle = faker.lorem.word({length: 3})
 
   test("[USER] can't update a product", async () => {
     setupUserAuthExtentedMocked(user)
