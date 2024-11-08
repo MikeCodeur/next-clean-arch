@@ -87,7 +87,6 @@
     "@testing-library/cypress": "^10.0.2",
     "@testing-library/jest-dom": "6.4.8",
     "@testing-library/react": "^16.0.1",
-    "@testing-library/react-hooks": "^8.0.1",
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.5.1",
     "@types/pg": "^8.11.6",
