@@ -62,7 +62,7 @@
     "lowdb": "^7.0.1",
     "lucide-react": "^0.436.0",
     "next": "15.0.3",
-    "next-auth": "5.0.0-beta.19",
+    "next-auth": "5.0.0-beta.25",
     "next-themes": "^0.3.0",
     "pg": "^8.12.0",
     "postgres": "3.4.4",
