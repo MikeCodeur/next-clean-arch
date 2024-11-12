@@ -149,7 +149,6 @@ const FormMessage = React.forwardRef<
   const body = error ? String(error?.message) : children
 
   if (!body) {
-    // eslint-disable-next-line unicorn/no-null
     return null
   }
 

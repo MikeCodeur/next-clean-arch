@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {
   CreateAccount,
   CreateSession,
@@ -9,6 +8,14 @@ import db from '../schema'
 import {accounts, sessions, users} from '../schema/users'
 import {and, eq} from 'drizzle-orm'
 
+export const getUsersDao = async () => {
+  const rows = await db.query.users.findMany({
+    with: {
+      profileInfo: true,
+    },
+  })
+  return rows
+}
 export const getUserByIdDao = async (uid: string) => {
   const row = await db.query.users.findFirst({
     with: {

@@ -1,5 +1,5 @@
 import {DeleteProduct} from '@/services/types/domain/product-types'
-import z from 'zod'
+import {z} from 'zod'
 
 export const deleteProductFormSchema = z.object({
   id: z.string(),

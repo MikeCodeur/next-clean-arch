@@ -13,6 +13,7 @@ INSERT INTO Todo (title, isCompleted, createdAt, updatedAt) VALUES
 -- Insérer des utilisateurs
 INSERT INTO "user" (email, name, emailVerified, role, password, image)
 VALUES
+  ('test@gmail.com', 'Test', '2024-10-23', 'ADMIN', '$2a$10$ziZFojbJ08GJ3Aq5xoW97.K7eoDu7PIbBfE5/VbVU/.oe1gVi8u86', 'https://example.com/test.jpg'),
   ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/alice.jpg'),
   ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', 'https://example.com/bob.jpg'),
   ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$ZZfXw246LFW1I1dvSc4VHeLwAByQ94nAbWZyOyz8C25vtgr2UTcVa', NULL),

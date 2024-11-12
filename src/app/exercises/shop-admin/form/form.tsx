@@ -20,9 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import React from 'react'
-
-import {useFormState as useActionState} from 'react-dom'
+import React, {useActionState} from 'react'
 
 import {getCategories, onSubmitAction} from '../actions'
 import {toast} from 'sonner'

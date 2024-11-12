@@ -39,7 +39,7 @@ export const getUserAuthExtented = async (): Promise<AuthUser | undefined> => {
   const email = session?.user?.email ?? ''
   const user = await getUserByEmailDao(email)
   if (!user) return
-  return {session, user, role: user?.role?.toLocaleLowerCase() as string}
+  return {session, user, role: user?.role?.toLocaleUpperCase() as string}
 }
 
 export const signUp = async (email: string, password: string, name: string) => {

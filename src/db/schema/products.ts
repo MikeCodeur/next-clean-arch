@@ -1,15 +1,15 @@
 import {
   date,
+  integer,
   pgTable,
-  varchar,
   real,
   text,
-  integer,
   uuid,
+  varchar,
 } from 'drizzle-orm/pg-core'
 
-import {categories, CategoryModel} from './categories'
 import {relations, sql} from 'drizzle-orm'
+import {categories} from './categories'
 
 export const products = pgTable('product', {
   id: uuid('id')
