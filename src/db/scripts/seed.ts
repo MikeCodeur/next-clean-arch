@@ -6,6 +6,9 @@ import initDotEnv from './env'
 initDotEnv()
 
 const seed = async () => {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Do not use in production')
+  }
   if (!process.env.POSTGRES_URL) {
     throw new Error('POSTGRES_URL is not defined')
   }
