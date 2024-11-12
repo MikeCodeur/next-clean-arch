@@ -54,5 +54,5 @@
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": "error"
   },
-  "ignorePatterns": ["src/**/*.js"]
+  "ignorePatterns": ["src/**/*.js",  "src/components/ui/*"]
 }
