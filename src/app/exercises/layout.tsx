@@ -5,6 +5,7 @@ import {PropsWithChildren} from 'react'
 import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
+import {moduleName} from '@/lib/constante'
 
 export const metadata: Metadata = {
   title: 'App',
@@ -56,9 +57,9 @@ export default function AppLayout({children}: PropsWithChildren) {
 
       <main className="w-full flex-1">{children}</main>
       <footer className="border-t">
-        <div className="container flex h-14 items-center justify-center px-4 text-center sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            © {new Date().getFullYear()} Next Module . All rights reserved.{' '}
+        <div className="container flex h-14 flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
+          <div className="mx-auto mt-2 max-w-4xl text-center ">
+            © {new Date().getFullYear()} {moduleName} . All rights reserved.{' '}
             <RenderTime name="exercices main layout" />
           </div>
         </div>
