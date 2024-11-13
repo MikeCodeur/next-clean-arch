@@ -1,38 +1,66 @@
 import {Metadata} from 'next'
 import Link from 'next/link'
 import {PropsWithChildren} from 'react'
-
+import {LogIn} from 'lucide-react'
 import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
+import {getConnectedUserLabel} from '../(dashboard)/shop-admin/actions'
 import {moduleName} from '@/lib/constante'
 
 export const metadata: Metadata = {
-  title: 'App',
-  description: "Page d'app",
+  title: 'Authentification',
+  description: 'Page Authentification',
 }
 
-export default function AppLayout({children}: PropsWithChildren) {
+export default async function AppLayout({children}: PropsWithChildren) {
+  const label = await getConnectedUserLabel()
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b">
         <div className="container px-4 sm:px-6 lg:px-8">
           <nav className="flex h-14 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/exercises"
-              >
+              <LogIn className="icon-class" />
+              <Link className="flex items-center space-x-2 font-bold" href="/">
                 <span>Home</span>
               </Link>
-
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/instructions"
+                href="/sign-in"
               >
-                <span>Instructions</span>
+                <span>Connexion</span>
               </Link>
-
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/sign-up"
+              >
+                <span>Inscription</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/dashboard"
+              >
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/privacy"
+              >
+                <span>Privacy</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/terms"
+              >
+                <span>Terms</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/logout"
+              >
+                <span>Logout</span>
+              </Link>
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
             <div className="flex items-center space-x-2">
@@ -49,6 +77,7 @@ export default function AppLayout({children}: PropsWithChildren) {
                 Instructions
               </Link>
 
+              {label}
               <ModeToggle />
             </div>
           </nav>
@@ -57,8 +86,8 @@ export default function AppLayout({children}: PropsWithChildren) {
 
       <main className="w-full flex-1">{children}</main>
       <footer className="border-t">
-        <div className="container flex h-14 flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
-          <div className="mx-auto mt-2 max-w-4xl text-center ">
+        <div className="container flex h-14 items-center justify-center px-4 text-center sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl">
             © {new Date().getFullYear()} {moduleName} . All rights reserved.{' '}
             <RenderTime name="exercices main layout" />
           </div>

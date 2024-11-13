@@ -1,1 +1,1 @@
-export {default} from '../exercises/layout'
+export {default} from '../(public)/layout'

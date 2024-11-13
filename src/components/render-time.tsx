@@ -8,7 +8,7 @@ export default function RenderTime({
   disabled?: boolean
 }) {
   return (
-    <div className="flex flex-auto items-center justify-center ">
+    <div className="flex flex-auto items-center justify-center">
       <p className="text-sm">
         <EnvComponent name={name} disabled={disabled} />
         Rendu à&nbsp;
