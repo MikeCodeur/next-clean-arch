@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "prod": "pnpm build && pnpm start",
+    "test": "vitest --pool=forks",
     "db:clear": "tsx src/db/scripts/clear.ts true",
     "db:seed": "tsx src/db/scripts/seed.ts",
     "db:generate": "drizzle-kit generate",
