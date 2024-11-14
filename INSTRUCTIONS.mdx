@@ -1,6 +1,6 @@
-# Comprendre l’hydratation
+# Prise en main
 
-### 💡 Comprendre l’hydratation et gérer les Errors/Warning
+### 💡 Prise en main de la stack de départ
 
 ## 📝 Tes notes
 
@@ -8,145 +8,115 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans les modules précèdent nous avons vu
+Dans les modules précédent nous avons vu les couches de :
 
-- Le rendu coté server (SSR) avec les React Server Components.
-- Le rendu coté client (CSR) avec les React Client Components.
+- Presentation (Les RCC et RSC, Forms et composants React)
+- Validation (validation de données des forms en entrée des server action)
+- Persistance (appelle de la couche de persistance via ORM : drizzle)
+- Authentification (via next-Auth)
 
-Nous allons aller plus en profondeur sur la manière dont Next gère tout cela. Rappel sur le SSR
+Dans notre organisation de fichiers / modules on pourrait regrouper les différentes couches de la manière suivante
 
-- Tout d'abord, toutes les données pour une page donnée sont récupérées sur le serveur.
-- Ensuite, le serveur rend le HTML pour la page.
-- Le HTML, le CSS et le JavaScript de la page sont envoyés au client.
-- Une interface utilisateur non interactive est affichée en utilisant le HTML et le CSS générés.
-- Enfin, React **hydrate** l'interface utilisateur pour la rendre interactive.
-
-![img](/course/server-rendering-without-streaming-chart.avif)
-
-📑 Le liens vers la doc [https://rc.nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#what-is-streaming](https://rc.nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#what-is-streaming)
-
-On pourrait croire que le processus `SSR` ne concerne que les composants server (RSC). Par exemple dans cet arbre de composant, on pourrait penser que le rendu SSR concerne les RSC et le rendu des RCC se fait uniquement du coté client (`CSR`).
-
-![img](/course/rcc-rsc-tree.png)
-
-En réalité le SSR concerne tout l’arbre de composants. RSC et RCC compris. Les RCC sont donc rendus 2 fois.
-
-Par exemple, ce RCC est rendu **une fois sur le server** sans code client (interaction client etc …) Par exemple ce composant est rendu
-
-```tsx
-export default function ClientComponent() {
-  const handleClick = () => {
-    alert('Hi')
-  }
-  return <button onClick={handleClick}>Click here</button>
-}
+```bash
+.
+└── src/
+    ├── app/
+    │   ├── (auth)
+    │   ├── (public)
+    │   └── (dashboard)/
+    │       ├── shop-admin
+    │       └── ...
+    ├── components/
+    │   ├── ui
+    │   └── features/
+    │       ├── auth
+    │       └── ...
+    └── db/
+        ├── schema
+        └── script
 ```
 
-Devient SSR
+- presentation : `app` et `components`
+- validation (form) : `app` et `components`
+- persistance : `db`
+- authentification : `auth.ts`
 
-```tsx
-<button>Click here</button>
-```
+Nous avons combiner tous les concepts des modules precedents pour faire cette premiere architecture, qui est encore loin de clean architecture.
 
-**Et un rendu ensuite sur le client avec hydration (ajout des events et code)**
+Nous pouvons créer des comptes, se connecter, et créer des produits dans notre base de données de produits.
 
-```tsx
-//handleClick est contenu dans le bundle/chunk.js
-<button onClick={handleClick}>Click here</button>
-```
-
-On a déjà vu plusieurs fois les bénéfice de ce type de découpage. Mais il faut bien prendre en compte que 2 rendus distinct sont fait. Et pour pouvoir hydrater correctement les contenus doivent être cohérent et identiques. Si le contenu rendu sur le server, diffère du contenu rendu sur le client, des warnings et erreurs sont lévés. Prenons l’exemple suivant :
-
-```tsx
-export default function ClientComponent() {
-  const date = new Date().toString()
-  return <div>{date}</div>
-}
-// SSR date : Tue Jul 02 2024 14:18:53 GMT+0800
-// Le rendu client arrive après
-// CSR date : Tue Jul 02 2024 14:18:54 GMT+0800
-```
-
-Next va alors lever une errors
-
-```tsx
-Unhandled Runtime Error
-Error: Text content does not match server-rendered HTML.
-See more info here: https://nextjs.org/docs/messages/react-hydration-error
-
-Text content did not match. Server: "Tue Jul 02 2024 14:27:43 GMT+0800 (Singapore Standard Time)" Client: "Tue Jul 02 2024 14:27:44 GMT+0800 (heure de Singapour)"
-
-En production :
-Error: Minified React error #425
-```
+Pour que cela fonctionne tu vas devoir initialiser ton environnement.
 
 ## Exercice
 
-**🐶** Dans cet exercice tu vas devoir corriger les erreurs et warnings liés à l’hydratation.
+Dans un premier temps tu vas devoir créer une base de données `Postgres` sur `Vercel` et mettre la variable d’environnement dans `.env` .`env.development`
 
-- Errors :
-  - Imbrication div dans `<p>`
-  - Pour la `date`, split supprime le temps (HH MM SS)
-- Warning
-  - Utilise `suppressHydrationWarning` dans un élément html
-    - Doc : https://nextjs.org/docs/messages/react-hydration-error#solution-3-using-suppresshydrationwarning
+```tsx
+POSTGRES_URL="postgres://......
+```
 
-<aside>
-💡 Rafraichie la page (F5) et navigue pour voir la différence de comportement
+Vérifie que que le connexion se fait correctement grace à la commande
 
-</aside>
+```tsx
+pnpm db:check
+
+//si c'est ok :
+✅ Connexion checked in 39 ms
+```
 
 Fichiers
 
-- `exercises/hydration/client-component.tsx`
+- `.env`
+- `.env.development`
 
 ## Bonus
 
-### 1. 🚀 render après hydration
+### 1. 🚀 Régénérer le schema de l’ORM
 
-Dans l’exercice précédent nous avons corrigé les erreurs d’hydrations mais les comportements ne sont pas ceux que nous souhaitons.
+Nous avons deja fournis un modèle de données avec drizzle pour gagner du temps. celui ci est dans `src/db/schema`
 
-- La Date a du être tronquée (or nous voulons afficher une vrai `date and time`)
-- Le rendu est bleu (serveur) or il devrait être rouge (client)
+- 🐶 génère les scripts avec `pnpm db:generate`
+- 🐶 execute les scripts avec `pnpm db:migrate`
+- 🐶 insère les données avec `pnpm db:seed`
 
-Il manque une dernière étape (si le rendu client diffère du serveur), il manque un rendering. Il faut garder ce schéma en tête
+En cas de problème
 
-```tsx
-SSR -> Client Loading -> Hydration -> CSR (useEffect)
-// utilise le composant <Phases> pour logger les differentes phases
-```
+- 🐶 drop le schema avec les données avec `pnpm db:drop`
+- 🐶 clear la database avec `pnpm db:clear`
 
-Pour effectuer un rendu supplémentaire ET qui ne pose pas de problème de d’hydratation il est possible d’utiliser
+En cas de doute, nous avons un script qui supprime tout et recréé tout
 
-```tsx
-const [hydrated, setHydrated] = useState(false)
-...
-useEffect(() => {
-  setHydrated(true)
-}, [])
-
- return <div>{hydrated? 'This is never prerendered' : 'Prerendered'}</div>
-```
-
-### Explication
-
-- Lors du SSR `hydrated` est `false`
-- Lors de l’hydratation `hydrated` est toujours à `false` (pas d’erreur)
-- Après hydratation nous utilisons `useEffect` pour effectuer `en re-render`
-
-🐶 Utilise cet technique pour afficher correctement la Date et le Style (blue/Red) en te basant sur `hydrated`.
-
-- Remet : **🤖**`const date = new Date().toString()`
-
-ps : tu peux supprimer `suppressHydrationWarning` car il ne devrait pas y avoir de warning sur le style
+- 🐶 clear la database avec `pnpm db:reset-seed`
 
 Fichiers
 
-- `exercises/hydration/client-component.tsx`
+- `package.json`
+
+### 2. 🚀 Inscription / Connexion
+
+- **🐶** Inscris toi et connecte toi pour verifier que tout fonctionne.
+
+Nous avons a disposition, differents users avec différents roles
+
+Tous les mots de passe sont `Azerty123`
+
+Fichiers
+
+- `src/app/(auth)`
+
+### 3. 🚀 Studio
+
+Il est parfois nécessaire de verifier les données en base de données. Il est possible de se connecter sur Vercel, ou avec PGAdmin client. Nous avons également drizzle studio qui permet de le faire.
+
+- **🐶 execute la commande :**
+
+```bash
+pnpm db:studio
+```
+
+Tu es maintenant prêt pour appliquer les concept de clean architecture
 
 ## Aller plus loin
-
-📑 Le lien vers la doc [https://nextjs.org/docs/messages/react-hydration-error](https://nextjs.org/docs/messages/react-hydration-error)
 
 ## Ils vont t’aider
 
@@ -158,4 +128,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20PRO&entry.1430994900=Rendering%20Avancée&entry.533578441=08%20hydration).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=01%20initialisation).
