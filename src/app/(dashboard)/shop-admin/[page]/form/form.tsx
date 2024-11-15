@@ -24,20 +24,12 @@ import React, {startTransition, useActionState} from 'react'
 
 import {getCategories, onSubmitAction} from '../../actions'
 import {toast} from 'sonner'
-import {ProductWithCategory} from '@/db/schema/products'
+
 import {
   createEditProductFormSchema,
   FormProductSchemaType,
 } from './product-form-validation'
-import {CategoryModel} from '@/db/schema/categories'
-
-//import {CategoryModel} from '@/db/schema/categories' //todo import the category type
-//import {ProductWithCategory} from '@/services/types/domain/product-types'
-// import {
-//   createEditProductFormSchema,
-//   FormProductSchemaType,
-// } from '@/components/features/auth/validations/product-form-validation'
-// import {Category} from '@/services/types/domain/category-types'
+import {Category, ProductWithCategory} from '@/types/product-types'
 
 export default function ProductForm({
   product,
@@ -45,7 +37,7 @@ export default function ProductForm({
   product?: ProductWithCategory
 }) {
   const [state, formAction] = useActionState(onSubmitAction, {})
-  const [categories, setCategories] = React.useState<CategoryModel[]>([])
+  const [categories, setCategories] = React.useState<Category[]>([])
   const [isPending, setIsPending] = React.useState(false)
   console.log('product form', product)
 

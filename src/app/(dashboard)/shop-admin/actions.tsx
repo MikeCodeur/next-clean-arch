@@ -5,18 +5,19 @@ import {
   FormProductSchemaType,
 } from './[page]/form/product-form-validation'
 import {cache} from 'react'
-import db from '@/db/schema'
-import {CreateEditProduct, ProductModel} from '@/db/schema/products'
+
 import {auth} from '@/auth'
-import {UserModel} from '@/db/schema/users'
+
 import {
-  deleteProductDao,
-  getCategoriesDao,
-  getProductByNameDao,
-  getProductsDao,
-  getUserByEmailDao,
-  persistProductDao,
+  deleteProduct as deleteProductDao,
+  getCategories as getCategoriesDao,
+  getProductByName as getProductByNameDao,
+  getProducts as getProductsDao,
+  getUserByEmail as getUserByEmailDao,
+  persistProduct as persistProductDao,
 } from '@/app/exercices/data-lib'
+import {CreateEditProduct, Product} from '@/types/product-types'
+import {User} from '@/types/user-types'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -133,7 +134,7 @@ export const persistProduct = async (product: CreateEditProduct) => {
   revalidatePath('/exercises/shop-admin')
 }
 
-export const deleteProduct = async (product: ProductModel) => {
+export const deleteProduct = async (product: Product) => {
   await deleteProductDao(product)
   revalidatePath('/exercises/shop-admin')
 }
@@ -156,6 +157,6 @@ export const getConnectedUserLabel = cache(async () => {
   return getUserLabel(user)
 })
 
-export const getUserLabel = cache(async (user?: UserModel) => {
+export const getUserLabel = cache(async (user?: User) => {
   return user ? `Hi ${user.name} (${user.role})` : 'Hi, Guest'
 })

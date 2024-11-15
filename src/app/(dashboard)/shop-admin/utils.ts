@@ -1,4 +1,4 @@
-import {getUserByEmailDao} from '@/app/exercices/data-lib'
+import {getUserByEmail} from '@/app/exercices/data-lib'
 import {auth} from '@/auth'
 //import {UserModel} from '@/db/schema/users'
 import {RoleEnum} from '@/type'
@@ -26,7 +26,7 @@ export const isAuthAdmin = async () => {
   const session = await auth()
   if (!session?.user?.email) return
   const email = session?.user?.email ?? ''
-  const user = await getUserByEmailDao(email)
+  const user = await getUserByEmail(email)
   console.log('isAuthAdmin authUser', user)
   return hasRequiredRole(user as User, RoleEnum.ADMIN)
 }

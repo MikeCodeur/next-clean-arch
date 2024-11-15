@@ -1,6 +1,6 @@
-# Les repositories (persistance)
+# Service Layout
 
-### 💡 Comprendre les repositories
+### 💡 Comprendre la couche service
 
 ## 📝 Tes notes
 
@@ -8,149 +8,67 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Le principe du repository est d'isoler l'accès aux données en créant une couche intermédiaire qui sert d'interface entre la logique métier et la persistance, permettant de manipuler les données sans dépendre directement du détail de l'ORM ou de la base de données.
+Dans une architecture logicielle bien structurée, la **couche service** joue un rôle clé en tant qu'intermédiaire entre la couche de présentation et la couche de persistance (ou DAO).
 
-Pour s’assurer d’une bonne isolation entre la couche de l’ORM et les couches supérieures (service ou, dans notre cas, présentation), nous allons ajouter des règles au niveau du linter. Cela nous permettra d’éviter que la couche de présentation puisse importer directement des éléments liés à l’ORM, comme les schémas ou les fonctions d’accès aux données.
+Elle encapsule la logique métier, c'est-à-dire toutes les règles et contraintes spécifiques au domaine d'application. En décomposant l'architecture en plusieurs couches, on améliore la maintenabilité, la testabilité et la flexibilité de du code.
 
-### Le principe d'inversion de dépendance
+La couche service peut être vue comme le **cerveau de votre application**. Elle s'assure que :
 
-Pour aller plus loin, ce découplage repose sur le **principe d’inversion de dépendance**, qui fait partie des principes SOLID. Selon ce principe :
+1. **Les données sont correctement validées** avant d'être envoyées ou modifiées dans la base.
+2. **Les erreurs sont traitées** de manière centralisée, offrant une expérience utilisateur cohérente et contrôlée.
+3. **La logique métier est indépendante des technologies sous-jacentes**, rendant le code plus modulaire et adaptable.
 
-1. **Les modules de haut niveau (présentation ou service)** ne doivent pas dépendre des modules de bas niveau (ORM).
-2. **Les deux doivent dépendre d’abstractions** (par exemple, des interfaces ou des contrats définis dans la couche repository).
-3. **Les détails d’implémentation (ORM)** doivent être dépendants des modules de haut niveau via ces abstractions.
+### Pourquoi une couche service ?
 
-En appliquant ce principe, nous nous assurons que :
+1. **Centralisation de la logique métier** :
+   - Imaginez que vous devez vérifier qu'un utilisateur a un rôle spécifique avant d'effectuer une action. Plutôt que de répéter cette règle dans plusieurs composants, la couche service centralise cette logique, ce qui évite les duplications et facilite les modifications futures.
+2. **Découplage des couches** :
+   - La couche présentation (interface utilisateur) ne devrait pas interagir directement avec la base de données ou les ORM. En intercalant une couche service, on limite les dépendances directes, ce qui rend l'architecture plus propre et plus flexible.
+3. **Testabilité accrue** :
+   - En isolant la logique métier dans une couche spécifique, il devient plus facile de la tester indépendamment des autres composants, par exemple en simulant les interactions avec les repositories ou autres services.
 
-- La couche présentation n’a aucune connaissance de la base de données ou des outils spécifiques (Drizzle ORM, Prisma, etc.).
-- Toute modification au niveau de la base de données n’impactera pas les couches supérieures.
-
-```tsx
-[Présentation] ---> [Service] ---> [Repository] ---> [ORM/DB]
-```
-
-### Mise en œuvre technique
-
-### Étape 1 : Création de la règle de linter
-
-Ajoutez une règle à votre fichier `eslint` pour empêcher les imports directs depuis la couche ORM dans la couche présentation. Par exemple :
+Nous avons ajouter cette configuration pour autoriser aucun import depuis `db` (meme les `repositories`)
 
 ```tsx
- //eslint.config.mjs
- {
-    files: ['src/app/exercices/**/*.{ts,tsx}'],
+{
+    files: ['src/app/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@/db/schema/*'],
+          patterns: ['@/db/*', 'drizzle-orm'],
         },
       ],
     },
   },
 ```
 
-En ajoutant cette configuration, notre application est en error `no-restricted-imports`, tu peux le constater avec
+### Quelques règles de nommage
 
-```tsx
-pnpm build
-```
+Pour éviter les collisions de noms nous utiliseront cette règle de nommage de fonction :
 
-Pour simplifier les exercices nous avons regrouper tous les appels aux fonctions qui accèdent à la base de données dans un seul fichier `exercices/data-lib.ts`
-
-- Les `actions.ts` appellent maintenant les fonctions de `exercices/data-lib.ts`
+- `*Dao` pour les fonctions de la couche de persistance (ex : `createUserDao`)
+- `*Service` pour les fonctions de la couche service (ex : `createUserService`)
+- Et par la suite `*Action` pour les fonctions des servers action (ex : `createUserAction`)
 
 ## Exercice
 
-Dans cet exercice tu vas devoir implémenter 2 repositories pour isoler l’ORM du reste de l’application
+Pour le moment la couche la présentation appelle des repositories, cela isole déjà de l’ORM mais les repositories ne doivent pas contenir de logique métier.
 
-- Un pour la gestion des `users` en base de données
-- Un pour la gestion des `products` en base de données
+Le but de cet exercice est d’introduire la couche service comme la
 
-Dans un repository nous implémentons généralement
+![course/layers.png](course/layers.png)
 
-- un CRUD
-- et des fonctions plus spécifiques
+Dans un premier temps la couche service ne fera pas grand chose, mais petit a petit nous allons y ajouter de plus en plus de règles.
 
-**🐶** Pour cela créé des `CRUD` dans `repository`
-
-**🐶** Pour cela déplace tout le code (ayant des dépendances à `l’orm` ) contenu dans la présentation (`exercices/data-lib.ts`) vers la persistance (`db/repositories/`)
-
-Note : En cas de problème d’importation sur les Types tu peux désactiver la règle (nous verrons ce point dans l’exercice suivant)
-
-```tsx
-// eslint-disable-next-line no-restricted-imports
-import {UserAddModel} from '@/db/schema/users'
-```
+- **🐶** Créer les 2 services : `User` et `Product` : Ces services feront appel au repository pour accéder aux données et auront des règles fonctionnelles simples (validation de données)
+- Modifie ensuite `data-lib.ts` pour appeler ces services
 
 Fichiers
 
-- `app/exercises/data-lib.ts`
-- `db/repositories/product-repository.ts`
-- `db/repositories/user-repository.ts`
-
-## Bonus
-
-### 1. 🚀 Isolation des types du model
-
-Notre ORM (`Drizzle`) nous permet d’avoir des types (typescript) en fonction du model.
-
-Exemple :
-
-```tsx
-//src/db/schema/products.ts
-export type ProductModel = typeof products.$inferSelect
-export type AddProductModel = typeof products.$inferInsert
-```
-
-Nous pouvons ensuite utiliser ces types dans les signatures de nos fonctions, comme par exemple
-
-```tsx
-export async function createProduct(newProduct: AddProductModel) {
-  const [createdProduct] = await db.insert(products) ...
-  ...
-}
-```
-
-Cela ne pose pas de problème dans la couche de persistance. Mais au niveau des couches supérieures (présentation / services) nous ne voulons pas avoir de dépendances avec des types de plus bas niveau. Nous ne voulons pas avoir
-
-```tsx
-import {UserAddModel} from '@/db/schema/users'
-```
-
-Fichiers
-
-- `app/exercises/data-lib.ts`
-- `types/product-types.ts`
-- `types/user-types.ts`
-
-### 2. 🚀 Découplage complet
-
-Active la règle `'no-restricted-imports'` sur toute la couche de présentation avec la configuration suivante : `files: ['src/app/**/*.{ts,tsx}'],`
-
-```tsx
-// eslint.config.mjs
- {
-    files: ['src/app/**/*.{ts,tsx}'],
-    //files: ['src/app/exercices/**/*.{ts,tsx}'], //
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/db/schema/*', '@/db/schema', 'drizzle-orm'],
-        },
-      ],
-    },
-  },
-```
-
-- **🐶 Fini le découplage en remplaçant tous les types par les types découplés**
-
-exécute : `pnpm build` pour voir les fichiers en error
-
-Fichiers
-
-- `eslint.config.mjs`
+- `exercise/data-lib.ts`
+- `services/user-service.ts`
+- `services/product-service.ts`
 
 ## Ils vont t’aider
 
@@ -162,4 +80,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=03%20Services).

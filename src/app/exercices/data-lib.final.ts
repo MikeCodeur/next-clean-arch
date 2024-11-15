@@ -1,47 +1,44 @@
-import {createUserDao} from '@/db/repositories/user-repository'
-// eslint-disable-next-line no-restricted-imports
-import {UserAddModel} from '@/db/schema/users'
-// eslint-disable-next-line no-restricted-imports
-import {CreateEditProduct, DeleteProductModel} from '@/db/schema/products'
-
+import {AddUser} from '@/types/user-types'
+import {CreateEditProduct, DeleteProduct} from '@/types/product-types'
+import {createUserService} from '@/services/user-service'
 import {
-  deleteProduct,
-  getCategories,
-  getProductByName,
-  getProducts,
-  getUserByEmail,
-  persistProduct,
-  getProductsPagination as getProductsPaginationDao,
-} from '@/db/repositories/product-repository'
+  deleteProductService,
+  getCategoriesService,
+  getProductByNameService,
+  getProductsPaginationService,
+  getProductsService,
+  getUserByEmailService,
+  persistProductService,
+} from '@/services/product-service'
 
-export async function createUser(newUser: UserAddModel) {
-  return createUserDao(newUser)
+export async function createUser(newUser: AddUser) {
+  return createUserService(newUser)
 }
 
-export async function getProductByNameDao(name: string) {
-  return getProductByName(name)
+export async function getProductByName(name: string) {
+  return getProductByNameService(name)
 }
 
-export async function persistProductDao(product: CreateEditProduct) {
-  return persistProduct(product)
+export async function persistProduct(product: CreateEditProduct) {
+  return persistProductService(product)
 }
 
-export async function getProductsDao() {
-  return getProducts()
+export async function getProducts() {
+  return getProductsService()
 }
 
-export async function getCategoriesDao() {
-  return getCategories()
+export async function getCategories() {
+  return getCategoriesService()
 }
 
-export const deleteProductDao = async (productParams: DeleteProductModel) => {
-  await deleteProduct(productParams)
+export const deleteProduct = async (productParams: DeleteProduct) => {
+  await deleteProductService(productParams)
 }
 
-export const getUserByEmailDao = async (email: string) => {
-  return getUserByEmail(email)
+export const getUserByEmail = async (email: string) => {
+  return getUserByEmailService(email)
 }
 
 export async function getProductsPagination(nbElement: number, start: number) {
-  return getProductsPaginationDao(nbElement, start)
+  return getProductsPaginationService(nbElement, start)
 }

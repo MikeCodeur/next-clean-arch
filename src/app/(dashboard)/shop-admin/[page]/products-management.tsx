@@ -10,11 +10,7 @@ import ProductForm from './form'
 import {ProductsTable} from './product-table'
 import {deleteProduct as deleteProductAction} from '../actions'
 import {toast} from 'sonner'
-
-import {
-  ProductModel as Product,
-  ProductWithCategory,
-} from '@/db/schema/products'
+import {Product, ProductWithCategory} from '@/types/product-types'
 
 export function ProductsManagement({products}: {products: Product[]}) {
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>()

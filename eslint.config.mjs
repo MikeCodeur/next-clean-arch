@@ -98,19 +98,18 @@ export default [
     },
   },
   {
-    //files: ['src/app/**/*.{ts,tsx}'],
-    files: ['src/app/exercices/**/*.{ts,tsx}'], //
+    files: ['src/app/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@/db/schema/*', '@/db/schema', 'drizzle-orm'],
+          patterns: ['@/db/*', 'drizzle-orm'],
         },
       ],
     },
   },
   {
-    files: ['src/data/**/*.ts', 'src/services/**/*.ts'],
+    files: ['src/db/**/*.ts', 'src/services/**/*.ts'],
 
     rules: {
       'no-restricted-imports': [

@@ -1,10 +1,11 @@
 //import {DeleteProduct} from '@/services/types/domain/product-types'
-import {DeleteProductModel} from '@/db/schema/products'
+
+import {DeleteProduct} from '@/types/product-types'
 import {z} from 'zod'
 
 export const deleteProductFormSchema = z.object({
   id: z.string(),
-}) satisfies z.Schema<DeleteProductModel>
+}) satisfies z.Schema<DeleteProduct>
 
 export const createEditProductFormSchema = z.object({
   id: z.string().optional(),

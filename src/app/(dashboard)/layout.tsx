@@ -6,7 +6,7 @@ import RenderTime from '@/components/render-time'
 import {Lock} from 'lucide-react'
 import {getConnectedUserLabel, getUserLabel} from './shop-admin/actions'
 import withAuth from '@/components/features/auth/withAuth'
-import {UserModel} from '@/db/schema/users'
+
 import {moduleName} from '@/lib/constante'
 
 export const metadata: Metadata = {
@@ -35,7 +35,7 @@ async function AppLayout({children}: PropsWithChildren) {
 
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/shop-admin"
+                href="/shop-admin/1"
               >
                 <span>Admin</span>
               </Link>

@@ -6,8 +6,9 @@ import {LoginFormSchema, RoleEnum, SignInError, SignupFormSchema} from '@/type'
 import {AuthError} from 'next-auth'
 import {isRedirectError} from 'next/dist/client/components/redirect'
 import {encrypt, hashPassword} from '@/crypt'
-import {CreateUser, users} from '@/db/schema/users'
-import {createUser, getUserByEmailDao} from '../exercices/data-lib'
+
+import {createUser, getUserByEmail} from '../exercices/data-lib'
+import {AddUser} from '@/types/user-types'
 
 export type FormState =
   | {
@@ -77,14 +78,14 @@ function logZodError(data: FormData) {
   console.error('Zod errorMessages', errorMessages)
 }
 export const signUp = async (email: string, password: string, name: string) => {
-  const user = await getUserByEmailDao(email)
+  const user = await getUserByEmail(email)
   if (user) {
     throw new Error('User already exists')
   }
   console.log('Signing up...', email, password)
 
   const hashedPassword = await hashPassword(password)
-  const newUser: CreateUser = {
+  const newUser: AddUser = {
     email,
     password: hashedPassword,
     name,

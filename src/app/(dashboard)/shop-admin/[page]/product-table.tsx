@@ -10,9 +10,7 @@ import {
 import {Button} from '@/components/ui/button'
 
 import {JSX, SVGProps} from 'react'
-
-import {CategoryModel as Category} from '@/db/schema/categories'
-import {ProductModel as Product} from '@/db/schema/products'
+import {Category, Product} from '@/types/product-types'
 
 export function ProductsTable({
   products,
