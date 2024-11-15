@@ -1,5 +1,4 @@
-import {checkAdmin} from '@/app/(dashboard)/shop-admin/utils'
-import {getProducts, getProductsPagination} from '../actions'
+import {getProductsPagination} from '@/app/exercices/data-lib'
 import {ProductsManagement} from './products-management'
 import {withAuthAdmin} from '@/components/features/auth/withAuth'
 import {

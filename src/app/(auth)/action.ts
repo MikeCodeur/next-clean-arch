@@ -5,10 +5,9 @@ import {LoginFormSchema, RoleEnum, SignInError, SignupFormSchema} from '@/type'
 
 import {AuthError} from 'next-auth'
 import {isRedirectError} from 'next/dist/client/components/redirect'
-import {getUserByEmailDao} from '../(dashboard)/shop-admin/actions'
 import {encrypt, hashPassword} from '@/crypt'
 import {CreateUser, users} from '@/db/schema/users'
-import db from '@/db/schema'
+import {createUser, getUserByEmailDao} from '../exercices/data-lib'
 
 export type FormState =
   | {
@@ -96,7 +95,7 @@ export const signUp = async (email: string, password: string, name: string) => {
     userId: newUser.email ?? '',
     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
   })
-  const [userCreated] = await db.insert(users).values(newUser).returning()
+  const [userCreated] = await createUser(newUser) //await db.insert(users).values(newUser).returning()
   return {email: userCreated.email, role: userCreated.role}
 }
 

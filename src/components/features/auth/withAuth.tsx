@@ -14,7 +14,7 @@ const withAuth = <P extends object>(
   WrappedComponent: React.ComponentType<P & WithAuthProps>,
   requiredRole?: RoleEnum
 ) => {
-  console.log(`withAuth Component ${WrappedComponent.name} mounted`)
+  //console.log(`withAuth Component ${WrappedComponent.name} mounted`)
 
   return async function WithAuth(props: P) {
     const user = await getConnectedUser()

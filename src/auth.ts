@@ -7,7 +7,7 @@ import Resend from 'next-auth/providers/resend'
 import {DrizzleAdapter} from '@auth/drizzle-adapter'
 import db from '@/db/schema'
 import {verifyPassword} from './crypt'
-import {getUserByEmailDao} from './app/(dashboard)/shop-admin/actions'
+import {getUserByEmailDao} from './app/exercices/data-lib'
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
   callbacks: {},

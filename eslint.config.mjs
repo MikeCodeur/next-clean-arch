@@ -98,13 +98,13 @@ export default [
     },
   },
   {
-    files: ['src/app/**/*.{ts,tsx}'],
-
+    //files: ['src/app/**/*.{ts,tsx}'],
+    files: ['src/app/exercices/**/*.{ts,tsx}'], //
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@/data/*'],
+          patterns: ['@/db/schema/*', '@/db/schema', 'drizzle-orm'],
         },
       ],
     },

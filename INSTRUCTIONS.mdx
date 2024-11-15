@@ -1,6 +1,6 @@
-# Prise en main
+# Les repositories (persistance)
 
-### 💡 Prise en main de la stack de départ
+### 💡 Comprendre les repositories
 
 ## 📝 Tes notes
 
@@ -8,115 +8,149 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans les modules précédent nous avons vu les couches de :
+Le principe du repository est d'isoler l'accès aux données en créant une couche intermédiaire qui sert d'interface entre la logique métier et la persistance, permettant de manipuler les données sans dépendre directement du détail de l'ORM ou de la base de données.
 
-- Presentation (Les RCC et RSC, Forms et composants React)
-- Validation (validation de données des forms en entrée des server action)
-- Persistance (appelle de la couche de persistance via ORM : drizzle)
-- Authentification (via next-Auth)
+Pour s’assurer d’une bonne isolation entre la couche de l’ORM et les couches supérieures (service ou, dans notre cas, présentation), nous allons ajouter des règles au niveau du linter. Cela nous permettra d’éviter que la couche de présentation puisse importer directement des éléments liés à l’ORM, comme les schémas ou les fonctions d’accès aux données.
 
-Dans notre organisation de fichiers / modules on pourrait regrouper les différentes couches de la manière suivante
+### Le principe d'inversion de dépendance
 
-```bash
-.
-└── src/
-    ├── app/
-    │   ├── (auth)
-    │   ├── (public)
-    │   └── (dashboard)/
-    │       ├── shop-admin
-    │       └── ...
-    ├── components/
-    │   ├── ui
-    │   └── features/
-    │       ├── auth
-    │       └── ...
-    └── db/
-        ├── schema
-        └── script
+Pour aller plus loin, ce découplage repose sur le **principe d’inversion de dépendance**, qui fait partie des principes SOLID. Selon ce principe :
+
+1. **Les modules de haut niveau (présentation ou service)** ne doivent pas dépendre des modules de bas niveau (ORM).
+2. **Les deux doivent dépendre d’abstractions** (par exemple, des interfaces ou des contrats définis dans la couche repository).
+3. **Les détails d’implémentation (ORM)** doivent être dépendants des modules de haut niveau via ces abstractions.
+
+En appliquant ce principe, nous nous assurons que :
+
+- La couche présentation n’a aucune connaissance de la base de données ou des outils spécifiques (Drizzle ORM, Prisma, etc.).
+- Toute modification au niveau de la base de données n’impactera pas les couches supérieures.
+
+```tsx
+[Présentation] ---> [Service] ---> [Repository] ---> [ORM/DB]
 ```
 
-- presentation : `app` et `components`
-- validation (form) : `app` et `components`
-- persistance : `db`
-- authentification : `auth.ts`
+### Mise en œuvre technique
 
-Nous avons combiner tous les concepts des modules precedents pour faire cette premiere architecture, qui est encore loin de clean architecture.
+### Étape 1 : Création de la règle de linter
 
-Nous pouvons créer des comptes, se connecter, et créer des produits dans notre base de données de produits.
+Ajoutez une règle à votre fichier `eslint` pour empêcher les imports directs depuis la couche ORM dans la couche présentation. Par exemple :
 
-Pour que cela fonctionne tu vas devoir initialiser ton environnement.
+```tsx
+ //eslint.config.mjs
+ {
+    files: ['src/app/exercices/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['@/db/schema/*'],
+        },
+      ],
+    },
+  },
+```
+
+En ajoutant cette configuration, notre application est en error `no-restricted-imports`, tu peux le constater avec
+
+```tsx
+pnpm build
+```
+
+Pour simplifier les exercices nous avons regrouper tous les appels aux fonctions qui accèdent à la base de données dans un seul fichier `exercices/data-lib.ts`
+
+- Les `actions.ts` appellent maintenant les fonctions de `exercices/data-lib.ts`
 
 ## Exercice
 
-Dans un premier temps tu vas devoir créer une base de données `Postgres` sur `Vercel` et mettre la variable d’environnement dans `.env` .`env.development`
+Dans cet exercice tu vas devoir implémenter 2 repositories pour isoler l’ORM du reste de l’application
+
+- Un pour la gestion des `users` en base de données
+- Un pour la gestion des `products` en base de données
+
+Dans un repository nous implémentons généralement
+
+- un CRUD
+- et des fonctions plus spécifiques
+
+**🐶** Pour cela créé des `CRUD` dans `repository`
+
+**🐶** Pour cela déplace tout le code (ayant des dépendances à `l’orm` ) contenu dans la présentation (`exercices/data-lib.ts`) vers la persistance (`db/repositories/`)
+
+Note : En cas de problème d’importation sur les Types tu peux désactiver la règle (nous verrons ce point dans l’exercice suivant)
 
 ```tsx
-POSTGRES_URL="postgres://......
-```
-
-Vérifie que que le connexion se fait correctement grace à la commande
-
-```tsx
-pnpm db:check
-
-//si c'est ok :
-✅ Connexion checked in 39 ms
+// eslint-disable-next-line no-restricted-imports
+import {UserAddModel} from '@/db/schema/users'
 ```
 
 Fichiers
 
-- `.env`
-- `.env.development`
+- `app/exercises/data-lib.ts`
+- `db/repositories/product-repository.ts`
+- `db/repositories/user-repository.ts`
 
 ## Bonus
 
-### 1. 🚀 Régénérer le schema de l’ORM
+### 1. 🚀 Isolation des types du model
 
-Nous avons deja fournis un modèle de données avec drizzle pour gagner du temps. celui ci est dans `src/db/schema`
+Notre ORM (`Drizzle`) nous permet d’avoir des types (typescript) en fonction du model.
 
-- 🐶 génère les scripts avec `pnpm db:generate`
-- 🐶 execute les scripts avec `pnpm db:migrate`
-- 🐶 insère les données avec `pnpm db:seed`
+Exemple :
 
-En cas de problème
-
-- 🐶 drop le schema avec les données avec `pnpm db:drop`
-- 🐶 clear la database avec `pnpm db:clear`
-
-En cas de doute, nous avons un script qui supprime tout et recréé tout
-
-- 🐶 clear la database avec `pnpm db:reset-seed`
-
-Fichiers
-
-- `package.json`
-
-### 2. 🚀 Inscription / Connexion
-
-- **🐶** Inscris toi et connecte toi pour verifier que tout fonctionne.
-
-Nous avons a disposition, differents users avec différents roles
-
-Tous les mots de passe sont `Azerty123`
-
-Fichiers
-
-- `src/app/(auth)`
-
-### 3. 🚀 Studio
-
-Il est parfois nécessaire de verifier les données en base de données. Il est possible de se connecter sur Vercel, ou avec PGAdmin client. Nous avons également drizzle studio qui permet de le faire.
-
-- **🐶 execute la commande :**
-
-```bash
-pnpm db:studio
+```tsx
+//src/db/schema/products.ts
+export type ProductModel = typeof products.$inferSelect
+export type AddProductModel = typeof products.$inferInsert
 ```
 
-Tu es maintenant prêt pour appliquer les concept de clean architecture
+Nous pouvons ensuite utiliser ces types dans les signatures de nos fonctions, comme par exemple
 
-## Aller plus loin
+```tsx
+export async function createProduct(newProduct: AddProductModel) {
+  const [createdProduct] = await db.insert(products) ...
+  ...
+}
+```
+
+Cela ne pose pas de problème dans la couche de persistance. Mais au niveau des couches supérieures (présentation / services) nous ne voulons pas avoir de dépendances avec des types de plus bas niveau. Nous ne voulons pas avoir
+
+```tsx
+import {UserAddModel} from '@/db/schema/users'
+```
+
+Fichiers
+
+- `app/exercises/data-lib.ts`
+- `types/product-types.ts`
+- `types/user-types.ts`
+
+### 2. 🚀 Découplage complet
+
+Active la règle `'no-restricted-imports'` sur toute la couche de présentation avec la configuration suivante : `files: ['src/app/**/*.{ts,tsx}'],`
+
+```tsx
+// eslint.config.mjs
+ {
+    files: ['src/app/**/*.{ts,tsx}'],
+    //files: ['src/app/exercices/**/*.{ts,tsx}'], //
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['@/db/schema/*', '@/db/schema', 'drizzle-orm'],
+        },
+      ],
+    },
+  },
+```
+
+- **🐶 Fini le découplage en remplaçant tous les types par les types découplés**
+
+exécute : `pnpm build` pour voir les fichiers en error
+
+Fichiers
+
+- `eslint.config.mjs`
 
 ## Ils vont t’aider
 
@@ -128,4 +162,4 @@ Tu es maintenant prêt pour appliquer les concept de clean architecture
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=01%20initialisation).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).

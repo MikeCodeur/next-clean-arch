@@ -1,9 +1,10 @@
+import {getUserByEmailDao} from '@/app/exercices/data-lib'
 import {auth} from '@/auth'
-import {UserModel} from '@/db/schema/users'
+//import {UserModel} from '@/db/schema/users'
 import {RoleEnum} from '@/type'
+import {User} from '@/types/user-types'
 import {redirect} from 'next/navigation'
 import {cache} from 'react'
-import {getUserByEmailDao} from './actions'
 
 export const getSession = async () => {
   const session = await auth()
@@ -27,7 +28,7 @@ export const isAuthAdmin = async () => {
   const email = session?.user?.email ?? ''
   const user = await getUserByEmailDao(email)
   console.log('isAuthAdmin authUser', user)
-  return hasRequiredRole(user as UserModel, RoleEnum.ADMIN)
+  return hasRequiredRole(user as User, RoleEnum.ADMIN)
 }
 export const checkAdmin = cache(async () => {
   const isAdmin = await isAuthAdmin()
@@ -37,10 +38,7 @@ export const checkAdmin = cache(async () => {
   }
 })
 
-export function hasRequiredRole(
-  userConnected: UserModel,
-  requestedRole: RoleEnum
-) {
+export function hasRequiredRole(userConnected: User, requestedRole: RoleEnum) {
   // Définir l'ordre des privilèges
   const roleHierarchy = [
     RoleEnum.USER,
