@@ -1,5 +1,6 @@
-import {getConnectedUser} from '@/app/(dashboard)/shop-admin/actions'
+import {getConnectedUser} from '@/app/exercices/auth-util'
 import RegisterForm from '@/components/features/auth/form/register-form'
+
 import {redirect} from 'next/navigation'
 
 export default async function Page() {

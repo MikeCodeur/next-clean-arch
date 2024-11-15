@@ -1,11 +1,10 @@
 import React from 'react'
 
-import {Label} from '@/components/ui/label'
 import {UserModel} from '@/db/schema/users'
-import {getConnectedUser} from '@/app/(dashboard)/shop-admin/actions'
-import {RoleEnum} from '@/type'
-import {hasRequiredRole} from '@/app/(dashboard)/shop-admin/utils'
 import {redirect} from 'next/navigation'
+
+import {RoleEnum} from '@/services/authentification/type'
+import {getConnectedUser, hasRequiredRole} from '@/app/exercices/auth-util'
 
 export type WithAuthProps = {
   user: UserModel

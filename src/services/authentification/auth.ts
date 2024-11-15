@@ -7,7 +7,7 @@ import Resend from 'next-auth/providers/resend'
 import {DrizzleAdapter} from '@auth/drizzle-adapter'
 import db from '@/db/schema'
 import {verifyPassword} from './crypt'
-import {getUserByEmail} from './app/exercices/data-lib'
+import {getUserByEmailDao} from '@/db/repositories/product-repository'
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
   callbacks: {},
@@ -20,7 +20,7 @@ export const {handlers, signIn, signOut, auth} = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        const user = await getUserByEmail(credentials.email as string)
+        const user = await getUserByEmailDao(credentials.email as string)
         if (!user) {
           throw new Error('User not found.')
         }

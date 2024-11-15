@@ -3,10 +3,7 @@ import {ModeToggle} from '@/components/theme-toggle'
 import {moduleName} from '@/lib/constante'
 
 import Link from 'next/link'
-import {
-  getConnectedUser,
-  getConnectedUserLabel,
-} from './(dashboard)/shop-admin/actions'
+import {getConnectedUserLabel} from './exercices/auth-util'
 
 export default async function Home() {
   const label = await getConnectedUserLabel()

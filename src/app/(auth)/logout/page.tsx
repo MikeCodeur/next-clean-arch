@@ -1,6 +1,6 @@
-import {getConnectedUser} from '@/app/(dashboard)/shop-admin/actions'
+import {getConnectedUser} from '@/app/exercices/auth-util'
 import Logout from '@/components/features/auth/form/logout-form'
-import withAuth from '@/components/features/auth/withAuth'
+
 import {redirect} from 'next/navigation'
 
 async function Page() {

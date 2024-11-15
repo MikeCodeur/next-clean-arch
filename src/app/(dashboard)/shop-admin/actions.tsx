@@ -4,9 +4,6 @@ import {
   createEditProductFormSchema,
   FormProductSchemaType,
 } from './[page]/form/product-form-validation'
-import {cache} from 'react'
-
-import {auth} from '@/auth'
 
 import {
   deleteProduct as deleteProductDao,
@@ -17,7 +14,7 @@ import {
   persistProduct as persistProductDao,
 } from '@/app/exercices/data-lib'
 import {CreateEditProduct, Product} from '@/types/product-types'
-import {User} from '@/types/user-types'
+import {getConnectedUser} from '@/app/exercices/auth-util'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -138,25 +135,3 @@ export const deleteProduct = async (product: Product) => {
   await deleteProductDao(product)
   revalidatePath('/exercises/shop-admin')
 }
-export const getConnectedUser = cache(async () => {
-  const session = await auth()
-  if (!session?.user || !session.user.email) return
-  console.log('getConnectedUser session.user', session.user)
-  try {
-    const user = await getUserByEmailDao(session.user.email)
-    return user
-    // return userDTO(user as UserModel)
-  } catch (error) {
-    console.error('Failed to fetch user', error)
-    return
-  }
-})
-
-export const getConnectedUserLabel = cache(async () => {
-  const user = await getConnectedUser()
-  return getUserLabel(user)
-})
-
-export const getUserLabel = cache(async (user?: User) => {
-  return user ? `Hi ${user.name} (${user.role})` : 'Hi, Guest'
-})

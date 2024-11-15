@@ -1,6 +1,6 @@
-# Service Layout
+# Service d’authentification
 
-### 💡 Comprendre la couche service
+### 💡 Faire un service d’authentification
 
 ## 📝 Tes notes
 
@@ -8,67 +8,36 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans une architecture logicielle bien structurée, la **couche service** joue un rôle clé en tant qu'intermédiaire entre la couche de présentation et la couche de persistance (ou DAO).
+Pour le moment l’authentification est repartie dans de nombreux fichiers
 
-Elle encapsule la logique métier, c'est-à-dire toutes les règles et contraintes spécifiques au domaine d'application. En décomposant l'architecture en plusieurs couches, on améliore la maintenabilité, la testabilité et la flexibilité de du code.
+- `auth.ts` (de next-auth)
+- `crypt.ts`
 
-La couche service peut être vue comme le **cerveau de votre application**. Elle s'assure que :
+Ainsi que plusieurs fonctions comme
 
-1. **Les données sont correctement validées** avant d'être envoyées ou modifiées dans la base.
-2. **Les erreurs sont traitées** de manière centralisée, offrant une expérience utilisateur cohérente et contrôlée.
-3. **La logique métier est indépendante des technologies sous-jacentes**, rendant le code plus modulaire et adaptable.
+- `getSession`, `isAuth`, `isAuthAdmin` etc …
+- `sign-up`
 
-### Pourquoi une couche service ?
+S’il l’on souhaite changer facilement de système d’authentification, tout doit être regrouper dans un module / service, isolé.
 
-1. **Centralisation de la logique métier** :
-   - Imaginez que vous devez vérifier qu'un utilisateur a un rôle spécifique avant d'effectuer une action. Plutôt que de répéter cette règle dans plusieurs composants, la couche service centralise cette logique, ce qui évite les duplications et facilite les modifications futures.
-2. **Découplage des couches** :
-   - La couche présentation (interface utilisateur) ne devrait pas interagir directement avec la base de données ou les ORM. En intercalant une couche service, on limite les dépendances directes, ce qui rend l'architecture plus propre et plus flexible.
-3. **Testabilité accrue** :
-   - En isolant la logique métier dans une couche spécifique, il devient plus facile de la tester indépendamment des autres composants, par exemple en simulant les interactions avec les repositories ou autres services.
+Nous allons créer cela dans le répertoire
 
-Nous avons ajouter cette configuration pour autoriser aucun import depuis `db` (meme les `repositories`)
-
-```tsx
-{
-    files: ['src/app/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/db/*', 'drizzle-orm'],
-        },
-      ],
-    },
-  },
-```
-
-### Quelques règles de nommage
-
-Pour éviter les collisions de noms nous utiliseront cette règle de nommage de fonction :
-
-- `*Dao` pour les fonctions de la couche de persistance (ex : `createUserDao`)
-- `*Service` pour les fonctions de la couche service (ex : `createUserService`)
-- Et par la suite `*Action` pour les fonctions des servers action (ex : `createUserAction`)
+- `services/authentification`
 
 ## Exercice
 
-Pour le moment la couche la présentation appelle des repositories, cela isole déjà de l’ORM mais les repositories ne doivent pas contenir de logique métier.
+Pour simplifier l’exercice nous avons regroupé toutes les fonctions liées de prêt ou de loin à l’authentification dans `exercise/auth-util.ts` , toujours dans la présentation.
 
-Le but de cet exercice est d’introduire la couche service comme la
+- **🐶 Dans cet exercice tu vas devoir tout déplacer dans le service authentification**
 
-![course/layers.png](course/layers.png)
-
-Dans un premier temps la couche service ne fera pas grand chose, mais petit a petit nous allons y ajouter de plus en plus de règles.
-
-- **🐶** Créer les 2 services : `User` et `Product` : Ces services feront appel au repository pour accéder aux données et auront des règles fonctionnelles simples (validation de données)
-- Modifie ensuite `data-lib.ts` pour appeler ces services
+Fait un `pnpm build` pour voir toutes les `errors` d’importation et modifie les `imports`
 
 Fichiers
 
-- `exercise/data-lib.ts`
-- `services/user-service.ts`
-- `services/product-service.ts`
+- `service/authentification/auth-service`
+- `exercise/auth-util.ts`
+
+##
 
 ## Ils vont t’aider
 
@@ -80,4 +49,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=03%20Services).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=04%20AuthentificationService).

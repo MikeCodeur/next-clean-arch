@@ -4,10 +4,9 @@ import {PropsWithChildren} from 'react'
 import {ModeToggle} from '@/components/theme-toggle'
 import RenderTime from '@/components/render-time'
 import {Lock} from 'lucide-react'
-import {getConnectedUserLabel, getUserLabel} from './shop-admin/actions'
 import withAuth from '@/components/features/auth/withAuth'
-
 import {moduleName} from '@/lib/constante'
+import {getConnectedUserLabel} from '../exercices/auth-util'
 
 export const metadata: Metadata = {
   title: 'Adminitration Shop',
