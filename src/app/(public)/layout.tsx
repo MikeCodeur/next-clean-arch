@@ -6,7 +6,7 @@ import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '../exercices/auth-util'
+import {getConnectedUserLabel} from '@/services/authentification/auth-service'
 
 export const metadata: Metadata = {
   title: 'Public page : Clean Arch Module',

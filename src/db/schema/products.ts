@@ -22,7 +22,7 @@ export const products = pgTable('product', {
   category: uuid('category_id').references(() => categories.id, {
     onDelete: 'cascade',
   }),
-  quantity: integer('quantity'),
+  quantity: integer('quantity').notNull(),
   createdAt: date('createdat'),
   updatedAt: date('updatedat'),
 })

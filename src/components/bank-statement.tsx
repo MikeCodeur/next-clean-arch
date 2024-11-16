@@ -21,8 +21,9 @@ import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
 import {Badge} from '@/components/ui/badge'
 import {JSX, SVGProps} from 'react'
+import {BankAccount} from '@/types/user-types'
 
-export function BankStatement() {
+export function BankStatement({bankAccount}: {bankAccount?: BankAccount}) {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6">
       <header className="mb-6 flex items-center justify-between">
@@ -32,7 +33,9 @@ export function BankStatement() {
         </div>
         <div className="space-y-1 text-right">
           <div className="text-muted-foreground">Available Balance</div>
-          <div className="text-2xl font-medium">$12,345.67</div>
+          <div className="text-2xl font-medium">
+            ${bankAccount?.balance ?? '0'}
+          </div>
         </div>
       </header>
       <div className="space-y-6">

@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import {RoleEnum} from './services/authentification/type'
+import {RoleEnum} from '../../authentification/type'
 
 export const LoginFormSchema = z.object({
   email: z.string().email({message: 'Please enter a valid email.'}),

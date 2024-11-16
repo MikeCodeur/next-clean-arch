@@ -110,12 +110,11 @@ export default [
   },
   {
     files: ['src/db/**/*.ts', 'src/services/**/*.ts'],
-
     rules: {
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@/app/*'],
+          patterns: ['@/app/*', '@/services/validation/ui/*'],
         },
       ],
     },

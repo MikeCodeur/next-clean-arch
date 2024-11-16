@@ -4,7 +4,10 @@ import {UserModel} from '@/db/schema/users'
 import {redirect} from 'next/navigation'
 
 import {RoleEnum} from '@/services/authentification/type'
-import {getConnectedUser, hasRequiredRole} from '@/app/exercices/auth-util'
+import {
+  getConnectedUser,
+  hasRequiredRole,
+} from '@/services/authentification/auth-service'
 
 export type WithAuthProps = {
   user: UserModel
@@ -14,14 +17,13 @@ const withAuth = <P extends object>(
   requiredRole?: RoleEnum
 ) => {
   //console.log(`withAuth Component ${WrappedComponent.name} mounted`)
-
   return async function WithAuth(props: P) {
     const user = await getConnectedUser()
     const hasRole = hasRequiredRole(
       user as UserModel,
       requiredRole ?? RoleEnum.GUEST
     )
-    console.log('withAuth user', user)
+    //console.log('withAuth user', user)
     if (!user) {
       redirect('/sign-in')
     }

@@ -1,4 +1,3 @@
-import {getProductsPagination} from '@/app/exercices/data-lib'
 import {ProductsManagement} from './products-management'
 import {withAuthAdmin} from '@/components/features/auth/withAuth'
 import {
@@ -10,6 +9,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import Link from 'next/link'
+import {Button} from '@/components/ui/button'
+import {getProductsPaginationService} from '@/services/product-service'
 
 async function Page(props: {params: Promise<{page: string}>}) {
   const params = await props.params
@@ -17,7 +19,7 @@ async function Page(props: {params: Promise<{page: string}>}) {
   const currentPage = Number.parseInt(page, 10) || 1
   const nbElement = 4 // Nombre d'éléments par page
   const start = (currentPage - 1) * nbElement
-  const {products, totalProducts} = await getProductsPagination(
+  const {products, totalProducts} = await getProductsPaginationService(
     nbElement,
     start
   )
@@ -43,6 +45,10 @@ async function Page(props: {params: Promise<{page: string}>}) {
       <h1 className="mb-4 text-center text-3xl font-bold">
         Administration de la boutique
       </h1>
+      <Link href="/shop-admin/quick">
+        <Button className="m-4">Ajout Rapide</Button>
+      </Link>
+      {/* <Button href="/shop-admin/quick">Ajout Rapide</Button> */}
       <ProductsManagement products={products ?? []} />
       <div className="mt-5">
         <Pagination>

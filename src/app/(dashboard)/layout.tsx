@@ -6,7 +6,7 @@ import RenderTime from '@/components/render-time'
 import {Lock} from 'lucide-react'
 import withAuth from '@/components/features/auth/withAuth'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '../exercices/auth-util'
+import {getConnectedUserLabel} from '@/services/authentification/auth-service'
 
 export const metadata: Metadata = {
   title: 'Adminitration Shop',
@@ -31,7 +31,12 @@ async function AppLayout({children}: PropsWithChildren) {
               >
                 <span>Dashboard</span>
               </Link>
-
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/bank"
+              >
+                <span>Bank</span>
+              </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"
                 href="/shop-admin/1"

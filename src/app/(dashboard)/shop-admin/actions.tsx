@@ -3,18 +3,20 @@ import {revalidatePath} from 'next/cache'
 import {
   createEditProductFormSchema,
   FormProductSchemaType,
-} from './[page]/form/product-form-validation'
+  quickAddProductFormSchema,
+} from '@/services/validation/ui/product-form-validation'
+
+import {CreateEditProduct, Product} from '@/types/product-types'
 
 import {
-  deleteProduct as deleteProductDao,
-  getCategories as getCategoriesDao,
-  getProductByName as getProductByNameDao,
-  getProducts as getProductsDao,
-  getUserByEmail as getUserByEmailDao,
-  persistProduct as persistProductDao,
-} from '@/app/exercices/data-lib'
-import {CreateEditProduct, Product} from '@/types/product-types'
-import {getConnectedUser} from '@/app/exercices/auth-util'
+  createProductWithCategoryService,
+  deleteProductService,
+  getCategoriesService,
+  getProductByNameService,
+  getProductsService,
+  persistProductService,
+} from '@/services/product-service'
+import {getConnectedUser} from '@/services/authentification/auth-service'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -25,6 +27,37 @@ export type FormState = {
   success?: boolean
   errors?: ValidationError[]
   message?: string
+}
+export async function quickAddProduct(
+  prevState: FormState,
+  data: FormData
+): Promise<FormState> {
+  const formData = Object.fromEntries(data)
+  const parsed = quickAddProductFormSchema.safeParse(formData)
+  if (!parsed.success) {
+    logZodError(data)
+    return {
+      success: false,
+      message: `Erreur de validation du Formulaire`,
+    }
+  }
+  try {
+    const product = await createProductWithCategoryService(
+      parsed.data.productName,
+      parsed.data.categoryName
+    )
+    revalidatePath('/shop-admin')
+
+    return {
+      success: true,
+      message: `Sauvegardé avec success `,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: `Erreur Service :  ${error}`,
+    }
+  }
 }
 
 export async function onSubmitAction(
@@ -70,7 +103,9 @@ export async function onSubmitAction(
       message: 'Server Error',
     }
   }
-  const prod = await getProductByNameDao(data.get('title')?.toString() ?? '')
+  const prod = await getProductByNameService(
+    data.get('title')?.toString() ?? ''
+  )
   if (prod && prod.length > 0 && prod[0].id !== parsed.data.id) {
     return {
       success: false,
@@ -88,8 +123,8 @@ export async function onSubmitAction(
     if (parsed.data.id === '') {
       delete parsed.data.id
     }
-    await persistProductDao(parsed.data)
-    revalidatePath('/exercises/shop-admin')
+    await persistProductService(parsed.data)
+    revalidatePath('/shop-admin')
     return {
       success: true,
       message: 'Product Saved',
@@ -117,21 +152,21 @@ export const getUser = async () => {
 }
 
 export const getProducts = async () => {
-  const products = await getProductsDao()
+  const products = await getProductsService()
   return products
 }
 
 export const getCategories = async () => {
-  const products = await getCategoriesDao()
+  const products = await getCategoriesService()
   return products
 }
 
 export const persistProduct = async (product: CreateEditProduct) => {
-  await persistProductDao(product)
-  revalidatePath('/exercises/shop-admin')
+  await persistProductService(product)
+  revalidatePath('/shop-admin')
 }
 
 export const deleteProduct = async (product: Product) => {
-  await deleteProductDao(product)
-  revalidatePath('/exercises/shop-admin')
+  await deleteProductService(product)
+  revalidatePath('/shop-admin')
 }

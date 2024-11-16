@@ -37,5 +37,3 @@ export type AuthUser = {
   user?: User
   role: string
 }
-
-//export type FormSchemaType = z.infer<typeof SignupFormSchema>

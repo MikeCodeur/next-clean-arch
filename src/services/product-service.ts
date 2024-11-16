@@ -5,12 +5,58 @@ import {
   DeleteProduct,
 } from '@/types/product-types'
 
-export async function createProductService(data: AddProduct) {
-  if (!data.title) {
-    throw new Error('Un title est obligatoire pour créer un produit.')
+import {
+  createEditProductSchema,
+  labelShema,
+} from '@/services/validation/validation-service'
+
+//category
+export async function getOrCreateCategoryService(categoryName: string) {
+  const parsed = labelShema.safeParse({label: categoryName})
+  if (!parsed.success) {
+    throw new Error(`${parsed.error.errors[0].message}`)
   }
-  return productRepository.createProductDao(data)
+  const sanitizedName = parsed.data.label
+  const existingCategory =
+    await productRepository.getCategoryByNameDao(sanitizedName)
+  if (existingCategory) {
+    return existingCategory
+  }
+  const newCategory = await productRepository.createCategoryDao({
+    name: sanitizedName,
+  })
+  return newCategory
 }
+
+export async function createProductWithCategoryService(
+  productName: string,
+  categoryName: string
+) {
+  const parsed = labelShema.safeParse({label: productName})
+  if (!parsed.success) {
+    throw new Error(`${parsed.error.errors[0].message}`)
+  }
+  const sanitizedName = parsed.data.label
+  const category = await getOrCreateCategoryService(categoryName)
+  const newProduct = {
+    title: sanitizedName,
+    category: category.id,
+    createdAt: new Date().toISOString(),
+    quantity: 0,
+  }
+  const product = await productRepository.createProductDao(newProduct)
+  return product
+}
+
+export async function createProductService(data: AddProduct) {
+  const parsed = createEditProductSchema.safeParse(data)
+  if (!parsed.success) {
+    throw new Error(`Validation failed ${parsed.error.message}`)
+  }
+  const sanitizedData = parsed.data
+  return productRepository.createProductDao(sanitizedData)
+}
+
 export async function getProductByNameService(name: string) {
   if (!name) {
     throw new Error('Un nom est obligatoire pour chercher un produit.')
@@ -19,7 +65,12 @@ export async function getProductByNameService(name: string) {
 }
 
 export async function persistProductService(product: CreateEditProduct) {
-  return productRepository.persistProductDao(product)
+  const parsed = createEditProductSchema.safeParse(product)
+  if (!parsed.success) {
+    throw new Error(`Validation failed ${parsed.error.message}`)
+  }
+  const sanitizedData = parsed.data
+  return productRepository.persistProductDao(sanitizedData)
 }
 
 export async function getProductsService() {
@@ -32,10 +83,6 @@ export async function getCategoriesService() {
 
 export const deleteProductService = async (productParams: DeleteProduct) => {
   await productRepository.deleteProductDao(productParams)
-}
-
-export const getUserByEmailService = async (email: string) => {
-  return productRepository.getUserByEmailDao(email)
 }
 
 export async function getProductsPaginationService(

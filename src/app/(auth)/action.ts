@@ -1,13 +1,15 @@
 'use server'
 
-import {LoginFormSchema, SignupFormSchema} from '@/type'
-
 import {AuthError} from 'next-auth'
 import {isRedirectError} from 'next/dist/client/components/redirect'
 
 import {signUp} from '@/services/authentification/auth-service'
 import {SignInError} from '@/services/authentification/type'
 import {signIn, signOut} from '@/services/authentification/auth'
+import {
+  LoginFormSchema,
+  SignupFormSchema,
+} from '@/services/validation/ui/validation-form'
 
 export type FormState =
   | {

@@ -28,7 +28,7 @@ import {toast} from 'sonner'
 import {
   createEditProductFormSchema,
   FormProductSchemaType,
-} from './product-form-validation'
+} from '@/services/validation/ui/product-form-validation'
 import {Category, ProductWithCategory} from '@/types/product-types'
 
 export default function ProductForm({

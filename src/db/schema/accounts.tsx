@@ -22,4 +22,4 @@ export const accountRelations = relations(bankAccounts, ({one}) => ({
     references: [users.id],
   }),
 }))
-export type BankAccount = typeof bankAccounts.$inferSelect // return type when queried
+export type BankAccountModel = typeof bankAccounts.$inferSelect // return type when queried

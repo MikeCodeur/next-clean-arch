@@ -1,6 +1,6 @@
-# Service d’authentification
+# Validations Layers
 
-### 💡 Faire un service d’authentification
+### 💡 Description longue de l'exercice
 
 ## 📝 Tes notes
 
@@ -8,36 +8,211 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Pour le moment l’authentification est repartie dans de nombreux fichiers
+La validation des données est une étape essentielle dans toute application bien structurée, car elle garantit l'intégrité des informations qui circulent entre les différentes couches du système.
 
-- `auth.ts` (de next-auth)
-- `crypt.ts`
+Que ce soit pour valider les entrées utilisateur dans l'interface, appliquer des règles métier complexes au niveau des services, ou assurer la conformité des données avec les contraintes de la base de données, chaque niveau a des besoins spécifiques.
 
-Ainsi que plusieurs fonctions comme
+Une validation bien pensée repose sur un principe clé : l'isolation des responsabilités. En segmentant les validations par couche — présentation, service, persistance — on s'assure non seulement de la cohérence des données mais aussi de la maintenabilité du code.
 
-- `getSession`, `isAuth`, `isAuthAdmin` etc …
-- `sign-up`
+Cette approche permet d'éviter les erreurs courantes, comme la réutilisation abusive d'un même modèle de validation dans tous les contextes, et offre une base solide pour construire des applications évolutives et fiables.
 
-S’il l’on souhaite changer facilement de système d’authentification, tout doit être regrouper dans un module / service, isolé.
+⚠️ Un `formulaire`, un `service` et une `table` en base de données n’ont pas toujours la même forme. L’erreur courante et d’utiliser le même validateur pour toutes les couches.
 
-Nous allons créer cela dans le répertoire
+Par exemple nous avons la validation au niveau du `formulaire` de produit `createEditProductFormSchema`
 
-- `services/authentification`
+```tsx
+//product-form-validation.ts
+//action.ts
+export async function onSubmitAction(
+  prevState: FormState,
+  data: FormData
+): Promise<FormState> {
+  const formData = Object.fromEntries(data)
+  const parsed = createEditProductFormSchema.safeParse(formData)
+
+  if (!parsed.success) {
+```
+
+On pourrait réutiliser `createEditProductFormSchema` au niveau du service.
+
+```tsx
+//product-service.ts
+export async function createProductService(data: AddProduct) {
+  const parsed = createEditProductFormSchema.safeParse(data)
+  if (!parsed.success) {
+    throw new Error(`Validation failed ${parsed.error.message}`)
+  }
+  return productRepository.createProductDao(data)
+}
+```
+
+⚠️ En faisant cela on introduit des dépendances entre le `service` et la `présentation` et c’est ce que nous souhaitons éviter
+
+✅ La règle suivante nous interdit d’importer des modules de `app` (présentation) vers `service` et `persistance`
+
+```tsx
+{
+    files: ['src/db/**/*.ts', 'src/services/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['@/app/*'],
+        },
+      ],
+    },
+  },
+```
+
+Il faut donc avoir des `validateurs` pour la `présentation` (les formulaires généralement) et les autres couches (`service` et éventuellement `persistance`)
+
+Il serait possible d’avoir
+
+- un répertoire `validation` dans la `présentation`
+- un répertoire `validation` dans le `service`
+- un répertoire `validation` dans la `persistance`
+
+Mais nous ferons le choix de tout centraliser dans un `service de validation` au niveau `service`
+
+```tsx
+/src
+  /services
+    /validation
+      validation-form.ts
+      validate-service.ts
+      validation-peristence.ts
+```
+
+Pour simplifier la suite des exercices, nous avons déplacé tous les schémas `zod` dans ces dossiers la.
 
 ## Exercice
 
-Pour simplifier l’exercice nous avons regroupé toutes les fonctions liées de prêt ou de loin à l’authentification dans `exercise/auth-util.ts` , toujours dans la présentation.
+Pour illustrer a quelle point c’est important d’avoir une isolation entre le schéma `zod` de validation proche de la base de données et les formulaires. Nous allons créer une fonctionnalité : “Ajout Rapide de produit” .
 
-- **🐶 Dans cet exercice tu vas devoir tout déplacer dans le service authentification**
+### Règles de cette fonctionnalité
 
-Fait un `pnpm build` pour voir toutes les `errors` d’importation et modifie les `imports`
+2 champs disponibles (`Nom` de produit et `nom` de la catégorie)
+
+- Si la catégorie existe, on la crée à la volé, sinon on la récupère
+- On créé ensuite le produit associé a la catégorie
+
+Pour gagner du temps le formulaire est déjà accessible : [http://localhost:3000/shop-admin/quick](http://localhost:3000/shop-admin/quick) Il est connecté au serveur action `shop-admin/actions.ts`
+
+```tsx
+//shop-admin/actions.ts
+export async function quickAddProduct(
+  prevState: FormState,
+  data: FormData
+): Promise<FormState> {
+  const formData = Object.fromEntries(data)
+  const parsed = quickAddProductFormSchema.safeParse(formData)
+  if (!parsed.success) {
+    logZodError(data)
+    return {
+      success: false,
+      message: `Erreur de validation`,
+    }
+  }
+  const product = await createProductWithCategoryService(
+    parsed.data.productName,
+    parsed.data.categoryName
+  )
+  revalidatePath('/shop-admin')
+
+  return {
+    success: true,
+    message: `Sauvegardé avec success ${product.title}`,
+  }
+}
+```
+
+Et le schéma `zod`
+
+```tsx
+//services/validation/ui/product-form-validation.ts
+export const quickAddProductFormSchema = z.object({
+  productName: z.string().min(2, {
+    message: 'Title must be at least 2 characters.',
+  }),
+  categoryName: z.string().min(2, {
+    message: 'Description must be at least 2 characters.',
+  }),
+})
+```
+
+Coté présentation tu n’as rien à faire
+
+🐶 Dans le `product-service` tu vas devoir implémenter deux fonctions :
+
+- `getOrCreateCategoryService` : Fonction qui va soit récupérer ou créer une catégorie en fonction du nom, utilise `labelShema` pour la validation du nom
+- `createProductWithCategoryService` : Fonction qui va valider les données (utilise `labelShema` ), qui va appeler `getOrCreateCategoryService` et créer le produit avec la catégorie
+
+Constate la validation du formulaire et la validation de données coté service. Les deux sont maintenant clairement isolés.
 
 Fichiers
 
-- `service/authentification/auth-service`
-- `exercise/auth-util.ts`
+- `services/product-service.ts`
+- `services/validation/validation-service.ts`
 
-##
+## Bonus
+
+### 1. 🚀 Validation complet du service
+
+Les données en entrées de services doivent être validées. Nous avons donc des schémas `zod` dans `validation-service.ts`
+
+Valide les données avec `createEditProductSchema` sur
+
+- `createProductService`
+- `persistProductService`
+
+Fichiers
+
+- `services/product-service.ts`
+- `services/validation/validation-service.ts`
+
+### 2. 🚀 Sanitize
+
+La validation de données avec `zod ,` va valider les champs mais cela ne va pas valider les champs supplémentaires, par exemple :
+
+```tsx
+const schema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+const data = {
+  name: "Alice",
+  age: 25,
+  extraField: "not allowed", // Champ supplémentaire
+};
+const parsed = schema.safeParse(data); // OK
+```
+
+De plus les données peuvent être valides mais mal formattés … Zod possède également des fonctions de conversions comme `trim()`
+
+```tsx
+const financeSchema = z.object({
+  amount: z.string().transform((val) => parseFloat(val)), // Convertir une chaîne en nombre
+  description: z.string().trim().optional(), // Supprimer les espaces inutiles
+});
+
+// Exemple de données d'entrée
+const rawData = {
+  amount: "  123.45 ",
+  description: "  Achat de matériel   ",
+};
+const parsed = financeSchema.safeParse(rawData);
+const financeParamsSanitized = parsed.data;
+// Résultat : { amount: "  123.45 ", description: "  Achat de matériel
+```
+
+Pour avoir les données saines il est possible d'utiliser `parsed.data`.
+
+- **🐶Utilise les données `“sanitized”` dans les fonctions ou il y a de la validation**
+
+Fichiers
+
+- `services/validation/validation-service.ts`
 
 ## Ils vont t’aider
 
@@ -49,4 +224,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=04%20AuthentificationService).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=05%20validation).
