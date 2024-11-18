@@ -4,32 +4,29 @@ import {RoleEnum} from '../authentification/type'
 import {getBankAccountByIdDao} from '@/db/repositories/user-repository'
 
 export const canReadBankAccount = async (bankAccountId?: string) => {
-  const authUser = await getAuthUser()
-  if (!authUser || !bankAccountId) return false
-  const isAdmin = hasRoleAdmin(authUser)
+  if (!bankAccountId) return false
+
   const bAccount = await getBankAccountByIdDao(bankAccountId)
-  const isOwner = bAccount?.userId === authUser.id
-  return isAdmin || isOwner
+  if (!bAccount) return false
+
+  return await canReadOwn(bAccount.userId)
 }
 
-export const canReadOwn = async (uid?: string) => {
-  const authUser = await getAuthUser()
-  if (!authUser || !uid) return false
-  const isAdmin = hasRoleAdmin(authUser)
-  const isOwner = uid === authUser.id
-  return isAdmin || isOwner
-}
+export const canReadOwn = async (resourceOwnerId?: string) => {
+  if (!resourceOwnerId) return false
 
-export const canCreateProduct = async () => {
   const authUser = await getAuthUser()
   if (!authUser) return false
-  const isAdmin = hasRoleAdmin(authUser)
-  return isAdmin
+
+  return isAdminOrOwner(authUser, resourceOwnerId)
 }
 
-export const canReadProduct = async () => {
-  return true
+const isAdminOrOwner = (authUser: User, ownerId: string): boolean => {
+  const isAdmin = hasRoleAdmin(authUser)
+  const isOwner = authUser.id === ownerId
+  return isAdmin || isOwner
 }
-export const hasRoleAdmin = async (authUser: User) => {
+
+export const hasRoleAdmin = (authUser: User) => {
   return hasRequiredRole(authUser as User, RoleEnum.ADMIN)
 }

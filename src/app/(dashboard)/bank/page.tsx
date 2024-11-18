@@ -1,5 +1,5 @@
 import {BankStatement} from '@/components/bank-statement'
-import {withAuthAdmin} from '@/components/features/auth/withAuth'
+import withAuth, {withAuthAdmin} from '@/components/features/auth/withAuth'
 import {Label} from '@/components/ui/label'
 
 import {getBankAccountByUidService} from '@/services/user-service'
@@ -17,4 +17,4 @@ async function Page() {
     </div>
   )
 }
-export default withAuthAdmin(Page)
+export default withAuth(Page)

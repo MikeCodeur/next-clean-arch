@@ -1,6 +1,6 @@
-# Validations Layers
+# Autorisation
 
-### 💡 Description longue de l'exercice
+### 💡 Mettre en place la couche d’authorization
 
 ## 📝 Tes notes
 
@@ -8,211 +8,154 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-La validation des données est une étape essentielle dans toute application bien structurée, car elle garantit l'intégrité des informations qui circulent entre les différentes couches du système.
+L'**autorisation** est un concept fondamental en développement d'applications, permettant de contrôler **qui peut faire quoi** dans un système. Contrairement à l'authentification, qui vérifie l'identité d'un utilisateur, l'autorisation détermine ses **permissions spécifiques**, comme accéder à des ressources ou effectuer des actions.
 
-Que ce soit pour valider les entrées utilisateur dans l'interface, appliquer des règles métier complexes au niveau des services, ou assurer la conformité des données avec les contraintes de la base de données, chaque niveau a des besoins spécifiques.
+Ce module organise la logique d'autorisation en couches claires et réutilisables, en combinant des vérifications de rôles (ex. : admin, manager) et de propriété (ex. : utilisateur propriétaire d'une ressource).
 
-Une validation bien pensée repose sur un principe clé : l'isolation des responsabilités. En segmentant les validations par couche — présentation, service, persistance — on s'assure non seulement de la cohérence des données mais aussi de la maintenabilité du code.
+En centralisant ces règles, il garantit une meilleure **sécurité**, **lisibilité**, et **maintenance** du code. L'objectif est de rendre les autorisations flexibles, extensibles et cohérentes dans toute l'application.
 
-Cette approche permet d'éviter les erreurs courantes, comme la réutilisation abusive d'un même modèle de validation dans tous les contextes, et offre une base solide pour construire des applications évolutives et fiables.
+Il existe de nombreuses manières de gérer l’autorisation dans des applications citons en quelques uns
 
-⚠️ Un `formulaire`, un `service` et une `table` en base de données n’ont pas toujours la même forme. L’erreur courante et d’utiliser le même validateur pour toutes les couches.
+- **ACL (Access Control List)**
+- **RBAC (Role-Based Access Control)**
+- **ABAC (Attribute-Based Access Control)**
+- **DAC (Discretionary Access Control)**
+- **MAC (Mandatory Access Control)**
+- **PBAC (Policy-Based Access Control)**
+- **CBAC (Context-Based Access Control)**
+- **LAC (Logic-Based Access Control)**
 
-Par exemple nous avons la validation au niveau du `formulaire` de produit `createEditProductFormSchema`
+Dans notre cas ici nous implémenterons du RBAC (basé sur les Roles)
 
-```tsx
-//product-form-validation.ts
-//action.ts
-export async function onSubmitAction(
-  prevState: FormState,
-  data: FormData
-): Promise<FormState> {
-  const formData = Object.fromEntries(data)
-  const parsed = createEditProductFormSchema.safeParse(formData)
-
-  if (!parsed.success) {
-```
-
-On pourrait réutiliser `createEditProductFormSchema` au niveau du service.
+Dans l’authentification, nous avons déjà ajouté `role` sur le `USER`
 
 ```tsx
-//product-service.ts
-export async function createProductService(data: AddProduct) {
-  const parsed = createEditProductFormSchema.safeParse(data)
-  if (!parsed.success) {
-    throw new Error(`Validation failed ${parsed.error.message}`)
-  }
-  return productRepository.createProductDao(data)
+export enum RoleEnum {
+  USER = 'USER',
+  GUEST = 'GUEST',
+  REDACTOR = 'REDACTOR',
+  MODERATOR = 'MODERATOR',
+  MANAGER = 'MANAGER',
+  ADMIN = 'ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN',
 }
 ```
 
-⚠️ En faisant cela on introduit des dépendances entre le `service` et la `présentation` et c’est ce que nous souhaitons éviter
+Et nous avons déjà des protections au niveau des routes avec les HOC suivants
 
-✅ La règle suivante nous interdit d’importer des modules de `app` (présentation) vers `service` et `persistance`
+- `withAuth` : Vérifie que le user est connecté (sans vérification de rôle)
+- `withAuthAdmin`: Vérifie que le user a le rôle `ADMIN`
+- `withAuthModerator`: Vérifie que le user a le rôle `MODERATOR`
+- `withAuthRedactor`: Vérifie que le user a le rôle `REDACTOR`
+- `withAuthManager`: Vérifie que le user a le rôle `MANAGER`
 
-```tsx
-{
-    files: ['src/db/**/*.ts', 'src/services/**/*.ts'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/app/*'],
-        },
-      ],
-    },
-  },
-```
+C’est de l’autorisation au niveau de la présentation, par blocage de route, c’est un bon début mais c’est n’est pas assez fin, cela ne permet pas de protéger la couche service (que l’on pourrait par exemple appeler depuis un `Server Action`)
 
-Il faut donc avoir des `validateurs` pour la `présentation` (les formulaires généralement) et les autres couches (`service` et éventuellement `persistance`)
+Les services doivent vérifier que l’utilisateur est autorisé a exécuter la fonction par exemple
 
-Il serait possible d’avoir
+### **Rôle : `GUEST`**
 
-- un répertoire `validation` dans la `présentation`
-- un répertoire `validation` dans le `service`
-- un répertoire `validation` dans la `persistance`
+- Le **Visiteur (Guest)** peut :
+  - Accéder aux ressources publiques
 
-Mais nous ferons le choix de tout centraliser dans un `service de validation` au niveau `service`
+### **Rôle : `USER`**
 
-```tsx
-/src
-  /services
-    /validation
-      validation-form.ts
-      validate-service.ts
-      validation-peristence.ts
-```
-
-Pour simplifier la suite des exercices, nous avons déplacé tous les schémas `zod` dans ces dossiers la.
+- L'**Utilisateur standard (User)** peut :
+  - Accéder aux ressources publiques
+  - Voir ses propres informations
+  - Modifier uniquement ses propres informations personnelles (nom, email, mot de passe).
+  ### **Rôle : `ADMIN`**
+  - L'**Admin** peut :
+    - Gérer tous les utilisateurs de la plateforme (ajout, modification, suppression).
+    - Accéder à toutes les ressources sans restrictions (documents, projets, utilisateurs).
+    - Modifier les permissions des autres utilisateurs (par exemple, passer un `USER` en `MANAGER`).
+    - Configurer les paramètres globaux de l'application (paramètres système, intégrations, etc.).
 
 ## Exercice
 
-Pour illustrer a quelle point c’est important d’avoir une isolation entre le schéma `zod` de validation proche de la base de données et les formulaires. Nous allons créer une fonctionnalité : “Ajout Rapide de produit” .
+👨‍✈️ Hugo le chef de projet te demande te demande d’implémenter les règles suivantes pour l’accès au compte bancaire : [http://localhost:3000/bank/](http://localhost:3000/bank/)
 
-### Règles de cette fonctionnalité
+- Le propriétaire du compte (`authUser`) peut lire
+- Les Admin (ou supérieur) peuvent lire tous les comptes
 
-2 champs disponibles (`Nom` de produit et `nom` de la catégorie)
+Pour simplifier l’exercice : la route :
 
-- Si la catégorie existe, on la crée à la volé, sinon on la récupère
-- On créé ensuite le produit associé a la catégorie
+- [http://localhost:3000/bank/](http://localhost:3000/bank/) redirige vers [http://localhost:3000/bank/UID](http://localhost:3000/bank/UID)
+- UID et le user ID (par default le user id connecté)
 
-Pour gagner du temps le formulaire est déjà accessible : [http://localhost:3000/shop-admin/quick](http://localhost:3000/shop-admin/quick) Il est connecté au serveur action `shop-admin/actions.ts`
+Pour tester l’autorisation il nous suffira de changer de UID dans URL
 
-```tsx
-//shop-admin/actions.ts
-export async function quickAddProduct(
-  prevState: FormState,
-  data: FormData
-): Promise<FormState> {
-  const formData = Object.fromEntries(data)
-  const parsed = quickAddProductFormSchema.safeParse(formData)
-  if (!parsed.success) {
-    logZodError(data)
-    return {
-      success: false,
-      message: `Erreur de validation`,
-    }
-  }
-  const product = await createProductWithCategoryService(
-    parsed.data.productName,
-    parsed.data.categoryName
-  )
-  revalidatePath('/shop-admin')
+**🐶 Etape 1 :** `authorization-service.ts`
 
-  return {
-    success: true,
-    message: `Sauvegardé avec success ${product.title}`,
-  }
-}
-```
+Implémente les fonctions suivantes :
 
-Et le schéma `zod`
+- `isAdminOrOwner` : Le user est il un admin ou propriétaire de la ressource
+- `canReadOwn` : Le user peut il lire ses propres ressources ? (base toi sur `isAdminOrOwner` )
+- `canReadBankAccount` : Le user peut il lire le `bankAccount` (base toi sur `canReadOwn` )
 
-```tsx
-//services/validation/ui/product-form-validation.ts
-export const quickAddProductFormSchema = z.object({
-  productName: z.string().min(2, {
-    message: 'Title must be at least 2 characters.',
-  }),
-  categoryName: z.string().min(2, {
-    message: 'Description must be at least 2 characters.',
-  }),
-})
-```
+**🐶 Etape 2 :** `user-service.ts`
 
-Coté présentation tu n’as rien à faire
+Modifie la fonction `getBankAccountByUidService` et protégeant avec `canReadBankAccount`
 
-🐶 Dans le `product-service` tu vas devoir implémenter deux fonctions :
+**🐶 Etape 3: `bank/[uid]page**.ts`
 
-- `getOrCreateCategoryService` : Fonction qui va soit récupérer ou créer une catégorie en fonction du nom, utilise `labelShema` pour la validation du nom
-- `createProductWithCategoryService` : Fonction qui va valider les données (utilise `labelShema` ), qui va appeler `getOrCreateCategoryService` et créer le produit avec la catégorie
-
-Constate la validation du formulaire et la validation de données coté service. Les deux sont maintenant clairement isolés.
+Adapte le code pour rédiger vers `restricted` si une erreur est levée ou `NotFound` si pas de compte bancaire
 
 Fichiers
 
-- `services/product-service.ts`
-- `services/validation/validation-service.ts`
+- `services/authorization/authorization-service.ts`
+- `services/user-service.ts`
+- `(dashboard)/bank/[uid]/page.ts`
 
 ## Bonus
 
-### 1. 🚀 Validation complet du service
+### 1. 🚀 Différencier les erreurs techniques de l’autorisation
 
-Les données en entrées de services doivent être validées. Nous avons donc des schémas `zod` dans `validation-service.ts`
+Il arrive qu’il y est des erreurs techniques qui soient levées. (Accès en base de données ou autre)
 
-Valide les données avec `createEditProductSchema` sur
+Nous voulons les différencier de l’autorisation
 
-- `createProductService`
-- `persistProductService`
+Pour cela nous avons un classe spéciale :
+
+```tsx
+//authorization Error
+export class AuthorizationError extends Error {
+  constructor(message: string = 'Accès non autorisé.') {
+    super(message)
+    this.name = 'AuthorizationError'
+  }
+}
+
+```
+
+- **🐶** Dans les services, lève une `AuthorizationError` au lieu d’une `error`
+
+Adapte ensuite la route pour gérer
+
+- NotFound
+- Restricted
+- Error technique
+
+Pour tester les 3 cas :
+
+- NotFound : Utilise un user ADMIN et un UID incorrecte
+- Restricted : Utilise un user USER et un UID d’un autre user
+- Error technique :
+
+Dans `user-service`
+
+```tsx
+export const getBankAccountByUidService = async (uid: string) => {
+  const canRead = await canReadOwn(uid)
+  throw new Error('Une error est survenue')
+```
 
 Fichiers
 
-- `services/product-service.ts`
-- `services/validation/validation-service.ts`
+- `services/user-service.ts`
+- `(dashboard)/bank/[uid]/page.ts`
 
-### 2. 🚀 Sanitize
-
-La validation de données avec `zod ,` va valider les champs mais cela ne va pas valider les champs supplémentaires, par exemple :
-
-```tsx
-const schema = z.object({
-  name: z.string(),
-  age: z.number(),
-});
-
-const data = {
-  name: "Alice",
-  age: 25,
-  extraField: "not allowed", // Champ supplémentaire
-};
-const parsed = schema.safeParse(data); // OK
-```
-
-De plus les données peuvent être valides mais mal formattés … Zod possède également des fonctions de conversions comme `trim()`
-
-```tsx
-const financeSchema = z.object({
-  amount: z.string().transform((val) => parseFloat(val)), // Convertir une chaîne en nombre
-  description: z.string().trim().optional(), // Supprimer les espaces inutiles
-});
-
-// Exemple de données d'entrée
-const rawData = {
-  amount: "  123.45 ",
-  description: "  Achat de matériel   ",
-};
-const parsed = financeSchema.safeParse(rawData);
-const financeParamsSanitized = parsed.data;
-// Résultat : { amount: "  123.45 ", description: "  Achat de matériel
-```
-
-Pour avoir les données saines il est possible d'utiliser `parsed.data`.
-
-- **🐶Utilise les données `“sanitized”` dans les fonctions ou il y a de la validation**
-
-Fichiers
-
-- `services/validation/validation-service.ts`
+###
 
 ## Ils vont t’aider
 
@@ -224,4 +167,8 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=05%20validation).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=06%20Authorization).
+
+```jsx
+
+```

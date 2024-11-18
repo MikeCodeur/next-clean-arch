@@ -50,6 +50,7 @@ VALUES
   ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/david.jpg'),
   ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/eve.jpg'),
   ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/frank.jpg'),
+  ('manager@gmail.com', 'Julie', '2024-09-04', 'MANAGER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/frank.jpg'),
   ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/grace.jpg');
 
 
@@ -110,8 +111,14 @@ VALUES
   await client.query(` 
     INSERT INTO bank_accounts (user_id, balance, blocked) VALUES
 ((SELECT id FROM "user" WHERE name = 'Alice'), 10000.00, false),
-((SELECT id FROM "user" WHERE name = 'Bob'), 15000.00, false),
-((SELECT id FROM "user" WHERE name = 'Blocked'), 15000.00, true);
+((SELECT id FROM "user" WHERE name = 'Bob'), 65000.00, false),
+((SELECT id FROM "user" WHERE name = 'Test'), 12400.00, false),
+((SELECT id FROM "user" WHERE name = 'Charlie'), 100.00, false),
+((SELECT id FROM "user" WHERE name = 'Eve'), 14500.00, false),
+((SELECT id FROM "user" WHERE name = 'Frank'), 16700.00, false),
+((SELECT id FROM "user" WHERE name = 'David'), 1234000.00, false),
+((SELECT id FROM "user" WHERE name = 'Grace'), 25000.00, false),
+((SELECT id FROM "user" WHERE name = 'Blocked'), 56000.00, true);
     `)
 
   const end = Date.now()

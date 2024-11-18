@@ -2,9 +2,10 @@ import type {Session, User} from 'next-auth'
 
 export enum RoleEnum {
   USER = 'USER',
-  GUEST = 'GUEST ',
+  GUEST = 'GUEST',
   REDACTOR = 'REDACTOR',
-  MODERATOR = 'MODERATOR ',
+  MODERATOR = 'MODERATOR',
+  MANAGER = 'MANAGER',
   ADMIN = 'ADMIN',
   SUPER_ADMIN = 'SUPER_ADMIN',
 }

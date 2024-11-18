@@ -10,6 +10,7 @@ import {verifyPassword} from './crypt'
 import {getUserByEmailDao} from '@/db/repositories/user-repository'
 
 export const {handlers, signIn, signOut, auth} = NextAuth({
+  trustHost: true,
   callbacks: {},
   providers: [
     Google,

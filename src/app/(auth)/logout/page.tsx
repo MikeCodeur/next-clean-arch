@@ -5,8 +5,8 @@ import {redirect} from 'next/navigation'
 
 async function Page() {
   const user = await getConnectedUser()
-  if (user) {
-    redirect('/dashboard')
+  if (!user) {
+    redirect('/sign-in')
   }
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">

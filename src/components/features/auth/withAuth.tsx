@@ -27,8 +27,11 @@ const withAuth = <P extends object>(
     if (!user) {
       redirect('/sign-in')
     }
-    if (!hasRole) {
+    if (!hasRole && requiredRole) {
       redirect(`/restricted?role=${requiredRole ?? ''}`)
+    }
+    if (!hasRole) {
+      redirect(`/restricted`)
     }
 
     return <WrappedComponent {...props} user={user} />
@@ -48,3 +51,7 @@ export const withAuthModerator = <P extends object>(
 export const withAuthRedactor = <P extends object>(
   WrappedComponent: React.ComponentType<P & WithAuthProps>
 ) => withAuth(WrappedComponent, RoleEnum.REDACTOR)
+
+export const withAuthManager = <P extends object>(
+  WrappedComponent: React.ComponentType<P & WithAuthProps>
+) => withAuth(WrappedComponent, RoleEnum.MANAGER)

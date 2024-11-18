@@ -78,7 +78,7 @@ export function hasRequiredRole(
   const useRole = userConnected?.role ?? RoleEnum.USER
   const userRoleIndex = roleHierarchy.indexOf(useRole as RoleEnum)
   const requestedRoleIndex = roleHierarchy.indexOf(requestedRole)
-  console.log('checkRoleHierarchy', userRoleIndex, requestedRoleIndex)
+
   if (userRoleIndex >= requestedRoleIndex) {
     return true
   }

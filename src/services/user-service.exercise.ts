@@ -2,7 +2,13 @@ import * as userRepository from '@/db/repositories/user-repository'
 import {AddUser} from '@/types/user-types'
 
 export const getBankAccountByUidService = async (uid: string) => {
-  return userRepository.getBankAccountDao(uid)
+  // 🐶 utilise 'canReadOwn' pour vérifier l'accès a cette ressource
+  return userRepository.getBankAccountByUidDao(uid)
+}
+
+export const getBankAccountByidService = async (bankAccountId: string) => {
+  // 🐶 utilise 'canReadBankAccount' pour vérifier l'accès a cette ressource
+  return userRepository.getBankAccountByIdDao(bankAccountId)
 }
 
 export async function createUserService(data: AddUser) {

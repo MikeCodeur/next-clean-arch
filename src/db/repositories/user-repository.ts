@@ -43,7 +43,7 @@ export async function getBankAccountByIdDao(bankAccountId: string) {
   return ba.length > 0 ? ba[0] : undefined
 }
 
-export const getBankAccountDao = async (uid: string) => {
+export const getBankAccountByUidDao = async (uid: string) => {
   const row = await db.query.bankAccounts.findFirst({
     with: {
       user: true,

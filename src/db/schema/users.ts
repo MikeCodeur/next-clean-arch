@@ -17,6 +17,7 @@ export const roleEnum = pgEnum('roles', [
   'GUEST',
   'REDACTOR',
   'MODERATOR',
+  'MANAGER',
   'ADMIN',
   'SUPER_ADMIN',
 ])
