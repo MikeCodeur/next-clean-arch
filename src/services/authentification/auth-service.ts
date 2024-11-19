@@ -59,7 +59,15 @@ export const signUp = async (email: string, password: string, name: string) => {
   const [userCreated] = await createUserDao(newUser)
   return {email: userCreated.email, role: userCreated.role}
 }
-
+export const roleHierarchy = [
+  RoleEnum.GUEST,
+  RoleEnum.USER,
+  RoleEnum.REDACTOR,
+  RoleEnum.MODERATOR,
+  RoleEnum.MANAGER,
+  RoleEnum.ADMIN,
+  RoleEnum.SUPER_ADMIN,
+]
 export function hasRequiredRole(
   userConnected?: User,
   requestedRole?: RoleEnum
@@ -68,15 +76,7 @@ export function hasRequiredRole(
     return false
   }
   // Définir l'ordre des privilèges
-  const roleHierarchy = [
-    RoleEnum.GUEST,
-    RoleEnum.USER,
-    RoleEnum.REDACTOR,
-    RoleEnum.MODERATOR,
-    RoleEnum.MANAGER,
-    RoleEnum.ADMIN,
-    RoleEnum.SUPER_ADMIN,
-  ]
+
   const useRole = userConnected?.role ?? RoleEnum.USER
   const userRoleIndex = roleHierarchy.indexOf(useRole as RoleEnum)
   const requestedRoleIndex = roleHierarchy.indexOf(requestedRole)

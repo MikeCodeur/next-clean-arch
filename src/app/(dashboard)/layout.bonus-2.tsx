@@ -1,67 +1,46 @@
 import {Metadata} from 'next'
 import Link from 'next/link'
 import {PropsWithChildren} from 'react'
-import {LogIn} from 'lucide-react'
 import {ModeToggle} from '@/components/theme-toggle'
-
 import RenderTime from '@/components/render-time'
-
+import {Lock} from 'lucide-react'
+import withAuth from '@/components/features/auth/withAuth'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '@/services/authentification/auth-service'
+import {
+  getAuthUser,
+  getConnectedUserLabel,
+} from '@/services/authentification/auth-service'
+import {User} from '@/types/user-types'
+import {RoleEnum} from '@/services/authentification/type'
+import {getMenuByRole} from './dashboard-menu'
 
 export const metadata: Metadata = {
-  title: 'Authentification',
-  description: 'Page Authentification',
+  title: 'Adminitration Shop',
+  description: 'Adminitration Shop',
 }
 
-export default async function AuthLayout({children}: PropsWithChildren) {
+async function DashboardLayout({children}: PropsWithChildren) {
   const label = await getConnectedUserLabel()
+  const user = await getAuthUser()
+  const userRole = (user?.role ?? RoleEnum.GUEST) as RoleEnum
+  const menuItems = getMenuByRole(userRole)
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b">
         <div className="container px-4 sm:px-6 lg:px-8">
           <nav className="flex h-14 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <LogIn className="icon-class" />
-              <Link className="flex items-center space-x-2 font-bold" href="/">
-                <span>Home</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/sign-in"
-              >
-                <span>Connexion</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/sign-up"
-              >
-                <span>Inscription</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/dashboard"
-              >
-                <span>Dashboard</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/privacy"
-              >
-                <span>Privacy</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/terms"
-              >
-                <span>Terms</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/logout"
-              >
-                <span>Logout</span>
-              </Link>
+              <Lock className="icon-class" />
+
+              {menuItems.map((menuItem) => (
+                <Link
+                  key={menuItem.href}
+                  className="flex items-center space-x-2 font-bold"
+                  href={menuItem.href}
+                >
+                  <span>{menuItem.label}</span>
+                </Link>
+              ))}
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
             <div className="flex items-center space-x-2">
@@ -97,3 +76,4 @@ export default async function AuthLayout({children}: PropsWithChildren) {
     </div>
   )
 }
+export default withAuth(DashboardLayout)

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Page d'app",
 }
 
-export default async function AppLayout({children}: PropsWithChildren) {
+export default async function PublicLayout({children}: PropsWithChildren) {
   const label = await getConnectedUserLabel()
   return (
     <div className="flex h-screen flex-col">

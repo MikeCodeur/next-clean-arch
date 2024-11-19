@@ -1,6 +1,6 @@
-# Autorisation
+# Autorisation - Dynamique UI
 
-### 💡 Mettre en place la couche d’authorization
+### 💡 Affichage Dynamique en fonction de l’autorisation
 
 ## 📝 Tes notes
 
@@ -8,207 +8,87 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-L'**autorisation** est un concept fondamental en développement d'applications, permettant de contrôler **qui peut faire quoi** dans un système. Contrairement à l'authentification, qui vérifie l'identité d'un utilisateur, l'autorisation détermine ses **permissions spécifiques**, comme accéder à des ressources ou effectuer des actions.
+Dans les exercices précédents, nous avons bloqué des routes en fonctions des rôles, nous avons aussi protéger l’appel aux actions.
 
-Ce module organise la logique d'autorisation en couches claires et réutilisables, en combinant des vérifications de rôles (ex. : admin, manager) et de propriété (ex. : utilisateur propriétaire d'une ressource).
-
-En centralisant ces règles, il garantit une meilleure **sécurité**, **lisibilité**, et **maintenance** du code. L'objectif est de rendre les autorisations flexibles, extensibles et cohérentes dans toute l'application.
-
-Il existe de nombreuses manières de gérer l’autorisation dans des applications citons en quelques uns
-
-- **ACL (Access Control List)**
-- **RBAC (Role-Based Access Control)**
-- **ABAC (Attribute-Based Access Control)**
-- **DAC (Discretionary Access Control)**
-- **MAC (Mandatory Access Control)**
-- **PBAC (Policy-Based Access Control)**
-- **CBAC (Context-Based Access Control)**
-- **LAC (Logic-Based Access Control)**
-
-Dans notre cas ici nous implémenterons du RBAC (basé sur les Roles)
-
-Dans l’authentification, nous avons déjà ajouté `role` sur le `USER`
-
-```tsx
-export enum RoleEnum {
-  USER = 'USER',
-  GUEST = 'GUEST',
-  REDACTOR = 'REDACTOR',
-  MODERATOR = 'MODERATOR',
-  MANAGER = 'MANAGER',
-  ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN',
-}
-```
-
-Et nous avons déjà des protections au niveau des routes avec les HOC suivants
-
-- `withAuth` : Vérifie que le user est connecté (sans vérification de rôle)
-- `withAuthAdmin`: Vérifie que le user a le rôle `ADMIN`
-- `withAuthModerator`: Vérifie que le user a le rôle `MODERATOR`
-- `withAuthRedactor`: Vérifie que le user a le rôle `REDACTOR`
-- `withAuthManager`: Vérifie que le user a le rôle `MANAGER`
-
-C’est de l’autorisation au niveau de la présentation, par blocage de route, c’est un bon début mais c’est n’est pas assez fin, cela ne permet pas de protéger la couche service (que l’on pourrait par exemple appeler depuis un `Server Action`)
-
-Les services doivent vérifier que l’utilisateur est autorisé a exécuter la fonction par exemple
-
-### **Rôle : `GUEST`**
-
-- Le **Visiteur (Guest)** peut :
-  - Accéder aux ressources publiques
-
-### **Rôle : `USER`**
-
-- L'**Utilisateur standard (User)** peut :
-  - Accéder aux ressources publiques
-  - Voir ses propres informations
-  - Modifier uniquement ses propres informations personnelles (nom, email, mot de passe).
-
-### **Rôle : `ADMIN`**
-
-- L'**Admin** peut :
-  - Gérer tous les utilisateurs de la plateforme (ajout, modification, suppression).
-  - Accéder à toutes les ressources sans restrictions (documents, projets, utilisateurs).
-  - Modifier les permissions des autres utilisateurs (par exemple, passer un `USER` en `MANAGER`).
-  - Configurer les paramètres globaux de l'application (paramètres système, intégrations, etc.).
-
-Note : Pour les besoins de l’exercice nous avons changé touts les
-
-- `withAuthManager` `withAuthAdmin` etc en `withAuth` pour pouvoir accéder aux routes et voir les comportements.
+Mais avec les règles d’autorisation, il est possible de gérer des affichages différents, comme par exemple des boutons ou menus supplémentaires en fonction du type d’utilisateur .
 
 ## Exercice
 
-👨‍✈️ Hugo le chef de projet te demande te demande d’implémenter les règles suivantes pour l’accès au compte bancaire : [http://localhost:3000/bank/](http://localhost:3000/bank/)
+👨‍✈️ Hugo le chef de projet te demande de conditionner l’affichage des 2 buttons suivants en fonction du Rôle `Manager` ou `Admin`
 
-- Le propriétaire du compte (`authUser`) peut lire
-- Les Admin (ou supérieur) peuvent lire tous les comptes
+- Ajout Rapide ([http://localhost:3000/shop-admin/1](http://localhost:3000/shop-admin/1))
+- Ajout Détaillé ([http://localhost:3000/shop-admin/quick](http://localhost:3000/shop-admin/quick))
 
-Pour simplifier l’exercice : la route :
+🐶 Pour cela tu vas devoir modifier les composants de routes (`page.tsx`) et utiliser
 
-- [http://localhost:3000/bank/](http://localhost:3000/bank/) redirige vers [http://localhost:3000/bank/UID](http://localhost:3000/bank/UID)
-- UID et le user ID (par default le user id connecté)
+- `canQuickAdd`
+- `canMutateProduct`
 
-Pour tester l’autorisation il nous suffira de changer de UID dans URL
+ps : Utilise la propriété `hidden` de `tailwind` et `cn` de `shadcn`
 
-**🐶 Etape 1 :** `authorization-service.ts`
-
-Implémente les fonctions suivantes :
-
-- `isAdminOrOwner` : Le user est il un admin ou propriétaire de la ressource
-- `canReadOwn` : Le user peut il lire ses propres ressources ? (base toi sur `isAdminOrOwner` )
-- `canReadBankAccount` : Le user peut il lire le `bankAccount` (base toi sur `canReadOwn` )
-
-**🐶 Etape 2 :** `user-service.ts`
-
-Modifie la fonction `getBankAccountByUidService` et protégeant avec `canReadBankAccount`
-
-**🐶 Etape 3: `bank/[uid]page**.ts`
-
-Adapte le code pour rédiger vers `restricted` si une erreur est levée ou `NotFound` si pas de compte bancaire
+```tsx
+className={cn({hidden: !canEdit})}
+```
 
 Fichiers
 
-- `services/authorization/authorization-service.ts`
-- `services/user-service.ts`
-- `(dashboard)/bank/[uid]/page.ts`
+- `(dashboard)/shop-admin/[page]/page`
+- `(dashboard)/shop-admin/quick/page`
 
 ## Bonus
 
-### 1. 🚀 Différencier les erreurs techniques de l’autorisation
+### 1. 🚀 Menu Dynamique
 
-Il arrive qu’il y est des erreurs techniques qui soient levées. (Accès en base de données ou autre)
+**👨‍✈️ Hugo le chef de projet** : te demande d’avoir un menu du `dashboard` qui s’adapte en fonction du rôle.
 
-Nous voulons les différencier de l’autorisation
+- 🐶 Utilise `hasRequiredRole` dans le `layout` du `dashboard` pour conditionner l’affiche des menus
 
-Pour cela nous avons un classe spéciale :
-
-```tsx
-//authorization Error
-export class AuthorizationError extends Error {
-  constructor(message: string = 'Accès non autorisé.') {
-    super(message)
-    this.name = 'AuthorizationError'
-  }
-}
-
-```
-
-- **🐶** Dans les services, lève une `AuthorizationError` au lieu d’une `error`
-
-Adapte ensuite la route pour gérer
-
-- NotFound
-- Restricted
-- Error technique
-
-Pour tester les 3 cas :
-
-- NotFound : Utilise un user ADMIN et un UID incorrecte
-- Restricted : Utilise un user USER et un UID d’un autre user
-- Error technique :
-
-Dans `user-service`
+Exemple :
 
 ```tsx
-export const getBankAccountByUidService = async (uid: string) => {
-  const canRead = await canReadOwn(uid)
-  throw new Error('Une error est survenue')
+const user = await getConnectedUser()
+hasRequiredRole(user, RoleEnum.USER)
 ```
 
 Fichiers
 
-- `services/user-service.ts`
-- `(dashboard)/bank/[uid]/page.ts`
+- `(dashboard)/layout.tsx`
 
-### 2. 🚀 Autorisation dans les Servers Action
+### 2. 🚀 Menu Dynamique - Configuration
 
-Dans l’exercice précèdent nous avons vérifier l’autorisation de lecture dans une route. Mais nous n’avons pas protéger les actions (server actions).
+Les menus sont des choses qui bougent souvent et que l’on peut retrouver dans diffèrent composants (`mobile-menu` / `menu-drawer` etc …). Il est donc important de centraliser la configuration des menus en fonction des rôles.
 
-Même si nos routes ,ne sont pas accessibles, les serveurs actions doivent quand même être protégés.
+Pour cela nous avons ajouter un fichier `dashboard-menu.ts`
 
-Rappel : _un server action expose les fonctions du serveur sous forme d’api accessible_
+```tsx
 
-Il est possible de protéger les actions au niveau
+export const dashboardMenu: Record<RoleEnum, MenuItem[]> = {
+  [RoleEnum.GUEST]: [{label: 'Home', href: '/'}],
+  [RoleEnum.USER]: [
+    {label: 'Home', href: '/'},
+    {label: 'Dashboard', href: '/dashboard'},
+    {label: 'Bank', href: '/bank'},
+  ],
+  [RoleEnum.ADMIN]: [
+    {label: 'Home', href: '/'},
+    {label: 'Dashboard', href: '/dashboard'},
+    {label: 'Admin', href: '/shop-admin/1'},
+ ...
+}
+getMenuByRole
+```
 
-- du serveur action.
-- du service.
+- **🐶 Utilise la fonction** `getMenuByRole` pour afficher le menu dynamiquement
 
-👨‍✈️ Hugo le Chef de projet te demande de protéger la création de produits avec les règles suivantes.
+```tsx
+const menuItems = getMenuByRole(userRole)
+...
+ {menuItems.map((menuItem) => (
+```
 
-- Les `ADMIN` peuvent créer, mettre à jour et supprimer des produits.
-- Les `MANAGER` peuvent uniquement faire des “ajouts rapide”
+Fichiers
 
-Nous allons ici protéger uniquement dans les servers action dans un premiers temps
-
-🐶 Ajoute les 2 fonctions suivantes dans le service autorisation
-
-- `canMutateProduct`
-- `canQuickAddProduct`
-
-🐶 Utilise les dans les serveurs actions
-
-Fichier
-
-- `services/authorization/authorization-service.ts`
-- `services/product-service.ts`
-- `(dashboard)/shop-admin/actions.ts`
-
-### 3. 🚀 Autorisation dans les Services
-
-Protéger au niveau des servers actions c’est bien. Mais notre application peut être amené a évoluer et les services pourraient être appelés depuis d’autres layers comme
-
-- Des API
-- Des traitement (Batchs etc)
-
-Nous allons doc protéger au niveau service.
-
-- **🐶 Appelle** `canMutateProduct` et `canQuickAddProduct` dans product-service et gère les `AuthorisationError` dans les serveurs action
-
-Fichier
-
-- `services/product-service.ts`
-- `(dashboard)/shop-admin/actions.ts`
+- `(dashboard)/layout.tsx`
 
 ## Ils vont t’aider
 
@@ -220,4 +100,4 @@ Fichier
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=06%20Authorization).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=07%20Authorization%20dynamic-ui).

@@ -1,7 +1,3 @@
-import withAuth, {withAuthManager} from '@/components/features/auth/withAuth'
-import QuickProductForm from './quick-add-form'
+export {default} from './page.exercise'
 
-function Page() {
-  return <QuickProductForm></QuickProductForm>
-}
-export default withAuth(Page)
+//export {default} from './page.final'

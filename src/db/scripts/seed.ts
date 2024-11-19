@@ -47,6 +47,7 @@ VALUES
   ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/bob.jpg'),
   ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', NULL),
   ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/charlie.jpg'),
+  ('user@gmail.com', 'Julien', '2024-08-15', 'USER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/charlie.jpg'),
   ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/david.jpg'),
   ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/eve.jpg'),
   ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/frank.jpg'),
@@ -118,6 +119,7 @@ VALUES
 ((SELECT id FROM "user" WHERE name = 'Frank'), 16700.00, false),
 ((SELECT id FROM "user" WHERE name = 'David'), 1234000.00, false),
 ((SELECT id FROM "user" WHERE name = 'Grace'), 25000.00, false),
+((SELECT id FROM "user" WHERE name = 'Julien'), 23400.00, false),
 ((SELECT id FROM "user" WHERE name = 'Blocked'), 56000.00, true);
     `)
 

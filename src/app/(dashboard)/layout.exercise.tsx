@@ -1,20 +1,19 @@
 import {Metadata} from 'next'
 import Link from 'next/link'
 import {PropsWithChildren} from 'react'
-import {LogIn} from 'lucide-react'
 import {ModeToggle} from '@/components/theme-toggle'
-
 import RenderTime from '@/components/render-time'
-
+import {Lock} from 'lucide-react'
+import withAuth from '@/components/features/auth/withAuth'
 import {moduleName} from '@/lib/constante'
 import {getConnectedUserLabel} from '@/services/authentification/auth-service'
 
 export const metadata: Metadata = {
-  title: 'Authentification',
-  description: 'Page Authentification',
+  title: 'Adminitration Shop',
+  description: 'Adminitration Shop',
 }
 
-export default async function AuthLayout({children}: PropsWithChildren) {
+async function DashboardLayout({children}: PropsWithChildren) {
   const label = await getConnectedUserLabel()
   return (
     <div className="flex h-screen flex-col">
@@ -22,21 +21,9 @@ export default async function AuthLayout({children}: PropsWithChildren) {
         <div className="container px-4 sm:px-6 lg:px-8">
           <nav className="flex h-14 items-center justify-between">
             <div className="flex items-center space-x-4">
-              <LogIn className="icon-class" />
+              <Lock className="icon-class" />
               <Link className="flex items-center space-x-2 font-bold" href="/">
                 <span>Home</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/sign-in"
-              >
-                <span>Connexion</span>
-              </Link>
-              <Link
-                className="flex items-center space-x-2 font-bold"
-                href="/sign-up"
-              >
-                <span>Inscription</span>
               </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"
@@ -46,21 +33,21 @@ export default async function AuthLayout({children}: PropsWithChildren) {
               </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/privacy"
+                href="/bank"
               >
-                <span>Privacy</span>
+                <span>Bank</span>
               </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/terms"
+                href="/shop-admin/1"
               >
-                <span>Terms</span>
+                <span>Admin</span>
               </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"
-                href="/logout"
+                href="/redactor"
               >
-                <span>Logout</span>
+                <span>Redactor</span>
               </Link>
               <div className="hidden items-center space-x-2 md:flex"></div>
             </div>
@@ -97,3 +84,4 @@ export default async function AuthLayout({children}: PropsWithChildren) {
     </div>
   )
 }
+export default withAuth(DashboardLayout)
