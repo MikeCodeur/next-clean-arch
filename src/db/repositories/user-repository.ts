@@ -12,6 +12,11 @@ export async function getUserDao(userId: string) {
   return product.length > 0 ? product[0] : undefined
 }
 
+export async function getAllUsersDao(limit: number = 10, offset: number = 0) {
+  const products = await db.select().from(users).limit(limit).offset(offset)
+  return products.length > 0 ? products : []
+}
+
 export async function updateUserDao(userId: string, updatedData: UserAddModel) {
   const [updatedUser] = await db
     .update(users)

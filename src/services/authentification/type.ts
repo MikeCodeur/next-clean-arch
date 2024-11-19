@@ -14,7 +14,9 @@ export type UserDTO = {
   email: string
   name?: string
   role?: RoleEnum
-  password?: string
+  image?: string
+  createdAt?: string
+  //password?: string
 }
 
 export type WithAuthProps = {

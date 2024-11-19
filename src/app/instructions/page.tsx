@@ -3,6 +3,8 @@
 import Instruction from '../../../INSTRUCTIONS.mdx'
 import {usePrismTheme} from './hooks'
 
+export const dynamic = 'force-dynamic'
+
 export default function Page() {
   const theme = usePrismTheme()
 

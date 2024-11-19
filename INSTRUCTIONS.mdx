@@ -1,6 +1,6 @@
-# Autorisation - Dynamique UI
+# Data Acces Layer - Data Transfert Object
 
-### 💡 Affichage Dynamique en fonction de l’autorisation
+### 💡 Comprendre la DAL et DTOs
 
 ## 📝 Tes notes
 
@@ -8,87 +8,147 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans les exercices précédents, nous avons bloqué des routes en fonctions des rôles, nous avons aussi protéger l’appel aux actions.
+Dans une architecture n-tiers, il est logique de penser que la couche de présentation appelle la couche service pour récupérer les données de la manière suivante
 
-Mais avec les règles d’autorisation, il est possible de gérer des affichages différents, comme par exemple des boutons ou menus supplémentaires en fonction du type d’utilisateur .
+![/course/3-layers.png](/course/3-layers.png)
+
+Ce model est valable mais il faut faire attention à quelques points.
+
+- gestion du cache.
+- exposition des données sensible à l’ui.
+- As t-on le droit, la session est elle valide ?
+
+Exemple avec la page des derniers utilisateurs inscris : [http://localhost:3000/last-users](http://localhost:3000/last-users)
+
+```tsx
+//(public)/last-user
+export default async function Page() {
+  const lastUsers = await getPublicLastUsers()
+  return (
+    <div className="mx-auto max-w-2xl p-6 text-lg">
+      <RecentUsersList users={lastUsers} />
+    </div>
+  )
+}
+```
+
+- Ici nous faisons appel à `getPublicLastUsers` qui fait appel `getAllUsersDao`. Un requête qui récupère **toutes les données utilisateurs** en base de données.
+
+Du coup nous passons toutes les données (même les données sensibles comme le `password` à la vue).
+
+On pourrait changer les requêtes `getAllUsersDao` mais rien ne nous dit que dans certains cas nous aurons besoins des autres champs.
+
+Pour gérer cela, nous allons introduire une nouvelle couche : `DAL - Data Access Layer`. Cette couche isole la présentation (Next / React etc … et le service)
+
+![/course/3-layers-1.png](/course/3-layers-1.png)
+
+A l’heure actuelle nous avons dans le service `auth-service` la fonction `getConnectedUser.` Cette fonction gère le `cache`
+
+```tsx
+import {cache} from 'react'
+//
+export const getConnectedUser = cache(async () => {
+  try {
+    const user = await getAuthUser()
+    console.log('getConnectedUser', user)
+    return user
+  } catch (error) {
+    console.error('Failed to fetch user', error)
+    return
+  }
+})
+```
+
+Le problème est que nous introduisons une dépendance à `React` dans le service, nous allons interdire cela avec la règle :
+
+```tsx
+//eslint
+{
+    files: ['src/services/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'react',
+              importNames: ['cache'],
+              message:
+                'L’utilisation de `cache` depuis `react` est interdite dans les services.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+```
+
+Nous avons déplacer toutes les fonctions utilisant le `cache react` dans `src/app/dal/user-dal`. Notre architecture ressemble maintenant à :
+
+![/course/3-layers-2.png](/course/3-layers-2.png)
+
+L’accès aux données (lecture) depuis les composant `React` passent par la couche `DAL`. Concernant les mutations elles ne passent pas par la DAL. (pas de cache ni de DTO)
 
 ## Exercice
 
-👨‍✈️ Hugo le chef de projet te demande de conditionner l’affichage des 2 buttons suivants en fonction du Rôle `Manager` ou `Admin`
+Dans un premier temps nous allons modifier `getConnectedUser` pour qu’elle ne retourne plus toutes les données de la base de données. Pour cela nous allons utiliser un DTO(Data Transfer Object).
 
-- Ajout Rapide ([http://localhost:3000/shop-admin/1](http://localhost:3000/shop-admin/1))
-- Ajout Détaillé ([http://localhost:3000/shop-admin/quick](http://localhost:3000/shop-admin/quick))
-
-🐶 Pour cela tu vas devoir modifier les composants de routes (`page.tsx`) et utiliser
-
-- `canQuickAdd`
-- `canMutateProduct`
-
-ps : Utilise la propriété `hidden` de `tailwind` et `cn` de `shadcn`
+C’est souvent un fonction qui convertie vers un type plus `safe` pour la vue.
 
 ```tsx
-className={cn({hidden: !canEdit})}
+export function userDTO(user?: User): UserDTO | undefined {
+ ...
+}
 ```
+
+**🐶 Implémente le DTO pour ne retourner que**
+
+- le nom
+- l’email
+- le role
 
 Fichiers
 
-- `(dashboard)/shop-admin/[page]/page`
-- `(dashboard)/shop-admin/quick/page`
+- `app/dal/user-dal.ts`
 
 ## Bonus
 
-### 1. 🚀 Menu Dynamique
+### 1. 🚀 Liste de Users
 
-**👨‍✈️ Hugo le chef de projet** : te demande d’avoir un menu du `dashboard` qui s’adapte en fonction du rôle.
+Adapte pour que [http://localhost:3000/last-users](http://localhost:3000/last-users) affiche les DTO et non le user de bdd.
 
-- 🐶 Utilise `hasRequiredRole` dans le `layout` du `dashboard` pour conditionner l’affiche des menus
-
-Exemple :
+Créer une fonction
 
 ```tsx
-const user = await getConnectedUser()
-hasRequiredRole(user, RoleEnum.USER)
-```
+export function usersDTO(users?: User[]): UserDTO[] {
 
-Fichiers
-
-- `(dashboard)/layout.tsx`
-
-### 2. 🚀 Menu Dynamique - Configuration
-
-Les menus sont des choses qui bougent souvent et que l’on peut retrouver dans diffèrent composants (`mobile-menu` / `menu-drawer` etc …). Il est donc important de centraliser la configuration des menus en fonction des rôles.
-
-Pour cela nous avons ajouter un fichier `dashboard-menu.ts`
-
-```tsx
-
-export const dashboardMenu: Record<RoleEnum, MenuItem[]> = {
-  [RoleEnum.GUEST]: [{label: 'Home', href: '/'}],
-  [RoleEnum.USER]: [
-    {label: 'Home', href: '/'},
-    {label: 'Dashboard', href: '/dashboard'},
-    {label: 'Bank', href: '/bank'},
-  ],
-  [RoleEnum.ADMIN]: [
-    {label: 'Home', href: '/'},
-    {label: 'Dashboard', href: '/dashboard'},
-    {label: 'Admin', href: '/shop-admin/1'},
- ...
 }
-getMenuByRole
 ```
 
-- **🐶 Utilise la fonction** `getMenuByRole` pour afficher le menu dynamiquement
+Remplace le `password` dans la vue par le rôle
 
 ```tsx
-const menuItems = getMenuByRole(userRole)
-...
- {menuItems.map((menuItem) => (
+ <TooltipContent>{`Avatar for ${user.role}`}</TooltipContent>
 ```
 
 Fichiers
 
-- `(dashboard)/layout.tsx`
+- `app/dal/user-dal.ts`
+
+### 2. 🚀 Visibilité des champs
+
+Les DTO peuvent aussi filtrer les champs en fonction de critères comme le rôle.
+
+- **👨‍✈️ Hugo le chef de projet te demande pour la liste des user** [http://localhost:3000/last-users](http://localhost:3000/last-users) d’afficher le rôle uniquement pour les ADMIN
+- **🐶 Adapte le DTO**
+
+En créant une fonction `canSeeRole` qui utilise la fonction `isAuthUserAdmin` du service autorisation.
+
+La règle : Si pas admin alors le champs rôle est non visible
+
+Fichiers
+
+- `app/dal/user-dal.ts`
 
 ## Ils vont t’aider
 
@@ -100,4 +160,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=07%20Authorization%20dynamic-ui).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).

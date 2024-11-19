@@ -1,4 +1,4 @@
-import {getConnectedUser} from '@/services/authentification/auth-service'
+import {getConnectedUser} from '@/app/dal/user-dal'
 import Logout from '@/components/features/auth/form/logout-form'
 
 import {redirect} from 'next/navigation'

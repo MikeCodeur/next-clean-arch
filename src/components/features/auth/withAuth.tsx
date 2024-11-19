@@ -5,9 +5,10 @@ import {redirect} from 'next/navigation'
 
 import {RoleEnum} from '@/services/authentification/type'
 import {
-  getConnectedUser,
+  getAuthUser,
   hasRequiredRole,
 } from '@/services/authentification/auth-service'
+import {getConnectedUser} from '@/app/dal/user-dal'
 
 export type WithAuthProps = {
   user: UserModel
@@ -18,7 +19,7 @@ const withAuth = <P extends object>(
 ) => {
   //console.log(`withAuth Component ${WrappedComponent.name} mounted`)
   return async function WithAuth(props: P) {
-    const user = await getConnectedUser()
+    const user = await getAuthUser()
     const hasRole = hasRequiredRole(
       user as UserModel,
       requiredRole ?? RoleEnum.GUEST

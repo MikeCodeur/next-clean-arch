@@ -42,17 +42,17 @@ const seed = async () => {
     
 INSERT INTO "user" (email, name, emailVerified, role, password, image)
 VALUES
-  ('test@gmail.com', 'Test', '2024-10-23', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/test.jpg'),
-  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/alice.jpg'),
-  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/bob.jpg'),
-  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', NULL),
-  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/charlie.jpg'),
-  ('user@gmail.com', 'Julien', '2024-08-15', 'USER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/charlie.jpg'),
-  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/david.jpg'),
-  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/eve.jpg'),
-  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/frank.jpg'),
-  ('manager@gmail.com', 'Julie', '2024-09-04', 'MANAGER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/frank.jpg'),
-  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://example.com/grace.jpg');
+  ('test@gmail.com', 'Test', '2024-10-23', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/1.jpg'),
+  ('admin@gmail.com', 'Alice', '2024-09-05', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/women/2.jpg'),
+  ('redactor@gmail.com', 'Bob', '2024-09-01', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/3.jpg'),
+  ('admin-1@gmail.com', 'Blocked', NULL, 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/4.jpg'),
+  ('guest@gmail.com', 'Charlie', '2024-08-15', 'GUEST', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/5.jpg'),
+  ('user@gmail.com', 'Julien', '2024-08-15', 'USER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/6.jpg'),
+  ('moderator@gmail.com', 'David', '2024-08-20', 'MODERATOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/7.jpg'),
+  ('admin-2@gmail.com', 'Eve', '2024-09-03', 'ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/women/8.jpg'),
+  ('superadmin@gmail.com', 'Frank', '2024-09-04', 'SUPER_ADMIN', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/men/9.jpg'),
+  ('manager@gmail.com', 'Julie', '2024-09-04', 'MANAGER', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/women/10.jpg'),
+  ('redactor-2@gmail.com', 'Grace', '2024-09-02', 'REDACTOR', '$2a$10$1zirz4Mizwdk1gRql.A0luzvfMUS2D1fTeFCGMYH/VOfBN0.qyOIS', 'https://randomuser.me/api/portraits/med/women/11.jpg');
 
 
 

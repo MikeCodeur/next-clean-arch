@@ -6,9 +6,12 @@ import {
 } from './authorization/authorization-service'
 import {AuthorizationError} from '@/lib/errors'
 
+export const getPublicLastUsers = async (limit: number = 10) => {
+  return userRepository.getAllUsersDao(limit)
+}
+
 export const getBankAccountByUidService = async (uid: string) => {
   const canRead = await canReadOwn(uid)
-  //throw new Error('Une error est survenue')
   if (!canRead) {
     throw new AuthorizationError(
       "Vous n'avez pas les droits pour lire ce compte bancaire."

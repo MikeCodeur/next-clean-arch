@@ -119,4 +119,23 @@ export default [
       ],
     },
   },
+  {
+    // Nouvelle règle pour le dossier `services`
+    files: ['src/services/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'react',
+              importNames: ['cache'],
+              message:
+                'L’utilisation de `cache` depuis `react` est interdite dans les services.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]

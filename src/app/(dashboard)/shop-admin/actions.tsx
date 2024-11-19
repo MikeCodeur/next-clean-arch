@@ -16,7 +16,7 @@ import {
   getProductsService,
   persistProductService,
 } from '@/services/product-service'
-import {getConnectedUser} from '@/services/authentification/auth-service'
+import {getConnectedUser} from '@/app/dal/user-dal'
 import {AuthorizationError} from '@/lib/errors'
 import {redirect} from 'next/navigation'
 

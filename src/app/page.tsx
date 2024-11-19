@@ -1,9 +1,10 @@
 import ImageTheme from '@/components/image-theme'
 import {ModeToggle} from '@/components/theme-toggle'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '@/services/authentification/auth-service'
-
 import Link from 'next/link'
+import {getConnectedUserLabel} from './dal/user-dal'
+
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const label = await getConnectedUserLabel()

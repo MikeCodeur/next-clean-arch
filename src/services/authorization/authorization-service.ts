@@ -3,11 +3,13 @@ import {getAuthUser, hasRequiredRole} from '../authentification/auth-service'
 import {RoleEnum} from '../authentification/type'
 import {getBankAccountByIdDao} from '@/db/repositories/user-repository'
 
-//2. 🚀 Autorisation dans les Servers Action
-export const canMutateProduct = async () => {
+export const isAuthUserAdmin = async () => {
   const authUser = await getAuthUser()
   if (!authUser) return false
   return hasRoleAdmin(authUser)
+}
+export const canMutateProduct = async () => {
+  return isAuthUserAdmin()
 }
 
 export const canQuickAddProduct = async () => {

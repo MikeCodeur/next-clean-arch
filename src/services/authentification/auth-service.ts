@@ -1,5 +1,5 @@
 import {auth} from './auth'
-import {cache} from 'react'
+//import {cache} from 'react'
 import {hashPassword} from './crypt'
 import {AddUser, User} from '@/types/user-types'
 
@@ -89,27 +89,3 @@ export function hasRequiredRole(
   }
   return false
 }
-
-export const getConnectedUser = cache(async () => {
-  const session = await auth()
-  if (!session?.user || !session.user.email) return
-  //console.log('getConnectedUser session.user', session.user)
-  try {
-    const user = await getUserByEmailDao(session.user.email)
-    console.log('getConnectedUser', user)
-    return user
-    // return userDTO(user as UserModel)
-  } catch (error) {
-    console.error('Failed to fetch user', error)
-    return
-  }
-})
-
-export const getConnectedUserLabel = cache(async () => {
-  const user = await getConnectedUser()
-  return getUserLabel(user)
-})
-
-export const getUserLabel = cache(async (user?: User) => {
-  return user ? `Hi ${user.name} (${user.role})` : 'Hi, Guest'
-})

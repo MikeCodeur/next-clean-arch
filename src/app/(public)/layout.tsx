@@ -6,7 +6,9 @@ import {ModeToggle} from '@/components/theme-toggle'
 
 import RenderTime from '@/components/render-time'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '@/services/authentification/auth-service'
+import {getConnectedUserLabel} from '../dal/user-dal'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Public page : Clean Arch Module',
@@ -36,6 +38,12 @@ export default async function PublicLayout({children}: PropsWithChildren) {
                 href="/sign-in"
               >
                 <span>Connexion</span>
+              </Link>
+              <Link
+                className="flex items-center space-x-2 font-bold"
+                href="/last-users"
+              >
+                <span>Les derniers inscris</span>
               </Link>
               <Link
                 className="flex items-center space-x-2 font-bold"

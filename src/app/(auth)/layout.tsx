@@ -7,7 +7,9 @@ import {ModeToggle} from '@/components/theme-toggle'
 import RenderTime from '@/components/render-time'
 
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '@/services/authentification/auth-service'
+import {getConnectedUserLabel} from '../dal/user-dal'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Authentification',

@@ -1,5 +1,6 @@
 import {
   boolean,
+  date,
   integer,
   jsonb,
   pgEnum,
@@ -32,6 +33,8 @@ export const users = pgTable('user', {
   role: roleEnum('role').notNull(),
   password: text('password'),
   image: text('image'),
+  createdAt: date('createdat').default(sql`now()`),
+  updatedAt: date('updatedat'),
 })
 
 export const profileInfo = pgTable('profile_info', {
