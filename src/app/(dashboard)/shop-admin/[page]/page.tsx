@@ -1,5 +1,5 @@
 import {ProductsManagement} from './products-management'
-import {withAuthAdmin} from '@/components/features/auth/withAuth'
+import withAuth, {withAuthAdmin} from '@/components/features/auth/withAuth'
 import {
   Pagination,
   PaginationContent,
@@ -89,4 +89,4 @@ async function Page(props: {params: Promise<{page: string}>}) {
     </div>
   )
 }
-export default withAuthAdmin(Page)
+export default withAuth(Page)

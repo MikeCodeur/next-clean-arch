@@ -64,12 +64,18 @@ Les services doivent vérifier que l’utilisateur est autorisé a exécuter la 
   - Accéder aux ressources publiques
   - Voir ses propres informations
   - Modifier uniquement ses propres informations personnelles (nom, email, mot de passe).
-  ### **Rôle : `ADMIN`**
-  - L'**Admin** peut :
-    - Gérer tous les utilisateurs de la plateforme (ajout, modification, suppression).
-    - Accéder à toutes les ressources sans restrictions (documents, projets, utilisateurs).
-    - Modifier les permissions des autres utilisateurs (par exemple, passer un `USER` en `MANAGER`).
-    - Configurer les paramètres globaux de l'application (paramètres système, intégrations, etc.).
+
+### **Rôle : `ADMIN`**
+
+- L'**Admin** peut :
+  - Gérer tous les utilisateurs de la plateforme (ajout, modification, suppression).
+  - Accéder à toutes les ressources sans restrictions (documents, projets, utilisateurs).
+  - Modifier les permissions des autres utilisateurs (par exemple, passer un `USER` en `MANAGER`).
+  - Configurer les paramètres globaux de l'application (paramètres système, intégrations, etc.).
+
+Note : Pour les besoins de l’exercice nous avons changé touts les
+
+- `withAuthManager` `withAuthAdmin` etc en `withAuth` pour pouvoir accéder aux routes et voir les comportements.
 
 ## Exercice
 
@@ -155,7 +161,54 @@ Fichiers
 - `services/user-service.ts`
 - `(dashboard)/bank/[uid]/page.ts`
 
-###
+### 2. 🚀 Autorisation dans les Servers Action
+
+Dans l’exercice précèdent nous avons vérifier l’autorisation de lecture dans une route. Mais nous n’avons pas protéger les actions (server actions).
+
+Même si nos routes ,ne sont pas accessibles, les serveurs actions doivent quand même être protégés.
+
+Rappel : _un server action expose les fonctions du serveur sous forme d’api accessible_
+
+Il est possible de protéger les actions au niveau
+
+- du serveur action.
+- du service.
+
+👨‍✈️ Hugo le Chef de projet te demande de protéger la création de produits avec les règles suivantes.
+
+- Les `ADMIN` peuvent créer, mettre à jour et supprimer des produits.
+- Les `MANAGER` peuvent uniquement faire des “ajouts rapide”
+
+Nous allons ici protéger uniquement dans les servers action dans un premiers temps
+
+🐶 Ajoute les 2 fonctions suivantes dans le service autorisation
+
+- `canMutateProduct`
+- `canQuickAddProduct`
+
+🐶 Utilise les dans les serveurs actions
+
+Fichier
+
+- `services/authorization/authorization-service.ts`
+- `services/product-service.ts`
+- `(dashboard)/shop-admin/actions.ts`
+
+### 3. 🚀 Autorisation dans les Services
+
+Protéger au niveau des servers actions c’est bien. Mais notre application peut être amené a évoluer et les services pourraient être appelés depuis d’autres layers comme
+
+- Des API
+- Des traitement (Batchs etc)
+
+Nous allons doc protéger au niveau service.
+
+- **🐶 Appelle** `canMutateProduct` et `canQuickAddProduct` dans product-service et gère les `AuthorisationError` dans les serveurs action
+
+Fichier
+
+- `services/product-service.ts`
+- `(dashboard)/shop-admin/actions.ts`
 
 ## Ils vont t’aider
 
@@ -168,7 +221,3 @@ Fichiers
 ## 🐜 Feedback
 
 Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=06%20Authorization).
-
-```jsx
-
-```

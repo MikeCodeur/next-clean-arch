@@ -69,16 +69,21 @@ export function hasRequiredRole(
   }
   // Définir l'ordre des privilèges
   const roleHierarchy = [
+    RoleEnum.GUEST,
     RoleEnum.USER,
     RoleEnum.REDACTOR,
     RoleEnum.MODERATOR,
+    RoleEnum.MANAGER,
     RoleEnum.ADMIN,
     RoleEnum.SUPER_ADMIN,
   ]
   const useRole = userConnected?.role ?? RoleEnum.USER
   const userRoleIndex = roleHierarchy.indexOf(useRole as RoleEnum)
   const requestedRoleIndex = roleHierarchy.indexOf(requestedRole)
-
+  if (requestedRoleIndex === -1 || userRoleIndex === -1) {
+    return false
+  }
+  console.log('hasRequiredRole', useRole, requestedRole)
   if (userRoleIndex >= requestedRoleIndex) {
     return true
   }
