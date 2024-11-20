@@ -1,6 +1,6 @@
-# Data Acces Layer - Data Transfert Object
+# Logging
 
-### 💡 Comprendre la DAL et DTOs
+### 💡 Comprendre l’importance de loguer correctement
 
 ## 📝 Tes notes
 
@@ -8,147 +8,285 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Dans une architecture n-tiers, il est logique de penser que la couche de présentation appelle la couche service pour récupérer les données de la manière suivante
+Le logging est une pratique essentielle dans le développement d'applications, car il permet de comprendre ce qui se passe réellement dans le système.
 
-![/course/3-layers.png](/course/3-layers.png)
+Un bon système de logs offre une visibilité sur les événements clés, les erreurs, et les performances de l’application, que ce soit en développement ou en production.
 
-Ce model est valable mais il faut faire attention à quelques points.
+En cas de problème, les logs agissent comme une "boîte noire" pour diagnostiquer rapidement les causes et réduire le temps de résolution.
 
-- gestion du cache.
-- exposition des données sensible à l’ui.
-- As t-on le droit, la session est elle valide ?
+Ils sont également indispensables pour surveiller les comportements inattendus, détecter des anomalies de sécurité, et garantir une expérience utilisateur optimale.
 
-Exemple avec la page des derniers utilisateurs inscris : [http://localhost:3000/last-users](http://localhost:3000/last-users)
+Une stratégie de logging bien pensée fait donc partie intégrante d'une application fiable et maintenable.
 
-```tsx
-//(public)/last-user
-export default async function Page() {
-  const lastUsers = await getPublicLastUsers()
-  return (
-    <div className="mx-auto max-w-2xl p-6 text-lg">
-      <RecentUsersList users={lastUsers} />
-    </div>
-  )
-}
-```
+Exemple
 
-- Ici nous faisons appel à `getPublicLastUsers` qui fait appel `getAllUsersDao`. Un requête qui récupère **toutes les données utilisateurs** en base de données.
+- **DEBUG** : Informations détaillées utilisées pour le débogage.
+- **INFO** : Événements normaux (succès, actions importantes).
+- **WARN** : Avertissements concernant des événements inattendus mais non bloquants.
+- **ERROR** : Erreurs bloquantes nécessitant une intervention immédiate.
+- **FATAL** : Erreurs critiques causant l'arrêt de l'application.
 
-Du coup nous passons toutes les données (même les données sensibles comme le `password` à la vue).
+**Exemple d'usage :**
 
-On pourrait changer les requêtes `getAllUsersDao` mais rien ne nous dit que dans certains cas nous aurons besoins des autres champs.
+- DEBUG : "Entrée dans la fonction `updateProductService` avec `{ id: 123 }`."
+- INFO : "Produit mis à jour avec succès."
+- WARN : "Le champ `price` est manquant, valeur par défaut utilisée."
+- ERROR : "Échec de la mise à jour : produit introuvable."
+- FATAL : "Connexion à la base de données impossible."
 
-Pour gérer cela, nous allons introduire une nouvelle couche : `DAL - Data Access Layer`. Cette couche isole la présentation (Next / React etc … et le service)
+### Il existe une RFC pour cela la [RFC 5424](https://www.rfc-editor.org/rfc/rfc5424.html)
 
-![/course/3-layers-1.png](/course/3-layers-1.png)
+## Problèmes de `console`
 
-A l’heure actuelle nous avons dans le service `auth-service` la fonction `getConnectedUser.` Cette fonction gère le `cache`
+1. Correspondance entre **`console`** et **RFC 5424 :**
 
-```tsx
-import {cache} from 'react'
-//
-export const getConnectedUser = cache(async () => {
-  try {
-    const user = await getAuthUser()
-    console.log('getConnectedUser', user)
-    return user
-  } catch (error) {
-    console.error('Failed to fetch user', error)
-    return
-  }
-})
-```
+| **Niveau RFC 5424** | **Code RFC** | **Console JS**    | **Notes**                                                                      |
+| ------------------- | ------------ | ----------------- | ------------------------------------------------------------------------------ |
+| **Emergency**       | 0            | ❌ Non disponible | Pas de méthode directe pour "Emergency" dans `console`.                        |
+| **Alert**           | 1            | ❌ Non disponible | Pas de méthode directe pour "Alert".                                           |
+| **Critical**        | 2            | ❌ Non disponible | Pas de méthode directe pour "Critical".                                        |
+| **Error**           | 3            | `console.error()` | Correspond approximativement au niveau **Error**.                              |
+| **Warning**         | 4            | `console.warn()`  | Correspond au niveau **Warning** pour des conditions non bloquantes.           |
+| **Notice**          | 5            | ❌ Non disponible | Pas de méthode spécifique pour un niveau intermédiaire comme "Notice".         |
+| **Informational**   | 6            | `console.info()`  | Correspond au niveau **Informational** pour les logs normaux et non critiques. |
+| **Debug**           | 7            | `console.debug()` | Correspond au niveau **Debug** pour des informations détaillées de diagnostic. |
 
-Le problème est que nous introduisons une dépendance à `React` dans le service, nous allons interdire cela avec la règle :
+`Console` n’est pas 100% standard à cette RFC mais elle couvre un grand nombre de cas.
 
-```tsx
-//eslint
-{
-    files: ['src/services/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'react',
-              importNames: ['cache'],
-              message:
-                'L’utilisation de `cache` depuis `react` est interdite dans les services.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-```
+Correspondance entre **`console`** et **RFC 5424 :**
 
-Nous avons déplacer toutes les fonctions utilisant le `cache react` dans `src/app/dal/user-dal`. Notre architecture ressemble maintenant à :
+1. Il n’y pas de `métadata` et de `structure` (formatage)
 
-![/course/3-layers-2.png](/course/3-layers-2.png)
+Ce qui peut compliquer l’analyse
 
-L’accès aux données (lecture) depuis les composant `React` passent par la couche `DAL`. Concernant les mutations elles ne passent pas par la DAL. (pas de cache ni de DTO)
+1. En utilisant `console`, nous sommes dépendant de la plateforme
+
+En effet il faut que la plateforme prenne en compte la sortie standard (stdout/stderr) et il faut qu’elle ait un outils d’analyse
+
+- Vercel par exemple :
+
+![course/vercel-log.png](course/vercel-log.png)
+
+[https://vercel.com/docs/observability/runtime-logs](https://vercel.com/docs/observability/runtime-logs)
+
+Mais si l’application est hébergé “manuellement” (sans serverless) il faut gérer cela dans des fichiers logs ou via un service externe (Loggly etc …)
 
 ## Exercice
 
-Dans un premier temps nous allons modifier `getConnectedUser` pour qu’elle ne retourne plus toutes les données de la base de données. Pour cela nous allons utiliser un DTO(Data Transfer Object).
+- **👨‍✈️** Hugo le chef de projet te demande de mettre en place un système de log pour pouvoir tracer ce qu’il se passe dans l’application
 
-C’est souvent un fonction qui convertie vers un type plus `safe` pour la vue.
+Dans un premier temps nous allons utiliser `console` pour `logger` les informations importantes dans les services. Nous allons utiliser les 3 niveaux de bases
+
+- `info`
+- `warning`
+- `error`
+
+🐶 Met en place les logs pour la partie `‘product’` au niveau
+
+- `service` (info, warning, error)
+
+Avec le pattern : `NOM_FONCTION : PARAMS DATA` par exemple
 
 ```tsx
-export function userDTO(user?: User): UserDTO | undefined {
- ...
-}
+console.info(`createProductWithCategoryService : params ${productName} ${categoryName}`)
 ```
-
-**🐶 Implémente le DTO pour ne retourner que**
-
-- le nom
-- l’email
-- le role
 
 Fichiers
 
-- `app/dal/user-dal.ts`
+- `services/product-service`
 
 ## Bonus
 
-### 1. 🚀 Liste de Users
+### 1. 🚀 Log avec Winston (formatage)
 
-Adapte pour que [http://localhost:3000/last-users](http://localhost:3000/last-users) affiche les DTO et non le user de bdd.
+`Console` étant limité, il existe des librairies plus avancé comme `winston`. Avantages :
 
-Créer une fonction
+Winston est une bibliothèque de logging flexible, puissante et largement adoptée dans l’écosystème Node.js. Elle offre toutes les fonctionnalités nécessaires pour capturer, structurer et transporter vos logs, que ce soit pour un petit projet ou une application à grande échelle. Winston permet de répondre aux besoins suivants :
+
+- **Multi-transport** : Envoyez vos logs à plusieurs destinations (console, fichiers, services cloud, bases de données).
+- **Personnalisation** : Créez des formats et des niveaux de log adaptés à vos besoins.
+- **Performance** : Winston est optimisé pour gérer des volumes de logs importants sans compromettre les performances.
+- **Évolutivité** : Idéal pour une application évoluant d’un déploiement local à une infrastructure distribuée.
+
+🐶 Dans un premier temps utilise le logger `Winston` avec un transport par default (`la console`) dans le `product-service`
 
 ```tsx
-export function usersDTO(users?: User[]): UserDTO[] {
+//logger.ts
+export const logger = winston.createLogger({
+  transports: [new winston.transports.Console()],
+})
+//{"level":"info","message":"getProductsPaginationService : params 4 0"}
+```
 
+Product service : Remplace la `console` par le `logger`
+
+```tsx
+//product-service
+import {logger} from '@/lib/logger'
+
+//console.info(`getProductsService : params`)
+logger.info(`getProductsService : params`)
+```
+
+🐶 Dans un second temps : **Enrichie le logger**
+
+1. Ajoute le niveau de log (`info`)
+
+Permet de définir un niveau a partir duquel le système log
+
+```tsx
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+})
+```
+
+Fichiers `.env`
+
+```tsx
+//.env.develoment
+LOG_LEVEL=debug
+//.env.production
+LOG_LEVEL=info
+// en developpement on va tout logger
+// pas en production car trop lourd
+```
+
+1. Formatage des logs : cli
+
+Essaye ce formatage : `winston.format.cli()` formatte pour le terminal
+
+```tsx
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.cli()
+})
+```
+
+1. Formatage des logs : Combine
+
+Essaye en combinant les formatages avec `winston.format.combine()`
+
+```tsx
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+	format: winston.format.combine(
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.colorize({level: true}),
+    winston.format.printf(({timestamp, level, message}) => {
+      return ` ${timestamp} [${level}]: ${message}`
+    })
+  ),
+})
+```
+
+Fichiers
+
+- `lib/logger.ts`
+- `services/product-service`
+
+### 2. 🚀 Winston MetaData
+
+Il arrive souvent que l’on ai a loguer les donnée en entrée comme par exemple
+
+```tsx
+logger.info(`createProductService : params ${data} `)
+// probleme
+// createProductService : params [object Object]
+```
+
+on souhaite pouvoir faire
+
+```tsx
+logger.info(`createProductService : params`, data)
+//data = metadata
+```
+
+- **🐶** Adapte le logger pour prendre en compte les metadata
+
+```tsx
+ winston.format.printf(({timestamp, level, message, ...metadata}) => {
+      const formattedMetadata =
+        Object.keys(metadata).length > 0 ? ` | ${JSON.stringify(metadata)}` : ''
+      return ` ${timestamp} [${level}]: ${message} ${formattedMetadata}`
+    })
+```
+
+Fichiers
+
+- `lib/logger.ts`
+- `services/product-service`
+
+### 3. 🚀 fichiers logs
+
+Pour analyser plus facilement il est utile d’avoir des fichiers contenant uniquement certains niveau d’erreur.
+
+**👨‍✈️ Hugo te demande d’implémenter la configuration qui permettra d’avoir :**
+
+- `application.log`, toute les log
+- `error.log`, toute les `errors`
+- `debug.log`, toute les traces de `debugs`
+
+**🐶 Dans la partie transport ajoute `new winston.transports.File`**
+
+```tsx
+export const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  transports: [
+	  new winston.transports.Console()
+	  new winston.transports.File( .... )
+  ],
+})
+```
+
+Pour cela tu dois d'abord créer les fichiers
+
+```tsx
+import fs from 'node:fs'
+import path from 'node:path'
+// Définir le chemin du dossier et du fichier log
+const logDir = path.resolve('./logs') // Dossier courant /logs
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir) // Crée le dossier "logs" s'il n'existe pas
 }
+const logFile = path.join(logDir, 'application.log')
+const logErrorFile = path.join(logDir, 'error.log')
+const logDebugFile = path.join(logDir, 'debug.log')
 ```
 
-Remplace le `password` dans la vue par le rôle
+et ensuite spécifier le fichier
 
 ```tsx
- <TooltipContent>{`Avatar for ${user.role}`}</TooltipContent>
+new winston.transports.File({
+      filename: logFile,
+      format ...
 ```
 
-Fichiers
+## Aller plus loin
 
-- `app/dal/user-dal.ts`
+Il sera possible de choisir un service externe comme `loggly` pour envoyer les log
 
-### 2. 🚀 Visibilité des champs
-
-Les DTO peuvent aussi filtrer les champs en fonction de critères comme le rôle.
-
-- **👨‍✈️ Hugo le chef de projet te demande pour la liste des user** [http://localhost:3000/last-users](http://localhost:3000/last-users) d’afficher le rôle uniquement pour les ADMIN
-- **🐶 Adapte le DTO**
-
-En créant une fonction `canSeeRole` qui utilise la fonction `isAuthUserAdmin` du service autorisation.
-
-La règle : Si pas admin alors le champs rôle est non visible
-
-Fichiers
-
-- `app/dal/user-dal.ts`
+```tsx
+  transports: [
+    new winston.transports.Console(), // Utilise la sortie console pour Vercel
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.splat(),
+        winston.format.cli()
+      ),
+    }),
+    // Other logger
+     new Loggly({
+       token: 'your-loggly-token', // Remplace par ton token Loggly
+       subdomain: 'your-loggly-subdomain', // Remplace par ton sous-domaine Loggly
+       tags: ['Winston-NodeJS'], // Ajoute des tags pour identifier les logs
+       json: true,  // Envoie les logs au format JSON
+     }),
+  ],
+})
+```
 
 ## Ils vont t’aider
 

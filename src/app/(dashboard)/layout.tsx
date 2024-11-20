@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 async function DashboardLayout({children}: PropsWithChildren) {
   const label = await getConnectedUserLabel()
   const user = await getConnectedUser()
-  console.log('user', user)
+
   const userRole = (user?.role ?? RoleEnum.GUEST) as RoleEnum
   const menuItems = getMenuByRole(userRole)
   return (

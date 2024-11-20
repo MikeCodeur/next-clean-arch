@@ -83,7 +83,7 @@ export function hasRequiredRole(
   if (requestedRoleIndex === -1 || userRoleIndex === -1) {
     return false
   }
-  //console.log('hasRequiredRole', useRole, requestedRole)
+  //console.log(import {getConnectedUser} from '@/app/dal/user-dal'', useRole, requestedRole)
   if (userRoleIndex >= requestedRoleIndex) {
     return true
   }

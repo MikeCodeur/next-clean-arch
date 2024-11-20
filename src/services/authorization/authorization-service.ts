@@ -15,7 +15,7 @@ export const canMutateProduct = async () => {
 export const canQuickAddProduct = async () => {
   const authUser = await getAuthUser()
   if (!authUser) return false
-  console.log('canQuickAddProduct', authUser)
+
   return hasRequiredRole(authUser, RoleEnum.MANAGER)
 }
 

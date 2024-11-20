@@ -90,7 +90,7 @@ export async function onSubmitAction(
   }
 
   const userConnected = await getConnectedUser()
-  console.log('userConnected', userConnected)
+
   if (!userConnected) {
     return {
       success: false,

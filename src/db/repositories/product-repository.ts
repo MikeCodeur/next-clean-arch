@@ -44,9 +44,10 @@ export async function updateProductDao(
   productId: string,
   updatedData: AddProductModel
 ) {
+  const {id, ...dataWithoutId} = updatedData
   const [updatedProduct] = await db
     .update(products)
-    .set(updatedData)
+    .set(dataWithoutId)
     .where(eq(products.id, productId))
     .returning()
 
