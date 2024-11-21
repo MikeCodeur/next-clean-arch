@@ -3,10 +3,30 @@ import 'server-only'
 import {cache} from 'react'
 import {RoleEnum, UserDTO} from '@/services/authentification/type'
 import {User} from '@/types/user-types'
-import {getAuthUser} from '@/services/authentification/auth-service'
+import {
+  getAuthUser,
+  isAuth,
+  isAuthAdmin,
+} from '@/services/authentification/auth-service'
 import {getPublicLastUsers} from '@/services/user-service'
 import {isAuthUserAdmin} from '@/services/authorization/authorization-service'
+import {redirect} from 'next/navigation'
 
+export const checkAuth = cache(async () => {
+  const auth = await isAuth()
+  console.log('checkAuth', auth)
+  if (!auth) {
+    redirect('/sign-in')
+  }
+})
+
+export const checkAdmin = cache(async () => {
+  const isAdmin = await isAuthAdmin()
+  console.log('isadmin', isAdmin)
+  if (!isAdmin) {
+    redirect('/restricted')
+  }
+})
 export const getPublicLastUsersDal = cache(async () => {
   try {
     const lastUsers = await getPublicLastUsers()

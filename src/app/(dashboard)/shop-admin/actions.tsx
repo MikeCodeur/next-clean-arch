@@ -20,6 +20,7 @@ import {
 import {getConnectedUser} from '@/app/dal/user-dal'
 import {AuthorizationError} from '@/lib/errors'
 import {redirect} from 'next/navigation'
+import {getCategoriesDal, getProductsDal} from '@/app/dal/product-dal'
 
 type ValidationError = {
   field: keyof FormProductSchemaType
@@ -168,12 +169,12 @@ export const getUser = async () => {
 }
 
 export const getProducts = async () => {
-  const products = await getProductsService()
+  const products = await getProductsDal()
   return products
 }
 
 export const getCategories = async () => {
-  const products = await getCategoriesService()
+  const products = await getCategoriesDal()
   return products
 }
 

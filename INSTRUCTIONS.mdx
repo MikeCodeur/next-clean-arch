@@ -1,6 +1,6 @@
-# Les facades
+# Optimisation
 
-### 💡 Comprendre le pattern facade
+### 💡 Optimiser l’application
 
 ## 📝 Tes notes
 
@@ -8,55 +8,104 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Une **façade** (ou **facade** en anglais) est un modèle de conception (design pattern) utilisé pour fournir une interface simplifiée à un ensemble de fonctionnalités ou de services complexes. Elle agit comme un point d'entrée unique pour des composants sous-jacents, permettant de **masquer les détails d'implémentation** et de rendre le code plus lisible et facile à utiliser.
+Faire fonctionner l’application correctement c’est une chose. Mais il faut aussi s’assurer des performances.
 
-### **Pourquoi utiliser une façade ?**
+Un des premier critère a regarder c’est la génération des pages statiques vs dynamiques. Dans notre cas elle sont toutes rendu dynamiquent (ƒ).
 
-1. **Simplification de l'accès** :
-   - Au lieu d'exposer directement un service complexe ou une collection de services, la façade offre une interface claire et concise.
-   - Cela réduit la courbe d'apprentissage pour les développeurs qui utilisent ces services.
-2. **Encapsulation des détails** :
-   - La façade masque la logique interne, évitant d'exposer les détails d'implémentation.
-   - Cela permet de modifier les composants sous-jacents sans impacter le reste du code.
-3. **Centralisation** :
-   - Tous les appels passent par un seul point d'entrée, ce qui facilite la maintenance et le débogage.
-   - Vous pouvez ajouter des fonctionnalités transversales (comme le logging, la validation ou l'authentification) dans la façade sans toucher aux services eux-mêmes.
-4. **Respect du principe de responsabilité unique (SRP)** :
-   - La façade gère la coordination entre différents services, tandis que les services eux-mêmes restent concentrés sur leurs propres responsabilités.
-
-### Notre code actuelle
-
-```tsx
-import productServiceInterceptor from '../interceptors/product-service-logger-interceptor'
-
-await productServiceInterceptor.createProductWithCategoryService(
-  parsed.data.productName,
-  parsed.data.categoryName
-)
+```html
+Route (app) Size First Load JS ┌ ƒ / 9.26 kB 153 kB ├ ○ /_not-found 148 B 101 kB
+├ ƒ /bank 1.32 kB 109 kB ├ ƒ /bank/[uid] 1.56 kB 109 kB ├ ƒ /dashboard 1.43 kB
+145 kB ├ ƒ /instructions 4.12 kB 105 kB ├ ƒ /last-users 4.6 kB 125 kB ├ ƒ
+/logout 2.09 kB 119 kB ├ ƒ /privacy 148 B 101 kB ├ ƒ /redactor 148 B 101 kB ├ ƒ
+/restricted 175 B 110 kB ├ ƒ /shop-admin 148 B 101 kB ├ ƒ /shop-admin/[page]
+35.1 kB 179 kB ├ ƒ /shop-admin/quick 2.67 kB 120 kB ├ ƒ /sign-in 2.39 kB 119 kB
+├ ƒ /sign-up 2.47 kB 119 kB └ ƒ /terms 148 B 101 kB + First Load JS shared by
+all 101 kB ├ chunks/428-5cc3bc366b3773bd.js 45.7 kB ├
+chunks/46f14785-7f61c0f37941c5a3.js 52.9 kB └ other shared chunks (total) 1.86
+kB
 ```
 
-En faisant cela nous perdons en lisibilité et nous perdons aussi l’autocomplétions pour l’import.
+C’est normal pour les pages ou l’utilisateur doit être connecté. Mais pour les pages publiques la plupart devraient être statique
 
-Nous allons donc créer une `facade` pour les fonctions du service produit
+- `privacy`
+- `terms`
+
+Or la elles ne le sont pas
+
+```tsx
+
+├ ƒ /privacy
+└ ƒ /terms
+```
+
+Nous allons corriger cela
 
 ## Exercice
 
-Nous ne voulons plus passer par les `interceptors` directement mais par les `facades`, nous avons donc rajouter la règles ESlint suivantes pour ne pas pouvoir importer les `interceptors` dans la présentation.
-
-```tsx
- patterns: [
-            '@/db/*',
-            'drizzle-orm',
-            '@/services/product-service',
-            '@/services/interceptors/product-service-logger-interceptor',
-          ],
-```
-
-- **🐶 Implemente la `facade` et vérifie l’utilisation dans la présentation**
+- **👨‍✈️ Hugo le chef de projet** : te demande de corriger cela
 
 Fichiers
 
-- `service/facades/product-service-facade.ts`
+- `(public)/layout.tsx`
+
+## Bonus
+
+### 1. 🚀 **Incremental Static Regeneration (ISR)**
+
+La page des [derniers utilisateurs inscris](http://localhost:3000/last-users) est dynamique. C’est une bonne chose car nous voulons voir les derniers utilisateurs inscris.
+
+```tsx
+export const dynamic = 'force-dynamic'
+
+export default async function Page() {
+...
+```
+
+Cependant ce n’est pas optimisé car l’ajout de nouveaux utilisateurs n’est pas fréquent et la fonctionnalité n’est pas critique.
+
+Nous pouvons nous permettre d’avoir un rafraichissement toutes les minutes par exemple.
+
+- **🐶 implémente cela**
+
+https://nextjs.org/docs/app/building-your-application/data-fetching/incremental-static-regeneration
+
+Fichiers
+
+- `(public)/last-users.tsx`
+
+### 2. 🚀 Cache
+
+Il faut également vérifier le cache sur les appels de data.
+
+https://nextjs.org/docs/app/building-your-application/data-fetching/fetching
+
+Si l’application contient des appel fetch et que l’on souhait mettre en cache
+
+```tsx
+let res = await fetch(`https://api.vercel.app/blog/${id}`, {
+    cache: 'force-cache',
+ )
+```
+
+On peut mettre aussi en cache les données via le DAL (Data Accès Layer) avec `React Cache`, exemple pour notre `getConnectedUser`
+
+```tsx
+export const getConnectedUser = cache(async () => {
+  try {
+    const user = await getAuthUser()
+    return userDTO(user)
+  } catch (error) {
+    console.error('Failed to fetch user', error)
+    return
+  }
+})
+```
+
+- **🐶 Dans cet exercice tu vas mettre en cache les appel au `product service` en creant un `product-dal.ts`**
+
+Fichiers
+
+- `exercise/about/**product-dal.ts**`
 
 ## Ils vont t’aider
 
@@ -68,4 +117,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=11%20Les%20facades).
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).
