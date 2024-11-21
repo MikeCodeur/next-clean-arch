@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/pagination'
 import Link from 'next/link'
 import {Button} from '@/components/ui/button'
-//import {getProductsPaginationService} from '@/services/product-service'
-import productServiceInterceptor from '@/services/interceptors/product-service-logger-interceptor'
+
 import {canQuickAddProduct} from '@/services/authorization/authorization-service'
 import {cn} from '@/lib/utils'
+import {getProductsPaginationService} from '@/services/facades/product-service-facade'
 
 async function Page(props: {params: Promise<{page: string}>}) {
   const canQuickAdd = await canQuickAddProduct()
@@ -23,11 +23,10 @@ async function Page(props: {params: Promise<{page: string}>}) {
   const currentPage = Number.parseInt(page, 10) || 1
   const nbElement = 4 // Nombre d'éléments par page
   const start = (currentPage - 1) * nbElement
-  const {products, totalProducts} =
-    await productServiceInterceptor.getProductsPaginationService(
-      nbElement,
-      start
-    )
+  const {products, totalProducts} = await getProductsPaginationService(
+    nbElement,
+    start
+  )
   const totalPages = Math.ceil(totalProducts / nbElement)
   const maxPagesToShow = 5 // Maximum number of pagination links to show
 

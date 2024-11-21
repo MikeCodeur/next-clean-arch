@@ -103,7 +103,12 @@ export default [
       'no-restricted-imports': [
         'error',
         {
-          patterns: ['@/db/*', 'drizzle-orm', '@/services/product-service'],
+          patterns: [
+            '@/db/*',
+            'drizzle-orm',
+            '@/services/product-service',
+            '@/services/interceptors/product-service-logger-interceptor',
+          ],
         },
       ],
     },

@@ -1,6 +1,6 @@
-# Les interceptors
+# Les facades
 
-### 💡 Comprendre les interceptors
+### 💡 Comprendre le pattern facade
 
 ## 📝 Tes notes
 
@@ -8,184 +8,55 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Un hello world en HTML:
+Une **façade** (ou **facade** en anglais) est un modèle de conception (design pattern) utilisé pour fournir une interface simplifiée à un ensemble de fonctionnalités ou de services complexes. Elle agit comme un point d'entrée unique pour des composants sous-jacents, permettant de **masquer les détails d'implémentation** et de rendre le code plus lisible et facile à utiliser.
 
-Les `interceptors` sont une technique puissante qui permettent d’intercepter et de modifier le comportement des appels de fonctions ou de méthodes. Ils sont particulièrement utiles pour gérer des préoccupations transversales comme le **logging**, la **gestion des erreurs**, la **validation**, ou encore le **profilage des performances** sans alourdir le code métier.
+### **Pourquoi utiliser une façade ?**
 
-Sans `interceptor`, ajouter des logs dans chaque fonction peut rapidement rendre le code confus, redondant, et difficile à maintenir. En revanche, un interceptor centralise cette logique de manière élégante, améliorant la clarté et la lisibilité du code.
+1. **Simplification de l'accès** :
+   - Au lieu d'exposer directement un service complexe ou une collection de services, la façade offre une interface claire et concise.
+   - Cela réduit la courbe d'apprentissage pour les développeurs qui utilisent ces services.
+2. **Encapsulation des détails** :
+   - La façade masque la logique interne, évitant d'exposer les détails d'implémentation.
+   - Cela permet de modifier les composants sous-jacents sans impacter le reste du code.
+3. **Centralisation** :
+   - Tous les appels passent par un seul point d'entrée, ce qui facilite la maintenance et le débogage.
+   - Vous pouvez ajouter des fonctionnalités transversales (comme le logging, la validation ou l'authentification) dans la façade sans toucher aux services eux-mêmes.
+4. **Respect du principe de responsabilité unique (SRP)** :
+   - La façade gère la coordination entre différents services, tandis que les services eux-mêmes restent concentrés sur leurs propres responsabilités.
 
-### Exemple : Logging sans Interceptor
-
-```tsx
-
-export const updateProductService = async ({ id, name }) => {
-  logger.info(`Appel de updateProductService avec id=${id}, name=${name}`);
-  try {
-    if (!id || !name) throw new Error('Invalid arguments');
-    const result = { id, name, status: 'updated' };
-    logger.info(`Résultat : ${JSON.stringify(result)}`);
-    return result;
-  } catch (error) {
-    logger.error(`Erreur : ${error.message}`);
-    throw error;
-  }
-};
-
-```
-
-Chaque fonction est alourdie par des appels répétitifs à `logger`.
-
-### Logging avec Interceptor
-
-Avec un `interceptor`, updateProductService ne contient pas de code lié au logging. Cette logique est externalisée, dans cette exemple la logique de `logging` est dans `interceptor.ts` :
-
-```jsx
-import {serviceInterceptor} from './interceptor'
-
-const result = await serviceInterceptor.updateProductService({
-  id: 123,
-  name: 'New Product',
-})
-```
-
-L’`interceptor` logge automatiquement :
-
-1. Les **arguments** passés à la fonction.
-2. Le **résultat** de la fonction.
-3. Les **erreurs** en cas d’échec.
-
-### Avantages des Interceptors
-
-1. **Clarté :** Le code métier reste concentré sur sa logique, sans distractions.
-2. **Réduction de la redondance :** La logique commune (comme le logging) est centralisée.
-3. **Extensibilité :** Les interceptors peuvent être enrichis pour inclure des fonctionnalités supplémentaires (profiling, validation, etc.).
-4. **Maintenance simplifiée :** Toute modification de la logique transverse se fait en un seul endroit.
-
-Les interceptors rendent votre code plus propre, maintenable et évolutif, tout en assurant un suivi précis des comportements.
-
-## Comment créer un interceptor ?
-
-Pour créer un intercepter on peut utiliser [un proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
-
-- Exemple simple
+### Notre code actuelle
 
 ```tsx
-const target = { name: 'Alice', age: 25 };
+import productServiceInterceptor from '../interceptors/product-service-logger-interceptor'
 
-const handler = {
-  get(obj, prop) {
-    console.log(`Accès à la propriété : ${prop}`);
-    return obj[prop];
-  },
-};
-
-const proxy = new Proxy(target, handler);
-
-console.log(proxy.name); // "Accès à la propriété : name", puis "Alice"
-console.log(proxy.age);  // "Accès à la propriété : age", puis 25
-
+await productServiceInterceptor.createProductWithCategoryService(
+  parsed.data.productName,
+  parsed.data.categoryName
+)
 ```
 
-Le proxy nous permettra de mettre en place l’interceptor
+En faisant cela nous perdons en lisibilité et nous perdons aussi l’autocomplétions pour l’import.
+
+Nous allons donc créer une `facade` pour les fonctions du service produit
 
 ## Exercice
 
-Pour les besoins de l’exercice nous avons mis en place un `proxy` qui n’altère pas les fonctions originales
+Nous ne voulons plus passer par les `interceptors` directement mais par les `facades`, nous avons donc rajouter la règles ESlint suivantes pour ne pas pouvoir importer les `interceptors` dans la présentation.
 
 ```tsx
-const productServiceInterceptor = new Proxy(productServiceMethods, {
-  get(target: ServiceMethods, property: keyof ServiceMethods) {
-    const originalMethod = target[property] as unknown
-    // Vérifier que la propriété est bien une fonction
-    if (typeof originalMethod === 'function') {
-      // Retourner une nouvelle fonction qui appelle l'originale sans modification
-      return async function (...args: unknown[]) {
-        // Appel de la méthode originale sans aucun changement
-        return originalMethod.apply(target, args)
-      }
-    }
-    // Retourner la propriété originale si ce n'est pas une fonction
-    return originalMethod
-  },
-})
-
-export default productServiceInterceptor // as ServiceMethods
+ patterns: [
+            '@/db/*',
+            'drizzle-orm',
+            '@/services/product-service',
+            '@/services/interceptors/product-service-logger-interceptor',
+          ],
 ```
 
-Pour forcer l’appel à `l’interceptor`, nous avons ajouter la règles ESlint suivante pour interdire `product-service` dans les présentation
-
-```tsx
- {
-    files: ['src/app/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/db/*', 'drizzle-orm', '@/services/product-service'],
-        },
-      ],
-    },
-  },
-```
-
-Nous avons modifier les appels dans la présentation
-
-```tsx
-// import {
-//   createProductWithCategoryService,
-//   deleteProductService,
-//   getCategoriesService,
-//   getProductByNameService,
-//   getProductsService,
-//   persistProductService,
-// } from '@/services/product-service'
-import productServiceInterceptor from '@/services/interceptors/product-service-logger-interceptor'
-
- const product =
-      await productServiceInterceptor.createProductWithCategoryService(
-        parsed.data.productName,
-        parsed.data.categoryName
-      )
-    revalidatePath('/shop-admin')
-```
-
-- **🐶 Dans cet exercice tu vas devoir utiliser le logger winston dans l’interceptor** `product-service-logger-interceptor`
+- **🐶 Implemente la `facade` et vérifie l’utilisation dans la présentation**
 
 Fichiers
 
-- `service/interceptors/product-service-logger-interceptor.ts`
-
-## Bonus
-
-### 1. 🚀 Gerer les `AuthorizationError`
-
-Il est possible d’affiner les log en fonction du type d’error. Dans notre cas nous allons affiner sur les `authorizationError`
-
-```tsx
- if (error instanceof AuthorizationError) {
-      logger.error(
-        `Authorisation Erreur dans la méthode ${String(property)} :`,
-        (error as Error).message
-      )
-    } else {
-      logger.error(
-        `Erreur dans la méthode ${String(property)} :`,
-        (error as Error).message
-      )
-      logger.debug(
-        `Erreur dans la méthode ${String(property)} : ${(error as Error).message}`,
-        error
-      )
-    }
-```
-
-- **🐶 implémente cela**
-
-Fichiers
-
-- `service/interceptors/product-service-logger-interceptor.ts`
-
-## Aller plus loin
+- `service/facades/product-service-facade.ts`
 
 ## Ils vont t’aider
 
@@ -197,8 +68,4 @@ Fichiers
 
 ## 🐜 Feedback
 
-Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).
-
-```jsx
-
-```
+Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis?entry.1912869708=Next%20Mastery&entry.1430994900=Clean%20Architecture&entry.533578441=11%20Les%20facades).
