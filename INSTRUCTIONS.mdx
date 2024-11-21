@@ -1,6 +1,6 @@
-# Logging
+# Les interceptors
 
-### 💡 Comprendre l’importance de loguer correctement
+### 💡 Comprendre les interceptors
 
 ## 📝 Tes notes
 
@@ -8,299 +8,184 @@ Detaille ce que tu as appris ici, sur une page [Notion](https://go.mikecodeu
 
 ## Comprendre
 
-Le logging est une pratique essentielle dans le développement d'applications, car il permet de comprendre ce qui se passe réellement dans le système.
+Un hello world en HTML:
 
-Un bon système de logs offre une visibilité sur les événements clés, les erreurs, et les performances de l’application, que ce soit en développement ou en production.
+Les `interceptors` sont une technique puissante qui permettent d’intercepter et de modifier le comportement des appels de fonctions ou de méthodes. Ils sont particulièrement utiles pour gérer des préoccupations transversales comme le **logging**, la **gestion des erreurs**, la **validation**, ou encore le **profilage des performances** sans alourdir le code métier.
 
-En cas de problème, les logs agissent comme une "boîte noire" pour diagnostiquer rapidement les causes et réduire le temps de résolution.
+Sans `interceptor`, ajouter des logs dans chaque fonction peut rapidement rendre le code confus, redondant, et difficile à maintenir. En revanche, un interceptor centralise cette logique de manière élégante, améliorant la clarté et la lisibilité du code.
 
-Ils sont également indispensables pour surveiller les comportements inattendus, détecter des anomalies de sécurité, et garantir une expérience utilisateur optimale.
+### Exemple : Logging sans Interceptor
 
-Une stratégie de logging bien pensée fait donc partie intégrante d'une application fiable et maintenable.
+```tsx
 
-Exemple
+export const updateProductService = async ({ id, name }) => {
+  logger.info(`Appel de updateProductService avec id=${id}, name=${name}`);
+  try {
+    if (!id || !name) throw new Error('Invalid arguments');
+    const result = { id, name, status: 'updated' };
+    logger.info(`Résultat : ${JSON.stringify(result)}`);
+    return result;
+  } catch (error) {
+    logger.error(`Erreur : ${error.message}`);
+    throw error;
+  }
+};
 
-- **DEBUG** : Informations détaillées utilisées pour le débogage.
-- **INFO** : Événements normaux (succès, actions importantes).
-- **WARN** : Avertissements concernant des événements inattendus mais non bloquants.
-- **ERROR** : Erreurs bloquantes nécessitant une intervention immédiate.
-- **FATAL** : Erreurs critiques causant l'arrêt de l'application.
+```
 
-**Exemple d'usage :**
+Chaque fonction est alourdie par des appels répétitifs à `logger`.
 
-- DEBUG : "Entrée dans la fonction `updateProductService` avec `{ id: 123 }`."
-- INFO : "Produit mis à jour avec succès."
-- WARN : "Le champ `price` est manquant, valeur par défaut utilisée."
-- ERROR : "Échec de la mise à jour : produit introuvable."
-- FATAL : "Connexion à la base de données impossible."
+### Logging avec Interceptor
 
-### Il existe une RFC pour cela la [RFC 5424](https://www.rfc-editor.org/rfc/rfc5424.html)
+Avec un `interceptor`, updateProductService ne contient pas de code lié au logging. Cette logique est externalisée, dans cette exemple la logique de `logging` est dans `interceptor.ts` :
 
-## Problèmes de `console`
+```jsx
+import {serviceInterceptor} from './interceptor'
 
-1. Correspondance entre **`console`** et **RFC 5424 :**
+const result = await serviceInterceptor.updateProductService({
+  id: 123,
+  name: 'New Product',
+})
+```
 
-| **Niveau RFC 5424** | **Code RFC** | **Console JS**    | **Notes**                                                                      |
-| ------------------- | ------------ | ----------------- | ------------------------------------------------------------------------------ |
-| **Emergency**       | 0            | ❌ Non disponible | Pas de méthode directe pour "Emergency" dans `console`.                        |
-| **Alert**           | 1            | ❌ Non disponible | Pas de méthode directe pour "Alert".                                           |
-| **Critical**        | 2            | ❌ Non disponible | Pas de méthode directe pour "Critical".                                        |
-| **Error**           | 3            | `console.error()` | Correspond approximativement au niveau **Error**.                              |
-| **Warning**         | 4            | `console.warn()`  | Correspond au niveau **Warning** pour des conditions non bloquantes.           |
-| **Notice**          | 5            | ❌ Non disponible | Pas de méthode spécifique pour un niveau intermédiaire comme "Notice".         |
-| **Informational**   | 6            | `console.info()`  | Correspond au niveau **Informational** pour les logs normaux et non critiques. |
-| **Debug**           | 7            | `console.debug()` | Correspond au niveau **Debug** pour des informations détaillées de diagnostic. |
+L’`interceptor` logge automatiquement :
 
-`Console` n’est pas 100% standard à cette RFC mais elle couvre un grand nombre de cas.
+1. Les **arguments** passés à la fonction.
+2. Le **résultat** de la fonction.
+3. Les **erreurs** en cas d’échec.
 
-Correspondance entre **`console`** et **RFC 5424 :**
+### Avantages des Interceptors
 
-1. Il n’y pas de `métadata` et de `structure` (formatage)
+1. **Clarté :** Le code métier reste concentré sur sa logique, sans distractions.
+2. **Réduction de la redondance :** La logique commune (comme le logging) est centralisée.
+3. **Extensibilité :** Les interceptors peuvent être enrichis pour inclure des fonctionnalités supplémentaires (profiling, validation, etc.).
+4. **Maintenance simplifiée :** Toute modification de la logique transverse se fait en un seul endroit.
 
-Ce qui peut compliquer l’analyse
+Les interceptors rendent votre code plus propre, maintenable et évolutif, tout en assurant un suivi précis des comportements.
 
-1. En utilisant `console`, nous sommes dépendant de la plateforme
+## Comment créer un interceptor ?
 
-En effet il faut que la plateforme prenne en compte la sortie standard (stdout/stderr) et il faut qu’elle ait un outils d’analyse
+Pour créer un intercepter on peut utiliser [un proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
 
-- Vercel par exemple :
+- Exemple simple
 
-![course/vercel-log.png](course/vercel-log.png)
+```tsx
+const target = { name: 'Alice', age: 25 };
 
-[https://vercel.com/docs/observability/runtime-logs](https://vercel.com/docs/observability/runtime-logs)
+const handler = {
+  get(obj, prop) {
+    console.log(`Accès à la propriété : ${prop}`);
+    return obj[prop];
+  },
+};
 
-Mais si l’application est hébergé “manuellement” (sans serverless) il faut gérer cela dans des fichiers logs ou via un service externe (Loggly etc …)
+const proxy = new Proxy(target, handler);
+
+console.log(proxy.name); // "Accès à la propriété : name", puis "Alice"
+console.log(proxy.age);  // "Accès à la propriété : age", puis 25
+
+```
+
+Le proxy nous permettra de mettre en place l’interceptor
 
 ## Exercice
 
-- **👨‍✈️** Hugo le chef de projet te demande de mettre en place un système de log pour pouvoir tracer ce qu’il se passe dans l’application
-
-Dans un premier temps nous allons utiliser `console` pour `logger` les informations importantes dans les services. Nous allons utiliser les 3 niveaux de bases
-
-- `info`
-- `warning`
-- `error`
-
-🐶 Met en place les logs pour la partie `‘product’` au niveau
-
-- `service` (info, warning, error)
-
-Avec le pattern : `NOM_FONCTION : PARAMS DATA` par exemple
+Pour les besoins de l’exercice nous avons mis en place un `proxy` qui n’altère pas les fonctions originales
 
 ```tsx
-console.info(`createProductWithCategoryService : params ${productName} ${categoryName}`)
+const productServiceInterceptor = new Proxy(productServiceMethods, {
+  get(target: ServiceMethods, property: keyof ServiceMethods) {
+    const originalMethod = target[property] as unknown
+    // Vérifier que la propriété est bien une fonction
+    if (typeof originalMethod === 'function') {
+      // Retourner une nouvelle fonction qui appelle l'originale sans modification
+      return async function (...args: unknown[]) {
+        // Appel de la méthode originale sans aucun changement
+        return originalMethod.apply(target, args)
+      }
+    }
+    // Retourner la propriété originale si ce n'est pas une fonction
+    return originalMethod
+  },
+})
+
+export default productServiceInterceptor // as ServiceMethods
 ```
+
+Pour forcer l’appel à `l’interceptor`, nous avons ajouter la règles ESlint suivante pour interdire `product-service` dans les présentation
+
+```tsx
+ {
+    files: ['src/app/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: ['@/db/*', 'drizzle-orm', '@/services/product-service'],
+        },
+      ],
+    },
+  },
+```
+
+Nous avons modifier les appels dans la présentation
+
+```tsx
+// import {
+//   createProductWithCategoryService,
+//   deleteProductService,
+//   getCategoriesService,
+//   getProductByNameService,
+//   getProductsService,
+//   persistProductService,
+// } from '@/services/product-service'
+import productServiceInterceptor from '@/services/interceptors/product-service-logger-interceptor'
+
+ const product =
+      await productServiceInterceptor.createProductWithCategoryService(
+        parsed.data.productName,
+        parsed.data.categoryName
+      )
+    revalidatePath('/shop-admin')
+```
+
+- **🐶 Dans cet exercice tu vas devoir utiliser le logger winston dans l’interceptor** `product-service-logger-interceptor`
 
 Fichiers
 
-- `services/product-service`
+- `service/interceptors/product-service-logger-interceptor.ts`
 
 ## Bonus
 
-### 1. 🚀 Log avec Winston (formatage)
+### 1. 🚀 Gerer les `AuthorizationError`
 
-`Console` étant limité, il existe des librairies plus avancé comme `winston`. Avantages :
-
-Winston est une bibliothèque de logging flexible, puissante et largement adoptée dans l’écosystème Node.js. Elle offre toutes les fonctionnalités nécessaires pour capturer, structurer et transporter vos logs, que ce soit pour un petit projet ou une application à grande échelle. Winston permet de répondre aux besoins suivants :
-
-- **Multi-transport** : Envoyez vos logs à plusieurs destinations (console, fichiers, services cloud, bases de données).
-- **Personnalisation** : Créez des formats et des niveaux de log adaptés à vos besoins.
-- **Performance** : Winston est optimisé pour gérer des volumes de logs importants sans compromettre les performances.
-- **Évolutivité** : Idéal pour une application évoluant d’un déploiement local à une infrastructure distribuée.
-
-🐶 Dans un premier temps utilise le logger `Winston` avec un transport par default (`la console`) dans le `product-service`
+Il est possible d’affiner les log en fonction du type d’error. Dans notre cas nous allons affiner sur les `authorizationError`
 
 ```tsx
-//logger.ts
-export const logger = winston.createLogger({
-  transports: [new winston.transports.Console()],
-})
-//{"level":"info","message":"getProductsPaginationService : params 4 0"}
+ if (error instanceof AuthorizationError) {
+      logger.error(
+        `Authorisation Erreur dans la méthode ${String(property)} :`,
+        (error as Error).message
+      )
+    } else {
+      logger.error(
+        `Erreur dans la méthode ${String(property)} :`,
+        (error as Error).message
+      )
+      logger.debug(
+        `Erreur dans la méthode ${String(property)} : ${(error as Error).message}`,
+        error
+      )
+    }
 ```
 
-Product service : Remplace la `console` par le `logger`
-
-```tsx
-//product-service
-import {logger} from '@/lib/logger'
-
-//console.info(`getProductsService : params`)
-logger.info(`getProductsService : params`)
-```
-
-🐶 Dans un second temps : **Enrichie le logger**
-
-1. Ajoute le niveau de log (`info`)
-
-Permet de définir un niveau a partir duquel le système log
-
-```tsx
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-})
-```
-
-Fichiers `.env`
-
-```tsx
-//.env.develoment
-LOG_LEVEL=debug
-//.env.production
-LOG_LEVEL=info
-// en developpement on va tout logger
-// pas en production car trop lourd
-```
-
-1. Formatage des logs : cli
-
-Essaye ce formatage : `winston.format.cli()` formatte pour le terminal
-
-```tsx
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.cli()
-})
-```
-
-1. Formatage des logs : Combine
-
-Essaye en combinant les formatages avec `winston.format.combine()`
-
-```tsx
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-	format: winston.format.combine(
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss',
-    }),
-    winston.format.colorize({level: true}),
-    winston.format.printf(({timestamp, level, message}) => {
-      return ` ${timestamp} [${level}]: ${message}`
-    })
-  ),
-})
-```
+- **🐶 implémente cela**
 
 Fichiers
 
-- `lib/logger.ts`
-- `services/product-service`
-
-### 2. 🚀 Winston MetaData
-
-Il arrive souvent que l’on ai a loguer les donnée en entrée comme par exemple
-
-```tsx
-logger.info(`createProductService : params ${data} `)
-// probleme
-// createProductService : params [object Object]
-```
-
-on souhaite pouvoir faire
-
-```tsx
-logger.info(`createProductService : params`, data)
-//data = metadata
-```
-
-- **🐶** Adapte le logger pour prendre en compte les metadata
-
-```tsx
- winston.format.printf(({timestamp, level, message, ...metadata}) => {
-      const formattedMetadata =
-        Object.keys(metadata).length > 0 ? ` | ${JSON.stringify(metadata)}` : ''
-      return ` ${timestamp} [${level}]: ${message} ${formattedMetadata}`
-    })
-```
-
-Fichiers
-
-- `lib/logger.ts`
-- `services/product-service`
-
-### 3. 🚀 fichiers logs
-
-Pour analyser plus facilement il est utile d’avoir des fichiers contenant uniquement certains niveau d’erreur.
-
-**👨‍✈️ Hugo te demande d’implémenter la configuration qui permettra d’avoir :**
-
-- `application.log`, toute les log
-- `error.log`, toute les `errors`
-- `debug.log`, toute les traces de `debugs`
-
-**🐶 Dans la partie transport ajoute `new winston.transports.File`**
-
-```tsx
-export const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  transports: [
-	  new winston.transports.Console()
-	  new winston.transports.File( .... )
-  ],
-})
-```
-
-Pour cela tu dois d'abord créer les fichiers
-
-```tsx
-import fs from 'node:fs'
-import path from 'node:path'
-// Définir le chemin du dossier et du fichier log
-const logDir = path.resolve('./logs') // Dossier courant /logs
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir) // Crée le dossier "logs" s'il n'existe pas
-}
-const logFile = path.join(logDir, 'application.log')
-const logErrorFile = path.join(logDir, 'error.log')
-const logDebugFile = path.join(logDir, 'debug.log')
-```
-
-et ensuite spécifier le fichier
-
-```tsx
-new winston.transports.File({
-      filename: logFile,
-      format ...
-```
+- `service/interceptors/product-service-logger-interceptor.ts`
 
 ## Aller plus loin
-
-Il sera possible de choisir un service externe comme `loggly` pour envoyer les log
-
-```tsx
-  transports: [
-    new winston.transports.Console(), // Utilise la sortie console pour Vercel
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.splat(),
-        winston.format.cli()
-      ),
-    }),
-    // Other logger
-     new Loggly({
-       token: 'your-loggly-token', // Remplace par ton token Loggly
-       subdomain: 'your-loggly-subdomain', // Remplace par ton sous-domaine Loggly
-       tags: ['Winston-NodeJS'], // Ajoute des tags pour identifier les logs
-       json: true,  // Envoie les logs au format JSON
-     }),
-  ],
-})
-```
-
-Il est possible d’utiliser cette lib pour la rotation de fichier
-
-[https://github.com/winstonjs/winston-daily-rotate-file](https://github.com/winstonjs/winston-daily-rotate-file)
-
-```tsx
-const transport: DailyRotateFile = new DailyRotateFile({
-    filename: 'application-%DATE%.log',
-    datePattern: 'YYYY-MM-DD-HH',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '14d'
-});
-```
 
 ## Ils vont t’aider
 
@@ -313,3 +198,7 @@ const transport: DailyRotateFile = new DailyRotateFile({
 ## 🐜 Feedback
 
 Remplir le formulaire le [formulaire de FeedBack](https://go.mikecodeur.com/cours-next-avis).
+
+```jsx
+
+```

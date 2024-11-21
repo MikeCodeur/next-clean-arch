@@ -8,14 +8,15 @@ import {
 
 import {CreateEditProduct, Product} from '@/types/product-types'
 
-import {
-  createProductWithCategoryService,
-  deleteProductService,
-  getCategoriesService,
-  getProductByNameService,
-  getProductsService,
-  persistProductService,
-} from '@/services/product-service'
+// import {
+//   createProductWithCategoryService,
+//   deleteProductService,
+//   getCategoriesService,
+//   getProductByNameService,
+//   getProductsService,
+//   persistProductService,
+// } from '@/services/product-service'
+import productServiceInterceptor from '@/services/interceptors/product-service-logger-interceptor'
 import {getConnectedUser} from '@/app/dal/user-dal'
 import {AuthorizationError} from '@/lib/errors'
 import {redirect} from 'next/navigation'
@@ -44,10 +45,11 @@ export async function quickAddProduct(
     }
   }
   try {
-    const product = await createProductWithCategoryService(
-      parsed.data.productName,
-      parsed.data.categoryName
-    )
+    const product =
+      await productServiceInterceptor.createProductWithCategoryService(
+        parsed.data.productName,
+        parsed.data.categoryName
+      )
     revalidatePath('/shop-admin')
 
     return {
@@ -110,7 +112,7 @@ export async function onSubmitAction(
       message: 'Server Error',
     }
   }
-  const prod = await getProductByNameService(
+  const prod = await productServiceInterceptor.getProductByNameService(
     data.get('title')?.toString() ?? ''
   )
   if (prod && prod.length > 0 && prod[0].id !== parsed.data.id) {
@@ -130,7 +132,7 @@ export async function onSubmitAction(
     if (parsed.data.id === '') {
       delete parsed.data.id
     }
-    await persistProductService(parsed.data)
+    await productServiceInterceptor.persistProductService(parsed.data)
     revalidatePath('/shop-admin')
     return {
       success: true,
@@ -167,21 +169,21 @@ export const getUser = async () => {
 }
 
 export const getProducts = async () => {
-  const products = await getProductsService()
+  const products = await productServiceInterceptor.getProductsService()
   return products
 }
 
 export const getCategories = async () => {
-  const products = await getCategoriesService()
+  const products = await productServiceInterceptor.getCategoriesService()
   return products
 }
 
 export const persistProduct = async (product: CreateEditProduct) => {
-  await persistProductService(product)
+  await productServiceInterceptor.persistProductService(product)
   revalidatePath('/shop-admin')
 }
 
 export const deleteProduct = async (product: Product) => {
-  await deleteProductService(product)
+  await productServiceInterceptor.deleteProductService(product)
   revalidatePath('/shop-admin')
 }
