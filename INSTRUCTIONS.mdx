@@ -288,6 +288,20 @@ Il sera possible de choisir un service externe comme `loggly` pour envoyer les l
 })
 ```
 
+Il est possible d’utiliser cette lib pour la rotation de fichier
+
+[https://github.com/winstonjs/winston-daily-rotate-file](https://github.com/winstonjs/winston-daily-rotate-file)
+
+```tsx
+const transport: DailyRotateFile = new DailyRotateFile({
+    filename: 'application-%DATE%.log',
+    datePattern: 'YYYY-MM-DD-HH',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '14d'
+});
+```
+
 ## Ils vont t’aider
 
 - **🐶 Mowgli le Chien** : _Mowgli te guidera dans chaque exercice._
