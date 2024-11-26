@@ -9,8 +9,8 @@ import {
   persistProduct,
   getProductsPagination as getProductsPaginationDao,
 } from '@/db/repositories/product-repository'
-import {AddUser} from '@/types/user-types'
-import {CreateEditProduct, DeleteProduct} from '@/types/product-types'
+import {AddUser} from '@/types/user-types.bonus-1'
+import {CreateEditProduct, DeleteProduct} from '@/types/product-types.bonus-1'
 
 export async function createUser(newUser: AddUser) {
   return createUserDao(newUser)
