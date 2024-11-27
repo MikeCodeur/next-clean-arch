@@ -12,17 +12,29 @@ Faire fonctionner l’application correctement c’est une chose. Mais il faut a
 
 Un des premier critère a regarder c’est la génération des pages statiques vs dynamiques. Dans notre cas elle sont toutes rendu dynamiquent (ƒ).
 
-```html
-Route (app) Size First Load JS ┌ ƒ / 9.26 kB 153 kB ├ ○ /_not-found 148 B 101 kB
-├ ƒ /bank 1.32 kB 109 kB ├ ƒ /bank/[uid] 1.56 kB 109 kB ├ ƒ /dashboard 1.43 kB
-145 kB ├ ƒ /instructions 4.12 kB 105 kB ├ ƒ /last-users 4.6 kB 125 kB ├ ƒ
-/logout 2.09 kB 119 kB ├ ƒ /privacy 148 B 101 kB ├ ƒ /redactor 148 B 101 kB ├ ƒ
-/restricted 175 B 110 kB ├ ƒ /shop-admin 148 B 101 kB ├ ƒ /shop-admin/[page]
-35.1 kB 179 kB ├ ƒ /shop-admin/quick 2.67 kB 120 kB ├ ƒ /sign-in 2.39 kB 119 kB
-├ ƒ /sign-up 2.47 kB 119 kB └ ƒ /terms 148 B 101 kB + First Load JS shared by
-all 101 kB ├ chunks/428-5cc3bc366b3773bd.js 45.7 kB ├
-chunks/46f14785-7f61c0f37941c5a3.js 52.9 kB └ other shared chunks (total) 1.86
-kB
+```bash
+Route (app)                              Size     First Load JS
+┌ ƒ /                                    9.26 kB         153 kB
+├ ○ /_not-found                          148 B           101 kB
+├ ƒ /bank                                1.32 kB         109 kB
+├ ƒ /bank/[uid]                          1.56 kB         109 kB
+├ ƒ /dashboard                           1.43 kB         145 kB
+├ ƒ /instructions                        4.12 kB         105 kB
+├ ƒ /last-users                          4.6 kB          125 kB
+├ ƒ /logout                              2.09 kB         119 kB
+├ ƒ /privacy                             148 B           101 kB
+├ ƒ /redactor                            148 B           101 kB
+├ ƒ /restricted                          175 B           110 kB
+├ ƒ /shop-admin                          148 B           101 kB
+├ ƒ /shop-admin/[page]                   35.1 kB         179 kB
+├ ƒ /shop-admin/quick                    2.67 kB         120 kB
+├ ƒ /sign-in                             2.39 kB         119 kB
+├ ƒ /sign-up                             2.47 kB         119 kB
+└ ƒ /terms                               148 B           101 kB
++ First Load JS shared by all            101 kB
+  ├ chunks/428-5cc3bc366b3773bd.js       45.7 kB
+  ├ chunks/46f14785-7f61c0f37941c5a3.js  52.9 kB
+  └ other shared chunks (total)          1.86 kB
 ```
 
 C’est normal pour les pages ou l’utilisateur doit être connecté. Mais pour les pages publiques la plupart devraient être statique
