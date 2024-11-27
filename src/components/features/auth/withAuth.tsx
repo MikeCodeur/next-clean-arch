@@ -4,7 +4,10 @@ import {UserModel} from '@/db/schema/users'
 import {redirect} from 'next/navigation'
 
 import {RoleEnum} from '@/services/authentification/type'
-import {getConnectedUser, hasRequiredRole} from '@/app/exercices/auth-util'
+import {
+  getConnectedUser,
+  hasRequiredRole,
+} from '@/services/authentification/auth-service'
 
 export type WithAuthProps = {
   user: UserModel

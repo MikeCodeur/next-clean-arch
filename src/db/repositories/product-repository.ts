@@ -6,7 +6,23 @@ import {
   DeleteProductModel,
   products,
 } from '../schema/products'
+import {AddCategoryModel, categories} from '../schema/categories'
 
+export async function createCategoryDao(category: AddCategoryModel) {
+  const [createdCategory] = await db
+    .insert(categories)
+    .values(category)
+    .returning()
+  return createdCategory
+}
+
+export async function getCategoryByNameDao(name: string) {
+  const category = await db
+    .select()
+    .from(categories)
+    .where(eq(categories.name, name))
+  return category.length > 0 ? category[0] : undefined
+}
 // CRUD
 export async function createProductDao(newProduct: AddProductModel) {
   const [createdProduct] = await db
@@ -97,7 +113,7 @@ export async function getProductsPaginationDao(
     with: {
       category: true,
     },
-    orderBy: (product, {asc}) => [asc(product.id)],
+    orderBy: (product, {desc}) => [desc(product.createdAt)],
   })
 
   const rows = await db.select({count: count()}).from(products)

@@ -10,6 +10,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import Link from 'next/link'
+import {Button} from '@/components/ui/button'
 
 async function Page(props: {params: Promise<{page: string}>}) {
   const params = await props.params
@@ -43,6 +45,9 @@ async function Page(props: {params: Promise<{page: string}>}) {
       <h1 className="mb-4 text-center text-3xl font-bold">
         Administration de la boutique
       </h1>
+      <Link href="/shop-admin/quick">
+        <Button className="m-4">Ajout Rapide</Button>
+      </Link>
       <ProductsManagement products={products ?? []} />
       <div className="mt-5">
         <Pagination>

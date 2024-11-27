@@ -6,7 +6,7 @@ import RenderTime from '@/components/render-time'
 import {Lock} from 'lucide-react'
 import withAuth from '@/components/features/auth/withAuth'
 import {moduleName} from '@/lib/constante'
-import {getConnectedUserLabel} from '../exercices/auth-util'
+import {getConnectedUserLabel} from '@/services/authentification/auth-service'
 
 export const metadata: Metadata = {
   title: 'Adminitration Shop',

@@ -1,4 +1,4 @@
-import {getConnectedUser} from '@/app/exercices/auth-util'
+import {getConnectedUser} from '@/services/authentification/auth-service'
 import RegisterForm from '@/components/features/auth/form/register-form'
 
 import {redirect} from 'next/navigation'

@@ -1,4 +1,4 @@
-import {isAuth, isAuthAdmin} from '@/app/exercices/auth-util'
+import {isAuth, isAuthAdmin} from '@/services/authentification/auth-service'
 import {redirect} from 'next/navigation'
 import {cache} from 'react'
 
