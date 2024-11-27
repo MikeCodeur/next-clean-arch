@@ -1,4 +1,3 @@
-import {getProductsPagination} from '@/app/exercices/data-lib'
 import {ProductsManagement} from './products-management'
 import {withAuthAdmin} from '@/components/features/auth/withAuth'
 import {
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui/pagination'
 import Link from 'next/link'
 import {Button} from '@/components/ui/button'
+import {getProductsPaginationService} from '@/services/product-service'
 
 async function Page(props: {params: Promise<{page: string}>}) {
   const params = await props.params
@@ -19,7 +19,7 @@ async function Page(props: {params: Promise<{page: string}>}) {
   const currentPage = Number.parseInt(page, 10) || 1
   const nbElement = 4 // Nombre d'éléments par page
   const start = (currentPage - 1) * nbElement
-  const {products, totalProducts} = await getProductsPagination(
+  const {products, totalProducts} = await getProductsPaginationService(
     nbElement,
     start
   )
