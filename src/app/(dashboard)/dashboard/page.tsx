@@ -1,5 +1,6 @@
+import {checkAuth} from '@/app/dal/user-dal'
 import {DashBoard} from '@/components/dash-board'
-import {checkAuth} from '../shop-admin/utils'
+
 import withAuth from '@/components/features/auth/withAuth'
 
 async function Page() {
