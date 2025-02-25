@@ -41,7 +41,7 @@
     "@hookform/resolvers": "^3.9.0",
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
-    "@next/mdx": "15.0.3",
+    "@next/mdx": "15.1.7",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-collapsible": "^1.1.0",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -61,13 +61,13 @@
     "jose": "^5.4.0",
     "lowdb": "^7.0.1",
     "lucide-react": "^0.436.0",
-    "next": "15.0.3",
+    "next": "15.1.7",
     "next-auth": "5.0.0-beta.25",
-    "next-themes": "^0.3.0",
+    "next-themes": "^0.4.4",
     "pg": "^8.12.0",
     "postgres": "3.4.4",
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "react-hook-form": "^7.52.1",
     "rehype-prism-plus": "^2.0.0",
     "remark-gfm": "^4.0.0",
@@ -90,8 +90,8 @@
     "@types/mdx": "^2.0.13",
     "@types/node": "^22.5.1",
     "@types/pg": "^8.11.6",
-    "@types/react": "npm:types-react@19.0.0-rc.1",
-    "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@typescript-eslint/parser": "^7.16.1",
     "@vitejs/plugin-react": "^4.3.1",
@@ -101,7 +101,7 @@
     "dotenv-cli": "^7.4.2",
     "drizzle-kit": "^0.24.2",
     "eslint": "^8.57.0",
-    "eslint-config-next": "15.0.3",
+    "eslint-config-next": "15.1.7",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-cypress": "^4.0.0",
     "eslint-plugin-github": "^4.10.2",
@@ -124,8 +124,8 @@
   "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b",
   "pnpm": {
     "overrides": {
-      "@types/react": "npm:types-react@19.0.0-rc.1",
-      "@types/react-dom": "npm:types-react-dom@19.0.0-rc.1"
+      "@types/react": "19.0.10",
+      "@types/react-dom": "19.0.4"
     }
   }
 }

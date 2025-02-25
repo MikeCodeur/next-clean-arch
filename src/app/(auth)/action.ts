@@ -9,7 +9,7 @@ import {
 } from '@/services/authentication/type'
 
 import {AuthError} from 'next-auth'
-import {isRedirectError} from 'next/dist/client/components/redirect'
+import {isRedirectError} from 'next/dist/client/components/redirect-error'
 
 export type FormState =
   | {
