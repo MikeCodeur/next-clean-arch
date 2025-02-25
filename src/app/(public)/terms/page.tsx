@@ -38,7 +38,7 @@ const Term = (props: TermsProps) => {
       <h2 className="mb-2 text-xl font-semibold">
         <span>{index}.</span> {title}
       </h2>
-      <ul className="pl-3 text-muted-foreground">{termsContent}</ul>
+      <ul className="text-muted-foreground pl-3">{termsContent}</ul>
     </div>
   )
 }

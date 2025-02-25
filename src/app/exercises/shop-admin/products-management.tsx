@@ -27,8 +27,8 @@ export function ProductsManagement({products}: {products: Product[]}) {
     toast('Product deleted')
   }
   return (
-    <div className="flex flex-col ">
-      <div className="mb-4 rounded-lg border shadow-sm">
+    <div className="flex flex-col">
+      <div className="mb-4 rounded-lg border shadow-xs">
         <Card>
           <CardHeader>
             <CardTitle>Product</CardTitle>
@@ -49,7 +49,7 @@ export function ProductsManagement({products}: {products: Product[]}) {
         </Card>
       </div>
 
-      <div className="rounded-lg border shadow-sm">
+      <div className="rounded-lg border shadow-xs">
         <ProductsTable
           products={products}
           onSelectedChange={handleSelectedProduct}

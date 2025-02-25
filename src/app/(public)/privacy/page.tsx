@@ -34,9 +34,9 @@ const Privacy = (props: PrivacyProps) => {
   return (
     <div className="py-2">
       <h2 className="mb-2 text-xl font-semibold">{title}</h2>
-      <p className="mb-4 text-muted-foreground">{description}</p>
+      <p className="text-muted-foreground mb-4">{description}</p>
       {pricacyContents && pricacyContents.length > 0 && (
-        <ul className="pl-8 text-muted-foreground">{pricacyContents}</ul>
+        <ul className="text-muted-foreground pl-8">{pricacyContents}</ul>
       )}
     </div>
   )
