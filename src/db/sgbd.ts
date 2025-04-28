@@ -320,7 +320,7 @@ export async function updateUserRole(email: string, role: RoleEnum) {
 export async function getUserByEmail(email: string) {
   const db = await lowDb()
   const users = db.data.users ?? []
-  // eslint-disable-next-line unicorn/no-null
+
   const user = users.find((u) => u.email === email) ?? null
   return user
 }
@@ -355,6 +355,7 @@ export async function updateSession(session: Session) {
     if (index === -1) {
       throw new Error(`Item with id ${session.sessionId} not found`)
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       sessions ? (sessions[index] = session) : undefined
     }
   })
@@ -364,7 +365,6 @@ export async function findSession(sessionId: string) {
   console.log('findSessionDao', sessionId)
   const db = await lowDb()
   const sessions = db.data.sessions ?? []
-  // eslint-disable-next-line unicorn/no-null
   const user = sessions.find((u) => u.sessionId === sessionId) ?? null
   return user
 }

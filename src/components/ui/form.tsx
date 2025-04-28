@@ -1,14 +1,8 @@
 import * as React from 'react'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import {Slot} from '@radix-ui/react-slot'
-import {
-  Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
-  FormProvider,
-  useFormContext,
-} from 'react-hook-form'
+import {Controller, FormProvider, useFormContext} from 'react-hook-form'
+import type {ControllerProps, FieldPath, FieldValues} from 'react-hook-form'
 
 import {cn} from '@/lib/utils'
 import {Label} from '@/components/ui/label'
@@ -112,7 +106,6 @@ const FormControl = React.forwardRef<
       ref={ref}
       id={formItemId}
       aria-describedby={
-        // eslint-disable-next-line unicorn/no-negated-condition
         !error
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
@@ -149,7 +142,6 @@ const FormMessage = React.forwardRef<
   const body = error ? String(error?.message) : children
 
   if (!body) {
-    // eslint-disable-next-line unicorn/no-null
     return null
   }
 
