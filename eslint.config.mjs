@@ -1,66 +1,37 @@
+import {dirname} from 'path'
+import {fileURLToPath} from 'url'
+import {FlatCompat} from '@eslint/eslintrc'
 import typescriptEslint from '@typescript-eslint/eslint-plugin'
 import react from 'eslint-plugin-react'
 import github from 'eslint-plugin-github'
 import jsonFormat from 'eslint-plugin-json-format'
 import unicorn from 'eslint-plugin-unicorn'
 import promise from 'eslint-plugin-promise'
-import drizzle from 'eslint-plugin-drizzle'
-import globals from 'globals'
-import tsParser from '@typescript-eslint/parser'
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
-import js from '@eslint/js'
-import {FlatCompat} from '@eslint/eslintrc'
-
+import prettier from 'eslint-plugin-prettier'
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = dirname(__filename)
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
 })
 
-export default [
-  {
-    ignores: ['src/components/ui/*'],
-  },
-  ...compat.extends(
-    'next/core-web-vitals',
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:@typescript-eslint/strict',
-    'plugin:github/recommended',
-    'plugin:unicorn/recommended',
-    'plugin:drizzle/recommended',
-    'prettier'
-  ),
+const eslintConfig = [
+  ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     plugins: {
       '@typescript-eslint': typescriptEslint,
+      'json-format': jsonFormat,
       react,
       github,
-      'json-format': jsonFormat,
       unicorn,
       promise,
-      drizzle,
+      prettier,
     },
-
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-        ...globals.jest,
-      },
-
-      parser: tsParser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-    },
-
     rules: {
-      'filenames/match-regex': 'off',
-      'unicorn/prefer-global-this': 'off',
-      'no-unescaped-entities': 'off',
+      'prettier/prettier': 'error',
+      'react/react-in-jsx-scope': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-unused-expressions': 'warn',
       'import/no-commonjs': 'off',
       'import/no-namespace': 'off',
       'import/named': 'off',
@@ -69,6 +40,7 @@ export default [
       'unicorn/filename-case': 'off',
       'no-console': 'off',
       'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
       'promise/always-return': 'error',
       'promise/no-return-wrap': 'error',
       'promise/param-names': 'error',
@@ -84,41 +56,9 @@ export default [
       'react/prop-types': 'off',
       'i18n-text/no-en': 'off',
       'github/no-implicit-buggy-globals': 'off',
-
-      'eslint-comments/no-use': [
-        'error',
-        {
-          allow: ['eslint-disable', 'eslint-disable-next-line'],
-        },
-      ],
-
-      camelcase: 'off',
-      'no-shadow': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
-  {
-    files: ['src/app/**/*.{ts,tsx}'],
-
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/data/*'],
-        },
-      ],
-    },
-  },
-  {
-    files: ['src/data/**/*.ts', 'src/services/**/*.ts'],
-
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: ['@/app/*'],
-        },
-      ],
+      'prefer-template': 'warn',
     },
   },
 ]
+
+export default eslintConfig

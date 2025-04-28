@@ -4,7 +4,7 @@ import {signIn, signOut} from '@/auth'
 import {LoginFormSchema, RoleEnum, SignInError, SignupFormSchema} from '@/type'
 
 import {AuthError} from 'next-auth'
-import {isRedirectError} from 'next/dist/client/components/redirect'
+import {isRedirectError} from 'next/dist/client/components/redirect-error'
 import {getUserByEmailDao} from '../(dashboard)/shop-admin/actions'
 import {encrypt, hashPassword} from '@/crypt'
 import {CreateUser, users} from '@/db/schema/users'
