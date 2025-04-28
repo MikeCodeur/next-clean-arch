@@ -1,7 +1,7 @@
 'use server'
 
 import {AuthError} from 'next-auth'
-import {isRedirectError} from 'next/dist/client/components/redirect'
+import {isRedirectError} from 'next/dist/client/components/redirect-error'
 
 import {signUp} from '@/services/authentification/auth-service'
 import {SignInError} from '@/services/authentification/type'
