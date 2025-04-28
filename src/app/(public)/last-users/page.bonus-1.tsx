@@ -7,7 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import {getPublicLastUsersDal} from '@/app/dal/user-dal'
+import {getPublicLastUsersDal} from '@/app/dal/user-dal.bonus-1'
 import {UserDTO} from '@/services/authentification/type'
 
 export default async function Page() {
